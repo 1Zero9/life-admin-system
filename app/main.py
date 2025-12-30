@@ -3,6 +3,9 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
+import tempfile
+from app.extractors import extract_pdf_text
+
 import boto3
 from botocore.client import Config
 from dotenv import load_dotenv
@@ -12,6 +15,7 @@ from app.models import Item
 from fastapi import Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
+
 
 
 
@@ -63,6 +67,18 @@ async def upload(file: UploadFile = File(...)):
     object_key = build_object_key(file.filename)
     content_type = file.content_type or "application/octet-stream"
 
+    extracted_text = None
+    is_pdf = (content_type == "application/pdf") or (file.filename.lower().endswith(".pdf"))
+
+    if is_pdf:
+        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=True) as tmp:
+            file.file.seek(0)
+            tmp.write(file.file.read())
+            tmp.flush()
+            extracted_text = extract_pdf_text(tmp.name)
+
+        file.file.seek(0)
+
     # Try get size without reading the whole file
     size_bytes = None
     try:
@@ -88,6 +104,7 @@ async def upload(file: UploadFile = File(...)):
             bucket=R2_BUCKET,
             object_key=object_key,
             size_bytes=size_bytes,
+            extracted_text=extracted_text,
         )
         db.add(item)
         db.commit()
@@ -105,6 +122,7 @@ async def upload(file: UploadFile = File(...)):
         "size_bytes": item.size_bytes,
         "created_at": item.created_at.isoformat(),
     }
+
 
 @app.get("/items/recent")
 def recent(limit: int = 25):
@@ -193,3 +211,39 @@ async def ui_upload(file: UploadFile = File(...)):
     # reuse the existing upload logic by calling the API function directly
     result = await upload(file)  # calls your /intake/upload handler
     return RedirectResponse(url="/", status_code=303)
+
+
+from fastapi import Query
+from sqlalchemy import or_
+
+@app.get("/items/search")
+def search(q: str = Query(..., min_length=1), limit: int = 25):
+    limit = max(1, min(limit, 100))
+    q_like = f"%{q}%"
+
+    db = SessionLocal()
+    try:
+        items = (
+            db.query(Item)
+            .filter(or_(
+                Item.original_filename.ilike(q_like),
+                Item.extracted_text.ilike(q_like),
+            ))
+            .order_by(Item.created_at.desc())
+            .limit(limit)
+            .all()
+        )
+        return [
+            {
+                "id": i.id,
+                "original_filename": i.original_filename,
+                "content_type": i.content_type,
+                "bucket": i.bucket,
+                "object_key": i.object_key,
+                "size_bytes": i.size_bytes,
+                "created_at": i.created_at.isoformat(),
+            }
+            for i in items
+        ]
+    finally:
+        db.close()

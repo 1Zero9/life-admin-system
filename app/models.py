@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 
 from sqlalchemy import Column, DateTime, Integer, String
 from .db import Base
+from sqlalchemy import Column, DateTime, Integer, String, Text
 
 
 class Item(Base):
@@ -14,4 +15,5 @@ class Item(Base):
     bucket = Column(String, nullable=False)
     object_key = Column(String, nullable=False)
     size_bytes = Column(Integer, nullable=True)
+    extracted_text = Column(Text, nullable=True)
     created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
