@@ -5,3 +5,9 @@
 node_modules/
 dist/
 build/
+Files/
+data/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
