@@ -9,6 +9,11 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from app.db import Base, engine, SessionLocal
 from app.models import Item
+from fastapi import Request
+from fastapi.responses import RedirectResponse
+from fastapi.templating import Jinja2Templates
+
+
 
 load_dotenv()
 
@@ -32,6 +37,9 @@ s3 = boto3.client(
 
 app = FastAPI(title="Life Admin System (MVP)")
 Base.metadata.create_all(bind=engine)
+
+
+templates = Jinja2Templates(directory="app/templates")
 
 
 
@@ -155,3 +163,33 @@ def search(q: str = Query(..., min_length=1), limit: int = 25):
         ]
     finally:
         db.close()
+
+
+@app.get("/")
+def ui_home(request: Request, q: str | None = None):
+    items = None
+    if q:
+        q_like = f"%{q}%"
+        db = SessionLocal()
+        try:
+            items = (
+                db.query(Item)
+                .filter(Item.original_filename.ilike(q_like))
+                .order_by(Item.created_at.desc())
+                .limit(25)
+                .all()
+            )
+        finally:
+            db.close()
+
+    return templates.TemplateResponse(
+        "index.html",
+        {"request": request, "q": q, "items": items},
+    )
+
+
+@app.post("/ui/upload")
+async def ui_upload(file: UploadFile = File(...)):
+    # reuse the existing upload logic by calling the API function directly
+    result = await upload(file)  # calls your /intake/upload handler
+    return RedirectResponse(url="/", status_code=303)

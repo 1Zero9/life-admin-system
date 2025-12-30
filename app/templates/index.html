@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Life Admin (MVP)</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; }
+      .card { max-width: 720px; padding: 16px; border: 1px solid #ddd; border-radius: 12px; }
+      input[type="text"], input[type="file"] { width: 100%; padding: 10px; margin: 8px 0 12px; }
+      button { padding: 10px 14px; border: 0; border-radius: 10px; cursor: pointer; }
+      .row { display: flex; gap: 12px; flex-wrap: wrap; }
+      .row > * { flex: 1; min-width: 200px; }
+      .muted { color: #666; font-size: 14px; }
+      table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+      th, td { text-align: left; border-bottom: 1px solid #eee; padding: 8px; font-size: 14px; }
+      code { background: #f6f6f6; padding: 2px 6px; border-radius: 6px; }
+    </style>
+  </head>
+  <body>
+    <h1>Life Admin (MVP)</h1>
+    <p class="muted">Upload first. Search by filename. Documents are the source of truth.</p>
+
+    <div class="card">
+      <h2>Upload</h2>
+      <form action="/ui/upload" method="post" enctype="multipart/form-data">
+        <label>File</label>
+        <input type="file" name="file" required />
+
+        <button type="submit">Upload</button>
+      </form>
+
+      <hr style="margin:16px 0;" />
+
+      <h2>Search</h2>
+      <form action="/" method="get" class="row">
+        <div>
+          <label>Filename contains</label>
+          <input type="text" name="q" value="{{ q or '' }}" placeholder="e.g. mortgage, insurance, 2025" />
+        </div>
+        <div style="align-self:end;">
+          <button type="submit">Search</button>
+        </div>
+      </form>
+
+      {% if items is not none %}
+        <h3>Results ({{ items|length }})</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Filename</th>
+              <th>Uploaded</th>
+              <th>Key</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in items %}
+              <tr>
+                <td>{{ i.original_filename }}</td>
+                <td>{{ i.created_at }}</td>
+                <td><code>{{ i.object_key }}</code></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+    </div>
+  </body>
+</html>
