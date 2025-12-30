@@ -136,3 +136,35 @@ Upload life admin documents and store originals safely.
 - Build log format: Goal → What worked → What failed → Resolution → Notes
 - Build log is critical for longevity goal (10-20+ years) and legacy handover
 - Empty build log entries from earlier in the day remain (14:52, 16:14, 16:19) - to be filled in retrospectively if needed
+
+---
+
+## 2025-12-30 – Git repository cleanup and commit organization
+
+### Goal
+- Clean up git repository and properly commit all recent work
+- Remove Python bytecode files from tracking
+- Organize commits logically by feature/purpose
+
+### What worked
+- Updated .gitignore to exclude __pycache__/, *.pyc, *.pyo, *.pyd
+- Removed tracked pycache files from repository (3 files)
+- Organized work into 3 logical commits:
+  1. chore: gitignore cleanup and pycache removal (731f5c5)
+  2. feat: PDF text extraction and content search (2c22a0b)
+  3. docs: claude.md and build log protocol (6507da3)
+- Successfully pushed to origin/main
+- All commits include Claude Code attribution
+
+### What failed
+- Nothing
+
+### Resolution
+- N/A
+
+### Notes
+- Python bytecode files were being tracked due to missing .gitignore entries
+- PDF extraction feature had been implemented but not yet committed
+- Commit messages follow existing pattern: prefix (feat/docs/chore) + description
+- Repository now clean with working tree up to date
+- Total 3 commits ahead of previous state (60dc137)
