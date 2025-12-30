@@ -168,3 +168,48 @@ Upload life admin documents and store originals safely.
 - Commit messages follow existing pattern: prefix (feat/docs/chore) + description
 - Repository now clean with working tree up to date
 - Total 3 commits ahead of previous state (60dc137)
+
+---
+
+## 2025-12-30 – Testing and bug fix: duplicate search endpoint
+
+### Goal
+- Test PDF text extraction and content search functionality
+- Verify all endpoints work correctly end-to-end
+
+### What worked
+- Database schema verified - extracted_text column exists
+- FastAPI application starts successfully
+- PDF upload with text extraction works correctly
+- Uploaded 083205518681.pdf (161KB, 9148 chars extracted)
+- Extracted text includes: name, address, billing info, dates
+- Recent items endpoint works correctly
+- Search by filename works
+
+### What failed
+- Search by PDF content initially returned empty results
+- Root cause: duplicate search endpoint definitions in app/main.py
+  - Line 157: Old endpoint - only searched filenames
+  - Line 220: New endpoint - searches filenames AND extracted_text
+  - First definition was being used, so content search didn't work
+
+### Resolution
+- Removed duplicate search endpoint (lines 154-183)
+- Kept the correct implementation with extracted_text search
+- Fixed unused variable warning in ui_upload endpoint
+- Verified searches work correctly:
+  - Search "Swords" → found (from address)
+  - Search "Cranfield" → found (from name)
+  - Search "electricity" → found (case-insensitive)
+  - Search "nonexistent" → no results (correct)
+
+### Notes
+- PDF text extraction is fully functional and deterministic
+- Content search works with case-insensitive ILIKE in SQLite
+- All MVP requirements for content indexing are met:
+  - extracted_text column added ✓
+  - extract_pdf_text() implemented ✓
+  - Upload flow extracts PDF text ✓
+  - Search endpoint searches both filename and content ✓
+- Server auto-reload feature helped during testing
+- The duplicate endpoint was likely from an earlier implementation attempt

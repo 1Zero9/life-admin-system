@@ -151,37 +151,6 @@ def recent(limit: int = 25):
     finally:
         db.close()
 
-from fastapi import Query
-
-@app.get("/items/search")
-def search(q: str = Query(..., min_length=1), limit: int = 25):
-    limit = max(1, min(limit, 100))
-    q_like = f"%{q}%"
-
-    db = SessionLocal()
-    try:
-        items = (
-            db.query(Item)
-            .filter(Item.original_filename.ilike(q_like))
-            .order_by(Item.created_at.desc())
-            .limit(limit)
-            .all()
-        )
-        return [
-            {
-                "id": i.id,
-                "original_filename": i.original_filename,
-                "content_type": i.content_type,
-                "bucket": i.bucket,
-                "object_key": i.object_key,
-                "size_bytes": i.size_bytes,
-                "created_at": i.created_at.isoformat(),
-            }
-            for i in items
-        ]
-    finally:
-        db.close()
-
 
 @app.get("/")
 def ui_home(request: Request, q: str | None = None):
@@ -209,7 +178,7 @@ def ui_home(request: Request, q: str | None = None):
 @app.post("/ui/upload")
 async def ui_upload(file: UploadFile = File(...)):
     # reuse the existing upload logic by calling the API function directly
-    result = await upload(file)  # calls your /intake/upload handler
+    await upload(file)  # calls your /intake/upload handler
     return RedirectResponse(url="/", status_code=303)
 
 
