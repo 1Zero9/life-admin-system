@@ -223,7 +223,12 @@ Upload life admin documents and store originals safely.
 - Keep implementation minimal and robust
 
 ### What worked
-- Added dependencies: pytesseract, pillow, opencv-python
+- System dependencies installed successfully:
+  - `brew install tesseract` (macOS) - Tesseract 5.5.2
+- Python dependencies added to requirements.txt:
+  - pytesseract==0.3.13
+  - pillow==11.2.0
+  - opencv-python==4.10.0.84
 - Created extract_text_from_image() function in scripts/gmail_ingest.py
 - Image detection by MIME type (image/png, image/jpeg) and file extension (.jpg, .jpeg, .png)
 - Optional OpenCV preprocessing (grayscale + thresholding) improves accuracy
@@ -232,6 +237,16 @@ Upload life admin documents and store originals safely.
 - Image attachments now searchable via /items/search endpoint
 - Logging: "OCR extracted X characters from <filename>"
 - Updated README.md with Tesseract installation instructions
+
+### Testing
+- Tested with iPhone camera photo (IMG_0193.jpeg - medical receipt)
+- OCR successfully extracted 337 characters:
+  - Clinic name, address, patient name, date, amount
+- Search verification passed:
+  - Search "Plaza" → Found image
+  - Search "Clinic" → Found image
+  - Search "RECEIPT" → Found image (plus PDFs)
+  - Search "Cranfield" → Found image (plus emails)
 
 ### What failed
 - Nothing
@@ -244,7 +259,43 @@ Upload life admin documents and store originals safely.
 - OCR only applies to attachments (source_type="attachment"), not uploaded files
 - Extracted text stored in items.extracted_text (same field as PDF text)
 - No database schema changes required
-- Idempotent: skips if extracted_text already exists
 - Preprocessing with OpenCV optional but recommended for better accuracy
 - Import guards ensure script works even if pytesseract/opencv missing
 - PYTESSERACT_AVAILABLE and CV2_AVAILABLE flags control feature availability
+
+---
+
+## 2026-01-03 – OCR Quality Markers and Guardrails
+
+### Goal
+- Add quality markers to identify extraction source (EMAIL/PDF/OCR)
+- Add guardrails to prevent OCR slowdowns and duplicate processing
+- Improve debugging and performance
+
+### What worked
+- Quality markers implemented:
+  - EMAIL: prefix for email body text
+  - PDF: prefix for PDF extracted text
+  - OCR: prefix for image OCR text
+- OCR guardrails implemented:
+  - 10 MB file size limit (configurable)
+  - Attachment idempotency check (source_type + source_id + parent_id)
+  - Type checking (images only)
+  - Availability checking (pytesseract required)
+- Clear logging when skipping OCR:
+  - "Skipping OCR for huge.jpg (size 15.2 MB exceeds 10 MB limit)"
+  - "Skipping receipt.jpg (already ingested)"
+
+### What failed
+- Nothing
+
+### Resolution
+- N/A
+
+### Notes
+- Quality markers help identify extraction issues in search results
+- File size threshold prevents OCR timeouts on large images
+- Idempotency prevents duplicate processing on re-runs
+- Newly ingested items have quality markers
+- Existing items retain their current format (no migration needed)
+- Guardrails ensure OCR doesn't slow down the ingestion process
