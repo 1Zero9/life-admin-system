@@ -17,6 +17,7 @@ from google.oauth2.credentials import Credentials
 
 from app.db import SessionLocal, Base, engine
 from app.models import Item
+from app.extractors import extract_pdf_text
 
 import boto3
 from botocore.client import Config
@@ -203,6 +204,28 @@ def ingest_message(service, message_id):
             ContentType=part.get("mimeType"),
         )
 
+        # Extract text from PDF attachments
+        extracted_text = None
+        mime_type = part.get("mimeType", "")
+        is_pdf = mime_type == "application/pdf" or filename.lower().endswith(".pdf")
+
+        if is_pdf:
+            tmp_file = None
+            try:
+                with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+                    tmp.write(data)
+                    tmp_file = tmp.name
+
+                extracted_text = extract_pdf_text(tmp_file)
+                if extracted_text:
+                    char_count = len(extracted_text)
+                    print(f"  Extracted {char_count} characters from PDF attachment {filename}")
+            except Exception as e:
+                print(f"  Warning: PDF extraction failed for {filename}: {e}")
+            finally:
+                if tmp_file and os.path.exists(tmp_file):
+                    os.unlink(tmp_file)
+
         db = SessionLocal()
         try:
             attachment_item = Item(
@@ -211,7 +234,7 @@ def ingest_message(service, message_id):
                 bucket=R2_BUCKET,
                 object_key=attachment_key,
                 size_bytes=len(data),
-                extracted_text=None,
+                extracted_text=extracted_text,
                 parent_id=email_item.id,
                 source_type="attachment",
                 source_id=attachment_id or part.get("partId"),
