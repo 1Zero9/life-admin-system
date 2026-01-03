@@ -225,6 +225,33 @@ async def ui_upload(file: UploadFile = File(...)):
 from fastapi import Query
 from sqlalchemy import or_
 
+
+@app.get("/download/{item_id}")
+def download(item_id: str):
+    """Generate presigned URL and redirect to download an item from R2."""
+    db = SessionLocal()
+    try:
+        item = db.query(Item).filter(Item.id == item_id).first()
+        if not item:
+            raise HTTPException(status_code=404, detail="Item not found")
+
+        # Generate presigned URL (5 minutes expiry)
+        presigned_url = s3.generate_presigned_url(
+            'get_object',
+            Params={
+                'Bucket': item.bucket,
+                'Key': item.object_key,
+                'ResponseContentType': item.content_type or 'application/octet-stream',
+                'ResponseContentDisposition': f'attachment; filename="{item.original_filename}"'
+            },
+            ExpiresIn=300
+        )
+
+        return RedirectResponse(url=presigned_url, status_code=307)
+    finally:
+        db.close()
+
+
 @app.get("/items/search")
 def search(q: str = Query(..., min_length=1), limit: int = 25):
     limit = max(1, min(limit, 100))

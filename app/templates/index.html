@@ -51,6 +51,7 @@
               <th>Filename</th>
               <th>Uploaded</th>
               <th>Key</th>
+              <th>Download</th>
             </tr>
           </thead>
           <tbody>
@@ -59,6 +60,7 @@
                 <td>{{ i.original_filename }}</td>
                 <td>{{ i.created_at }}</td>
                 <td><code>{{ i.object_key }}</code></td>
+                <td><a href="/download/{{ i.id }}">Download</a></td>
               </tr>
             {% endfor %}
           </tbody>
@@ -70,6 +72,7 @@
             <tr>
               <th>Email</th>
               <th>Received</th>
+              <th>Download</th>
             </tr>
           </thead>
           <tbody>
@@ -81,7 +84,10 @@
                   {% if atts %}
                     <ul style="margin: 4px 0 0 20px; font-size: 13px; color: #666;">
                       {% for att in atts %}
-                        <li>{{ att.original_filename }} ({{ att.size_bytes }} bytes)</li>
+                        <li>
+                          {{ att.original_filename }} ({{ att.size_bytes }} bytes)
+                          <a href="/download/{{ att.id }}" style="margin-left: 8px;">Download</a>
+                        </li>
                       {% endfor %}
                     </ul>
                   {% else %}
@@ -89,6 +95,7 @@
                   {% endif %}
                 </td>
                 <td>{{ email.created_at }}</td>
+                <td><a href="/download/{{ email.id }}">Download</a></td>
               </tr>
             {% endfor %}
           </tbody>
