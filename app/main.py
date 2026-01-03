@@ -145,6 +145,9 @@ def recent(limit: int = 25):
                 "object_key": i.object_key,
                 "size_bytes": i.size_bytes,
                 "created_at": i.created_at.isoformat(),
+                "parent_id": i.parent_id,
+                "source_type": i.source_type,
+                "source_id": i.source_id,
             }
             for i in items
         ]
@@ -211,6 +214,9 @@ def search(q: str = Query(..., min_length=1), limit: int = 25):
                 "object_key": i.object_key,
                 "size_bytes": i.size_bytes,
                 "created_at": i.created_at.isoformat(),
+                "parent_id": i.parent_id,
+                "source_type": i.source_type,
+                "source_id": i.source_id,
             }
             for i in items
         ]

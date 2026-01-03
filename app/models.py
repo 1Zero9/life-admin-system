@@ -16,4 +16,7 @@ class Item(Base):
     object_key = Column(String, nullable=False)
     size_bytes = Column(Integer, nullable=True)
     extracted_text = Column(Text, nullable=True)
+    parent_id = Column(String, nullable=True)
+    source_type = Column(String, nullable=True)
+    source_id = Column(String, nullable=True)
     created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
