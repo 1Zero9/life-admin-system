@@ -44,7 +44,7 @@
       </form>
 
       {% if items is not none %}
-        <h3>Results ({{ items|length }})</h3>
+        <h3>Search Results ({{ items|length }})</h3>
         <table>
           <thead>
             <tr>
@@ -59,6 +59,36 @@
                 <td>{{ i.original_filename }}</td>
                 <td>{{ i.created_at }}</td>
                 <td><code>{{ i.object_key }}</code></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% elif emails is not none %}
+        <h3>Recent Emails ({{ emails|length }})</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Received</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for email in emails %}
+              <tr>
+                <td>
+                  <strong>{{ email.original_filename }}</strong>
+                  {% set atts = attachments_by_parent.get(email.id, []) %}
+                  {% if atts %}
+                    <ul style="margin: 4px 0 0 20px; font-size: 13px; color: #666;">
+                      {% for att in atts %}
+                        <li>{{ att.original_filename }} ({{ att.size_bytes }} bytes)</li>
+                      {% endfor %}
+                    </ul>
+                  {% else %}
+                    <div style="font-size: 13px; color: #999; margin-top: 4px;">No attachments</div>
+                  {% endif %}
+                </td>
+                <td>{{ email.created_at }}</td>
               </tr>
             {% endfor %}
           </tbody>

@@ -11,3 +11,7 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+secrets/
+*.json
+!package.json
+!tsconfig.json

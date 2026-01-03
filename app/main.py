@@ -158,10 +158,14 @@ def recent(limit: int = 25):
 @app.get("/")
 def ui_home(request: Request, q: str | None = None):
     items = None
-    if q:
-        q_like = f"%{q}%"
-        db = SessionLocal()
-        try:
+    emails = None
+    attachments_by_parent = None
+
+    db = SessionLocal()
+    try:
+        if q:
+            # Search mode: flat list of all matching items
+            q_like = f"%{q}%"
             items = (
                 db.query(Item)
                 .filter(Item.original_filename.ilike(q_like))
@@ -169,12 +173,43 @@ def ui_home(request: Request, q: str | None = None):
                 .limit(25)
                 .all()
             )
-        finally:
-            db.close()
+        else:
+            # Grouped mode: emails with nested attachments
+            emails = (
+                db.query(Item)
+                .filter(Item.source_type == "email")
+                .order_by(Item.created_at.desc())
+                .limit(25)
+                .all()
+            )
+
+            if emails:
+                email_ids = [e.id for e in emails]
+                attachments = (
+                    db.query(Item)
+                    .filter(Item.parent_id.in_(email_ids))
+                    .order_by(Item.created_at.asc())
+                    .all()
+                )
+
+                # Group attachments by parent_id
+                attachments_by_parent = {}
+                for att in attachments:
+                    if att.parent_id not in attachments_by_parent:
+                        attachments_by_parent[att.parent_id] = []
+                    attachments_by_parent[att.parent_id].append(att)
+    finally:
+        db.close()
 
     return templates.TemplateResponse(
         "index.html",
-        {"request": request, "q": q, "items": items},
+        {
+            "request": request,
+            "q": q,
+            "items": items,
+            "emails": emails,
+            "attachments_by_parent": attachments_by_parent,
+        },
     )
 
 
