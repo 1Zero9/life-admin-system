@@ -25,6 +25,21 @@ from botocore.client import Config
 from email import message_from_bytes
 from email.policy import default as email_policy
 
+# OCR imports
+try:
+    import pytesseract
+    from PIL import Image
+    PYTESSERACT_AVAILABLE = True
+except ImportError:
+    PYTESSERACT_AVAILABLE = False
+
+try:
+    import cv2
+    import numpy as np
+    CV2_AVAILABLE = True
+except ImportError:
+    CV2_AVAILABLE = False
+
 # -----------------------------
 # Configuration
 # -----------------------------
@@ -99,6 +114,45 @@ def extract_plain_text(msg):
     return ""
 
 
+def extract_text_from_image(image_path):
+    """Extract text from image using OCR with optional preprocessing."""
+    if not PYTESSERACT_AVAILABLE:
+        return None
+
+    try:
+        # Load image
+        image = Image.open(image_path)
+
+        # Optional preprocessing with OpenCV
+        if CV2_AVAILABLE:
+            # Convert PIL image to numpy array
+            img_array = np.array(image)
+
+            # Convert to grayscale
+            if len(img_array.shape) == 3:
+                gray = cv2.cvtColor(img_array, cv2.COLOR_RGB2GRAY)
+            else:
+                gray = img_array
+
+            # Apply thresholding to improve OCR accuracy
+            _, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+            # Convert back to PIL Image
+            image = Image.fromarray(thresh)
+
+        # Run OCR
+        text = pytesseract.image_to_string(image, lang="eng")
+
+        # Clean up text
+        text = text.strip()
+
+        return text if text else None
+
+    except Exception as e:
+        print(f"  Warning: OCR extraction failed: {e}")
+        return None
+
+
 # -----------------------------
 # Ingestion logic
 # -----------------------------
@@ -130,8 +184,8 @@ def ingest_message(service, message_id):
     print(f"From: {sender}")
     print(f"Date: {date}")
 
-    extracted_text = f"Subject: {subject}\nFrom: {sender}\nDate: {date}\n"
-    extracted_text += extract_plain_text(email_msg)
+    body_text = extract_plain_text(email_msg)
+    extracted_text = f"EMAIL:\nSubject: {subject}\nFrom: {sender}\nDate: {date}\n{body_text}"
 
     email_key = build_object_key(EMAIL_PREFIX, "email.eml")
     print(f"Uploading to R2: {email_key}")
@@ -195,6 +249,21 @@ def ingest_message(service, message_id):
         else:
             data = base64.urlsafe_b64decode(body.get("data", ""))
 
+        # Check if attachment already exists (idempotency)
+        source_id_value = attachment_id or part.get("partId")
+        db_check = SessionLocal()
+        try:
+            existing = db_check.query(Item).filter(
+                Item.source_type == "attachment",
+                Item.source_id == source_id_value,
+                Item.parent_id == email_item.id
+            ).first()
+            if existing:
+                print(f"  Skipping {filename} (already ingested)")
+                continue
+        finally:
+            db_check.close()
+
         attachment_key = build_object_key(ATTACHMENT_PREFIX, filename)
 
         s3.put_object(
@@ -208,6 +277,14 @@ def ingest_message(service, message_id):
         extracted_text = None
         mime_type = part.get("mimeType", "")
         is_pdf = mime_type == "application/pdf" or filename.lower().endswith(".pdf")
+        is_image = (
+            mime_type in ("image/png", "image/jpeg", "image/jpg")
+            or filename.lower().endswith((".jpg", ".jpeg", ".png"))
+        )
+
+        # Guardrails
+        file_size_bytes = len(data)
+        size_threshold = 10 * 1024 * 1024  # 10 MB
 
         if is_pdf:
             tmp_file = None
@@ -216,15 +293,43 @@ def ingest_message(service, message_id):
                     tmp.write(data)
                     tmp_file = tmp.name
 
-                extracted_text = extract_pdf_text(tmp_file)
-                if extracted_text:
-                    char_count = len(extracted_text)
+                text = extract_pdf_text(tmp_file)
+                if text:
+                    # Add quality marker prefix
+                    extracted_text = f"PDF:\n{text}"
+                    char_count = len(text)
                     print(f"  Extracted {char_count} characters from PDF attachment {filename}")
             except Exception as e:
                 print(f"  Warning: PDF extraction failed for {filename}: {e}")
             finally:
                 if tmp_file and os.path.exists(tmp_file):
                     os.unlink(tmp_file)
+
+        elif is_image and PYTESSERACT_AVAILABLE:
+            # OCR guardrails
+            if file_size_bytes > size_threshold:
+                print(f"  Skipping OCR for {filename} (size {file_size_bytes / 1024 / 1024:.1f} MB exceeds {size_threshold / 1024 / 1024:.0f} MB limit)")
+            else:
+                tmp_file = None
+                try:
+                    # Determine file extension
+                    ext = Path(filename).suffix.lower() or ".png"
+
+                    with tempfile.NamedTemporaryFile(suffix=ext, delete=False) as tmp:
+                        tmp.write(data)
+                        tmp_file = tmp.name
+
+                    text = extract_text_from_image(tmp_file)
+                    if text:
+                        # Add quality marker prefix
+                        extracted_text = f"OCR:\n{text}"
+                        char_count = len(text)
+                        print(f"  OCR extracted {char_count} characters from {filename}")
+                except Exception as e:
+                    print(f"  Warning: OCR extraction failed for {filename}: {e}")
+                finally:
+                    if tmp_file and os.path.exists(tmp_file):
+                        os.unlink(tmp_file)
 
         db = SessionLocal()
         try:

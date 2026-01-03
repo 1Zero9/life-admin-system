@@ -14,9 +14,12 @@ idna==3.11
 Jinja2==3.1.6
 jmespath==1.0.1
 MarkupSafe==3.0.3
+opencv-python==4.10.0.84
+pillow==11.2.0
 pydantic==2.12.5
 pydantic_core==2.41.5
 pypdf==6.5.0
+pytesseract==0.3.13
 python-dateutil==2.9.0.post0
 python-dotenv==1.2.1
 python-multipart==0.0.21

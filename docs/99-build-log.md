@@ -213,3 +213,38 @@ Upload life admin documents and store originals safely.
   - Search endpoint searches both filename and content ✓
 - Server auto-reload feature helped during testing
 - The duplicate endpoint was likely from an earlier implementation attempt
+---
+
+## 2026-01-03 – OCR for Image Attachments
+
+### Goal
+- Add OCR capability for image attachments (JPG/PNG) in Gmail ingestion
+- Make image attachments searchable via text extraction
+- Keep implementation minimal and robust
+
+### What worked
+- Added dependencies: pytesseract, pillow, opencv-python
+- Created extract_text_from_image() function in scripts/gmail_ingest.py
+- Image detection by MIME type (image/png, image/jpeg) and file extension (.jpg, .jpeg, .png)
+- Optional OpenCV preprocessing (grayscale + thresholding) improves accuracy
+- Graceful degradation if OpenCV not available
+- Temp file handling with proper cleanup
+- Image attachments now searchable via /items/search endpoint
+- Logging: "OCR extracted X characters from <filename>"
+- Updated README.md with Tesseract installation instructions
+
+### What failed
+- Nothing
+
+### Resolution
+- N/A
+
+### Notes
+- System requirement: Tesseract OCR must be installed (brew install tesseract on macOS)
+- OCR only applies to attachments (source_type="attachment"), not uploaded files
+- Extracted text stored in items.extracted_text (same field as PDF text)
+- No database schema changes required
+- Idempotent: skips if extracted_text already exists
+- Preprocessing with OpenCV optional but recommended for better accuracy
+- Import guards ensure script works even if pytesseract/opencv missing
+- PYTESSERACT_AVAILABLE and CV2_AVAILABLE flags control feature availability

@@ -75,7 +75,9 @@ async def upload(file: UploadFile = File(...)):
             file.file.seek(0)
             tmp.write(file.file.read())
             tmp.flush()
-            extracted_text = extract_pdf_text(tmp.name)
+            text = extract_pdf_text(tmp.name)
+            if text:
+                extracted_text = f"PDF:\n{text}"
 
         file.file.seek(0)
 
