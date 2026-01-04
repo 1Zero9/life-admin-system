@@ -3,104 +3,634 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Life Admin (MVP)</title>
+    <title>Document Vault</title>
     <style>
-      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; }
-      .card { max-width: 720px; padding: 16px; border: 1px solid #ddd; border-radius: 12px; }
-      input[type="text"], input[type="file"] { width: 100%; padding: 10px; margin: 8px 0 12px; }
-      button { padding: 10px 14px; border: 0; border-radius: 10px; cursor: pointer; }
-      .row { display: flex; gap: 12px; flex-wrap: wrap; }
-      .row > * { flex: 1; min-width: 200px; }
-      .muted { color: #666; font-size: 14px; }
-      table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-      th, td { text-align: left; border-bottom: 1px solid #eee; padding: 8px; font-size: 14px; }
-      code { background: #f6f6f6; padding: 2px 6px; border-radius: 6px; }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: #F5F5F7;
+        color: #1D1D1F;
+        line-height: 1.5;
+      }
+
+      /* Layout */
+      .app-container {
+        display: flex;
+        height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 240px;
+        background: #FFFFFF;
+        border-right: 1px solid #D2D2D7;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+      }
+
+      .sidebar-header {
+        padding: 24px 20px;
+        border-bottom: 1px solid #D2D2D7;
+      }
+
+      .sidebar-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1D1D1F;
+      }
+
+      .sidebar-nav {
+        flex: 1;
+        padding: 16px 0;
+        overflow-y: auto;
+      }
+
+      .nav-section {
+        margin-bottom: 24px;
+      }
+
+      .nav-section-title {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: #86868B;
+        padding: 8px 20px;
+        letter-spacing: 0.5px;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 20px;
+        color: #1D1D1F;
+        text-decoration: none;
+        font-size: 14px;
+        transition: background 0.15s;
+      }
+
+      .nav-item:hover {
+        background: #F5F5F7;
+      }
+
+      .nav-item.active {
+        background: #E8E8ED;
+        font-weight: 500;
+      }
+
+      .nav-item-count {
+        font-size: 13px;
+        color: #86868B;
+      }
+
+      .sidebar-footer {
+        padding: 16px 20px;
+        border-top: 1px solid #D2D2D7;
+      }
+
+      .upload-button {
+        width: 100%;
+        padding: 10px 16px;
+        background: #0071E3;
+        color: #FFFFFF;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+
+      .upload-button:hover {
+        background: #0077ED;
+      }
+
+      /* Main content */
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      /* Top bar */
+      .top-bar {
+        background: #FFFFFF;
+        border-bottom: 1px solid #D2D2D7;
+        padding: 16px 32px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .search-box {
+        flex: 1;
+        max-width: 480px;
+        position: relative;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 8px 16px 8px 36px;
+        border: 1px solid #D2D2D7;
+        border-radius: 8px;
+        font-size: 14px;
+        background: #F5F5F7;
+        transition: all 0.15s;
+      }
+
+      .search-input:focus {
+        outline: none;
+        background: #FFFFFF;
+        border-color: #0071E3;
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #86868B;
+        font-size: 16px;
+      }
+
+      /* Content area */
+      .content-area {
+        flex: 1;
+        overflow-y: auto;
+        padding: 24px 32px;
+      }
+
+      .content-header {
+        margin-bottom: 24px;
+      }
+
+      .content-title {
+        font-size: 28px;
+        font-weight: 600;
+        color: #1D1D1F;
+        margin-bottom: 8px;
+      }
+
+      .content-subtitle {
+        font-size: 14px;
+        color: #86868B;
+      }
+
+      /* Table */
+      .documents-table {
+        width: 100%;
+        background: #FFFFFF;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #D2D2D7;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      thead {
+        background: #F5F5F7;
+        border-bottom: 1px solid #D2D2D7;
+      }
+
+      th {
+        padding: 12px 16px;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 600;
+        color: #86868B;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      tbody tr {
+        border-bottom: 1px solid #F5F5F7;
+        transition: background 0.1s;
+      }
+
+      tbody tr:last-child {
+        border-bottom: none;
+      }
+
+      tbody tr {
+        position: relative;
+      }
+
+      tbody tr:hover {
+        background: #FAFAFC;
+      }
+
+      tbody tr:hover .row-actions {
+        opacity: 1;
+      }
+
+      td {
+        padding: 14px 16px;
+        font-size: 14px;
+        color: #1D1D1F;
+      }
+
+      td a {
+        color: inherit;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .row-actions {
+        opacity: 0;
+        transition: opacity 0.15s;
+      }
+
+      .delete-btn {
+        background: transparent;
+        border: none;
+        color: #FF3B30;
+        font-size: 13px;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: background 0.15s;
+      }
+
+      .delete-btn:hover {
+        background: rgba(255, 59, 48, 0.1);
+      }
+
+      /* File icon */
+      .file-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 11px;
+        font-weight: 600;
+        color: #FFFFFF;
+        text-transform: uppercase;
+      }
+
+      .file-name {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .file-name-text {
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .file-source {
+        font-size: 12px;
+        color: #86868B;
+        margin-top: 2px;
+      }
+
+      .file-date {
+        color: #6E6E73;
+        white-space: nowrap;
+      }
+
+      /* Empty state */
+      .empty-state {
+        text-align: center;
+        padding: 80px 24px;
+        color: #86868B;
+      }
+
+      .empty-state-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.3;
+      }
+
+      .empty-state-title {
+        font-size: 18px;
+        font-weight: 500;
+        color: #1D1D1F;
+        margin-bottom: 8px;
+      }
+
+      .empty-state-text {
+        font-size: 14px;
+      }
+
+      /* Upload modal overlay */
+      .upload-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .upload-modal.active {
+        display: flex;
+      }
+
+      .upload-modal-content {
+        background: #FFFFFF;
+        border-radius: 12px;
+        padding: 32px;
+        max-width: 480px;
+        width: 90%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      .upload-modal-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 24px;
+      }
+
+      .upload-form-group {
+        margin-bottom: 24px;
+      }
+
+      .upload-form-label {
+        display: block;
+        font-size: 13px;
+        font-weight: 500;
+        color: #6E6E73;
+        margin-bottom: 8px;
+      }
+
+      .upload-file-input {
+        width: 100%;
+        padding: 48px 24px;
+        border: 2px dashed #D2D2D7;
+        border-radius: 8px;
+        background: #F5F5F7;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .upload-file-input:hover {
+        border-color: #0071E3;
+        background: #FAFAFA;
+      }
+
+      .upload-actions {
+        display: flex;
+        gap: 12px;
+      }
+
+      .upload-submit {
+        flex: 1;
+        padding: 12px 24px;
+        background: #0071E3;
+        color: #FFFFFF;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+      }
+
+      .upload-submit:hover {
+        background: #0077ED;
+      }
+
+      .upload-cancel {
+        padding: 12px 24px;
+        background: transparent;
+        color: #1D1D1F;
+        border: 1px solid #D2D2D7;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+      }
+
+      .upload-cancel:hover {
+        background: #F5F5F7;
+      }
     </style>
   </head>
   <body>
-    <h1>Life Admin (MVP)</h1>
-    <p class="muted">Upload first. Search by filename. Documents are the source of truth.</p>
-
-    <div class="card">
-      <h2>Upload</h2>
-      <form action="/ui/upload" method="post" enctype="multipart/form-data">
-        <label>File</label>
-        <input type="file" name="file" required />
-
-        <button type="submit">Upload</button>
-      </form>
-
-      <hr style="margin:16px 0;" />
-
-      <h2>Search</h2>
-      <form action="/" method="get" class="row">
-        <div>
-          <label>Filename contains</label>
-          <input type="text" name="q" value="{{ q or '' }}" placeholder="e.g. mortgage, insurance, 2025" />
+    <div class="app-container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-title">Document Vault</div>
         </div>
-        <div style="align-self:end;">
-          <button type="submit">Search</button>
-        </div>
-      </form>
 
-      {% if items is not none %}
-        <h3>Search Results ({{ items|length }})</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Filename</th>
-              <th>Uploaded</th>
-              <th>Key</th>
-              <th>Download</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for i in items %}
-              <tr>
-                <td>{{ i.original_filename }}</td>
-                <td>{{ i.created_at }}</td>
-                <td><code>{{ i.object_key }}</code></td>
-                <td><a href="/download/{{ i.id }}">Download</a></td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      {% elif emails is not none %}
-        <h3>Recent Emails ({{ emails|length }})</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Email</th>
-              <th>Received</th>
-              <th>Download</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for email in emails %}
-              <tr>
-                <td>
-                  <strong>{{ email.original_filename }}</strong>
-                  {% set atts = attachments_by_parent.get(email.id, []) %}
-                  {% if atts %}
-                    <ul style="margin: 4px 0 0 20px; font-size: 13px; color: #666;">
-                      {% for att in atts %}
-                        <li>
-                          {{ att.original_filename }} ({{ att.size_bytes }} bytes)
-                          <a href="/download/{{ att.id }}" style="margin-left: 8px;">Download</a>
-                        </li>
-                      {% endfor %}
-                    </ul>
-                  {% else %}
-                    <div style="font-size: 13px; color: #999; margin-top: 4px;">No attachments</div>
-                  {% endif %}
-                </td>
-                <td>{{ email.created_at }}</td>
-                <td><a href="/download/{{ email.id }}">Download</a></td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      {% endif %}
+        <nav class="sidebar-nav">
+          <div class="nav-section">
+            <div class="nav-section-title">Library</div>
+            <a href="/?source=all" class="nav-item {% if source == 'all' %}active{% endif %}">
+              <span>All Documents</span>
+              <span class="nav-item-count">{{ counts.all }}</span>
+            </a>
+          </div>
+
+          <div class="nav-section">
+            <div class="nav-section-title">Source</div>
+            <a href="/?source=email" class="nav-item {% if source == 'email' %}active{% endif %}">
+              <span>Emails</span>
+              <span class="nav-item-count">{{ counts.email }}</span>
+            </a>
+            <a href="/?source=upload" class="nav-item {% if source == 'upload' %}active{% endif %}">
+              <span>Uploads</span>
+              <span class="nav-item-count">{{ counts.upload }}</span>
+            </a>
+            <a href="/?source=attachment" class="nav-item {% if source == 'attachment' %}active{% endif %}">
+              <span>Attachments</span>
+              <span class="nav-item-count">{{ counts.attachment }}</span>
+            </a>
+          </div>
+        </nav>
+
+        <div class="sidebar-footer">
+          <button class="upload-button" onclick="showUploadModal()">Upload Document</button>
+        </div>
+      </aside>
+
+      <!-- Main content -->
+      <main class="main-content">
+        <!-- Top bar -->
+        <div class="top-bar">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <form action="/" method="get">
+              <input type="hidden" name="source" value="{{ source }}" />
+              <input
+                type="text"
+                name="q"
+                class="search-input"
+                placeholder="Search documents..."
+                value="{{ q or '' }}"
+                autocomplete="off"
+              />
+            </form>
+          </div>
+        </div>
+
+        <!-- Content area -->
+        <div class="content-area">
+          <div class="content-header">
+            {% if q %}
+              <h1 class="content-title">Search Results</h1>
+              <p class="content-subtitle">Showing results for "{{ q }}"</p>
+            {% elif source == 'email' %}
+              <h1 class="content-title">Emails</h1>
+              <p class="content-subtitle">{{ counts.email }} email documents</p>
+            {% elif source == 'upload' %}
+              <h1 class="content-title">Uploads</h1>
+              <p class="content-subtitle">{{ counts.upload }} uploaded documents</p>
+            {% elif source == 'attachment' %}
+              <h1 class="content-title">Attachments</h1>
+              <p class="content-subtitle">{{ counts.attachment }} email attachments</p>
+            {% else %}
+              <h1 class="content-title">All Documents</h1>
+              <p class="content-subtitle">{{ counts.all }} documents in vault</p>
+            {% endif %}
+          </div>
+
+          {% if items %}
+            <div class="documents-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width: 45%">Name</th>
+                    <th style="width: 25%">Date</th>
+                    <th style="width: 20%">Source</th>
+                    <th style="width: 10%"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in items %}
+                    <tr>
+                      <td>
+                        <a href="/download/{{ item.id }}">
+                          <div class="file-icon" style="background-color: {{ item.file_icon_color }}">
+                            {% if item.file_type == 'pdf' %}PDF{% endif %}
+                            {% if item.file_type == 'email' %}✉{% endif %}
+                            {% if item.file_type == 'image' %}🖼{% endif %}
+                            {% if item.file_type == 'word' %}DOC{% endif %}
+                            {% if item.file_type == 'excel' %}XLS{% endif %}
+                            {% if item.file_type == 'audio' %}🎵{% endif %}
+                            {% if item.file_type == 'video' %}🎬{% endif %}
+                            {% if item.file_type == 'archive' %}📦{% endif %}
+                            {% if item.file_type == 'document' %}📄{% endif %}
+                          </div>
+                          <div class="file-name">
+                            <div class="file-name-text">{{ item.title }}</div>
+                          </div>
+                        </a>
+                      </td>
+                      <td class="file-date">{{ item.date }}</td>
+                      <td class="file-source">{{ item.source }}</td>
+                      <td>
+                        <div class="row-actions">
+                          <button class="delete-btn" onclick="deleteItem('{{ item.id }}', '{{ item.title }}')">Delete</button>
+                        </div>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="empty-state">
+              <div class="empty-state-icon">📭</div>
+              {% if q %}
+                <div class="empty-state-title">No results found</div>
+                <div class="empty-state-text">Try a different search term</div>
+              {% else %}
+                <div class="empty-state-title">No documents yet</div>
+                <div class="empty-state-text">Upload your first document to get started</div>
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+      </main>
     </div>
+
+    <!-- Upload modal -->
+    <div class="upload-modal" id="uploadModal">
+      <div class="upload-modal-content">
+        <h2 class="upload-modal-title">Upload Document</h2>
+        <form action="/ui/upload" method="post" enctype="multipart/form-data">
+          <div class="upload-form-group">
+            <label class="upload-form-label">Choose file</label>
+            <input type="file" name="file" required class="upload-file-input" />
+          </div>
+          <div class="upload-actions">
+            <button type="submit" class="upload-submit">Upload</button>
+            <button type="button" class="upload-cancel" onclick="hideUploadModal()">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      function showUploadModal() {
+        document.getElementById('uploadModal').classList.add('active');
+      }
+
+      function hideUploadModal() {
+        document.getElementById('uploadModal').classList.remove('active');
+      }
+
+      // Close modal on outside click
+      document.getElementById('uploadModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          hideUploadModal();
+        }
+      });
+
+      // Auto-submit search on input
+      document.querySelector('.search-input').addEventListener('input', function() {
+        clearTimeout(window.searchTimeout);
+        window.searchTimeout = setTimeout(() => {
+          this.form.submit();
+        }, 500);
+      });
+
+      // Delete item
+      async function deleteItem(itemId, itemTitle) {
+        if (!confirm(`Delete "${itemTitle}"?\n\nThis will mark the item as deleted but preserve it in storage.`)) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`/items/${itemId}`, {
+            method: 'DELETE',
+          });
+
+          const result = await response.json();
+
+          if (result.ok) {
+            // Reload page to refresh the list
+            window.location.reload();
+          } else {
+            alert('Failed to delete item: ' + (result.message || 'Unknown error'));
+          }
+        } catch (error) {
+          alert('Failed to delete item: ' + error.message);
+        }
+      }
+    </script>
   </body>
 </html>

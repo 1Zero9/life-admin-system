@@ -4,7 +4,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import tempfile
-from app.extractors import extract_pdf_text
+import hashlib
+from app.extractors import extract_pdf_text, extract_image_text
 
 import boto3
 from botocore.client import Config
@@ -15,6 +16,7 @@ from app.models import Item
 from fastapi import Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
+from app.ui_helpers import normalize_title, format_date_display, format_source_type, get_file_type, get_file_icon_color
 
 
 
@@ -54,6 +56,11 @@ def build_object_key(original_filename: str) -> str:
     return f"{R2_PREFIX}/{now:%Y}/{now:%m}/{item_id}{ext}"
 
 
+def calculate_file_hash(file_content: bytes) -> str:
+    """Calculate SHA256 hash of file content for duplicate detection."""
+    return hashlib.sha256(file_content).hexdigest()
+
+
 @app.get("/health")
 def health():
     return {"ok": True}
@@ -64,40 +71,79 @@ async def upload(file: UploadFile = File(...)):
     if not file.filename:
         raise HTTPException(status_code=400, detail="Missing filename")
 
+    # Read file content once
+    file_content = await file.read()
+    size_bytes = len(file_content)
+
+    # Calculate file hash for duplicate detection
+    file_hash = calculate_file_hash(file_content)
+
+    # Check for duplicates
+    db = SessionLocal()
+    try:
+        existing = db.query(Item).filter(Item.file_hash == file_hash).first()
+        if existing:
+            return {
+                "ok": True,
+                "duplicate": True,
+                "id": existing.id,
+                "message": f"File already exists: {existing.original_filename}",
+                "original_filename": existing.original_filename,
+                "created_at": existing.created_at.isoformat(),
+            }
+    finally:
+        db.close()
+
     object_key = build_object_key(file.filename)
     content_type = file.content_type or "application/octet-stream"
 
+    # Text extraction
     extracted_text = None
+
+    # Check if it's a PDF
     is_pdf = (content_type == "application/pdf") or (file.filename.lower().endswith(".pdf"))
+
+    # Check if it's an image
+    is_image = (
+        content_type and content_type.startswith("image/")
+    ) or file.filename.lower().endswith(('.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.heic'))
 
     if is_pdf:
         with tempfile.NamedTemporaryFile(suffix=".pdf", delete=True) as tmp:
-            file.file.seek(0)
-            tmp.write(file.file.read())
+            tmp.write(file_content)
             tmp.flush()
             text = extract_pdf_text(tmp.name)
             if text:
                 extracted_text = f"PDF:\n{text}"
 
-        file.file.seek(0)
+    elif is_image:
+        # Apply 10 MB limit for OCR (same as email attachments)
+        max_ocr_size = 10 * 1024 * 1024  # 10 MB
 
-    # Try get size without reading the whole file
-    size_bytes = None
-    try:
-        size_bytes = os.fstat(file.file.fileno()).st_size
-    except Exception:
-        pass
+        if size_bytes <= max_ocr_size:
+            with tempfile.NamedTemporaryFile(suffix=Path(file.filename).suffix, delete=True) as tmp:
+                tmp.write(file_content)
+                tmp.flush()
+                text = extract_image_text(tmp.name)
+                if text:
+                    extracted_text = f"OCR:\n{text}"
+                    print(f"OCR extracted {len(text)} characters from {file.filename}")
+        else:
+            size_mb = size_bytes / (1024 * 1024)
+            print(f"Skipping OCR for {file.filename} (size {size_mb:.1f} MB exceeds {max_ocr_size / (1024 * 1024):.0f} MB limit)")
 
+    # Upload to R2
     try:
-        s3.upload_fileobj(
-            Fileobj=file.file,
+        s3.put_object(
             Bucket=R2_BUCKET,
             Key=object_key,
-            ExtraArgs={"ContentType": content_type},
+            Body=file_content,
+            ContentType=content_type,
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Upload failed: {e}") from e
 
+    # Store in database
     db = SessionLocal()
     try:
         item = Item(
@@ -107,6 +153,7 @@ async def upload(file: UploadFile = File(...)):
             object_key=object_key,
             size_bytes=size_bytes,
             extracted_text=extracted_text,
+            file_hash=file_hash,
         )
         db.add(item)
         db.commit()
@@ -116,6 +163,7 @@ async def upload(file: UploadFile = File(...)):
 
     return {
         "ok": True,
+        "duplicate": False,
         "id": item.id,
         "bucket": item.bucket,
         "object_key": item.object_key,
@@ -134,6 +182,7 @@ def recent(limit: int = 25):
     try:
         items = (
             db.query(Item)
+            .filter(Item.deleted_at.is_(None))
             .order_by(Item.created_at.desc())
             .limit(limit)
             .all()
@@ -158,61 +207,91 @@ def recent(limit: int = 25):
 
 
 @app.get("/")
-def ui_home(request: Request, q: str | None = None):
-    items = None
-    emails = None
-    attachments_by_parent = None
+def ui_home(
+    request: Request,
+    q: str | None = None,
+    source: str | None = None,
+    view: str = "all"
+):
+    """
+    Vault UI home screen.
+    Shows items with normalized titles, formatted dates, and file type icons.
+    Supports search, filtering by source type, and different views.
 
+    Parameters:
+    - q: search query
+    - source: filter by source_type (email, upload, attachment)
+    - view: all, recent (default: all)
+    """
     db = SessionLocal()
     try:
+        # Build query based on filters
+        # Always exclude deleted items
+        query = db.query(Item).filter(Item.deleted_at.is_(None))
+
+        # Apply source filter if specified
+        if source and source != "all":
+            query = query.filter(Item.source_type == source)
+
+        # Apply search if specified
         if q:
-            # Search mode: flat list of all matching items
             q_like = f"%{q}%"
-            items = (
-                db.query(Item)
-                .filter(Item.original_filename.ilike(q_like))
-                .order_by(Item.created_at.desc())
-                .limit(25)
-                .all()
-            )
-        else:
-            # Grouped mode: emails with nested attachments
-            emails = (
-                db.query(Item)
-                .filter(Item.source_type == "email")
-                .order_by(Item.created_at.desc())
-                .limit(25)
-                .all()
-            )
+            query = query.filter(or_(
+                Item.original_filename.ilike(q_like),
+                Item.extracted_text.ilike(q_like),
+            ))
 
-            if emails:
-                email_ids = [e.id for e in emails]
-                attachments = (
-                    db.query(Item)
-                    .filter(Item.parent_id.in_(email_ids))
-                    .order_by(Item.created_at.asc())
-                    .all()
-                )
+        # For table view, we want all items (not grouped)
+        # Sort by most recent first
+        raw_items = query.order_by(Item.created_at.desc()).limit(100).all()
 
-                # Group attachments by parent_id
-                attachments_by_parent = {}
-                for att in attachments:
-                    if att.parent_id not in attachments_by_parent:
-                        attachments_by_parent[att.parent_id] = []
-                    attachments_by_parent[att.parent_id].append(att)
+        # Format items for display
+        items = []
+        for i in raw_items:
+            file_type = get_file_type(i.original_filename, i.content_type)
+
+            items.append({
+                "id": i.id,
+                "title": normalize_title(i.original_filename, i.source_type, i.created_at),
+                "date": format_date_display(i.created_at),
+                "source": format_source_type(i.source_type),
+                "file_type": file_type,
+                "file_icon_color": get_file_icon_color(file_type),
+                "original_filename": i.original_filename,
+                "parent_id": i.parent_id,
+                "size_bytes": i.size_bytes,
+            })
+
+        # Get filter counts for sidebar (exclude deleted items)
+        all_count = db.query(Item).filter(Item.deleted_at.is_(None)).count()
+        email_count = db.query(Item).filter(Item.source_type == "email", Item.deleted_at.is_(None)).count()
+        upload_count = db.query(Item).filter(Item.source_type.is_(None), Item.deleted_at.is_(None)).count()
+        attachment_count = db.query(Item).filter(Item.source_type == "attachment", Item.deleted_at.is_(None)).count()
+
+        return templates.TemplateResponse(
+            "index.html",
+            {
+                "request": request,
+                "items": items,
+                "q": q,
+                "source": source or "all",
+                "view": view,
+                "counts": {
+                    "all": all_count,
+                    "email": email_count,
+                    "upload": upload_count,
+                    "attachment": attachment_count,
+                }
+            },
+        )
     finally:
         db.close()
 
-    return templates.TemplateResponse(
-        "index.html",
-        {
-            "request": request,
-            "q": q,
-            "items": items,
-            "emails": emails,
-            "attachments_by_parent": attachments_by_parent,
-        },
-    )
+
+@app.get("/upload")
+def ui_upload_page(request: Request):
+    """Upload page"""
+    return templates.TemplateResponse("upload.html", {"request": request})
 
 
 @app.post("/ui/upload")
@@ -226,13 +305,38 @@ from fastapi import Query
 from sqlalchemy import or_
 
 
+@app.delete("/items/{item_id}")
+def delete_item(item_id: str):
+    """
+    Soft delete an item. Marks it as deleted but doesn't remove from storage.
+    Preserves data integrity while allowing cleanup of unwanted items.
+    """
+    db = SessionLocal()
+    try:
+        item = db.query(Item).filter(Item.id == item_id, Item.deleted_at.is_(None)).first()
+        if not item:
+            raise HTTPException(status_code=404, detail="Item not found")
+
+        # Soft delete - mark as deleted but don't remove from R2
+        item.deleted_at = datetime.now(timezone.utc)
+        db.commit()
+
+        return {
+            "ok": True,
+            "id": item_id,
+            "message": "Item marked as deleted",
+        }
+    finally:
+        db.close()
+
+
 @app.get("/download/{item_id}")
 def download(item_id: str):
     """Generate presigned URL and redirect to download an item from R2."""
     db = SessionLocal()
     try:
         item = db.query(Item).filter(Item.id == item_id).first()
-        if not item:
+        if not item or item.deleted_at:
             raise HTTPException(status_code=404, detail="Item not found")
 
         # Generate presigned URL (5 minutes expiry)
@@ -261,10 +365,13 @@ def search(q: str = Query(..., min_length=1), limit: int = 25):
     try:
         items = (
             db.query(Item)
-            .filter(or_(
-                Item.original_filename.ilike(q_like),
-                Item.extracted_text.ilike(q_like),
-            ))
+            .filter(
+                Item.deleted_at.is_(None),
+                or_(
+                    Item.original_filename.ilike(q_like),
+                    Item.extracted_text.ilike(q_like),
+                )
+            )
             .order_by(Item.created_at.desc())
             .limit(limit)
             .all()

@@ -299,3 +299,185 @@ Upload life admin documents and store originals safely.
 - Newly ingested items have quality markers
 - Existing items retain their current format (no migration needed)
 - Guardrails ensure OCR doesn't slow down the ingestion process
+
+---
+
+## 2026-01-04 – Vault UI Layer 1 (Initial Implementation)
+
+### Goal
+- Build human-first document vault UI (pre-AI layer)
+- Hide technical details, show only what humans need
+- Calm, minimal, scannable interface
+
+### What worked
+- Created `app/ui_helpers.py` with title normalization and date formatting
+- Title normalization rules:
+  - Emails: strip .eml, replace underscores with spaces
+  - Images (IMG_xxxx): "Image · 3 January"
+  - Uploads: strip extension, replace separators with spaces
+  - Attachments: strip extension only
+- Date formatting:
+  - Today: "Today, 14:32"
+  - Yesterday: "Yesterday, 20:46"
+  - This week: "Tuesday, 11:20"
+  - This year: "15 March"
+  - Older: "12 July 2024"
+- Redesigned `index.html` with clean minimalist layout
+- Separate upload page at `/upload`
+- Backend route returns formatted items with parent-child grouping
+- Search works across filenames and extracted_text
+- All technical metadata hidden (object keys, file sizes, etc.)
+
+### What failed
+- Initial minimalist design deemed insufficient for real-world use
+- Single-column list doesn't scale to hundreds/thousands of documents
+- Hiding all controls on separate pages creates navigation friction
+- Theoretical minimalism conflicts with practical usability
+
+### Resolution
+- Documented design evolution in `/docs/20-vault-ui-evolution.md`
+- Decision: pivot to single-screen interface with sidebar and filters
+- Keep core principles (no AI, no tags, calm design)
+- Add practical features (filters, table layout, visible controls)
+- **Next build:** comprehensive single-screen Vault UI
+
+### Notes
+- Initial implementation validated the data flow and helper functions
+- Title normalization working correctly for all source types
+- Date formatting uses relative times for recent items (better UX)
+- Learned: "minimal" doesn't mean "featureless" - it means purposeful
+- One well-designed screen > multiple simple screens
+- Design evolution: minimalism for its own sake vs minimalism for usability
+
+---
+
+## 2026-01-04 – Single-Screen Vault UI (Complete)
+
+### Goal
+- Build comprehensive single-screen document management interface
+- Sidebar navigation with filters
+- Table layout with file type icons
+- Integrated search and upload
+- All controls visible at once
+
+### What worked
+- **File type detection** (`app/ui_helpers.py`):
+  - `get_file_type()`: detects pdf, email, image, word, excel, audio, video, archive
+  - `get_file_icon_color()`: color-coded icons (red PDFs, blue emails, green images, etc.)
+- **Backend filtering** (`app/main.py`):
+  - Updated `ui_home()` route with `source` and `q` parameters
+  - Dynamic filtering by source type (email, upload, attachment, all)
+  - Combined with search functionality
+  - Returns counts for sidebar display
+- **Single-screen layout** (`app/templates/index.html`):
+  - Left sidebar (240px fixed width):
+    - "Document Vault" header
+    - Navigation sections (Library, Source)
+    - Filter links with document counts
+    - Upload button in footer
+  - Main content area:
+    - Top bar with search (auto-submit after 500ms)
+    - Content header showing current view and count
+    - Table layout with 3 columns: Name, Date, Source
+    - File type icons with colors
+    - Row hover effects
+  - Upload modal:
+    - Triggered by sidebar button
+    - Modal overlay with form
+    - Cancel or submit
+- **Visual design**:
+  - Apple-inspired color palette (#F5F5F7 background, #1D1D1F text)
+  - Clean typography (San Francisco system font)
+  - Subtle borders and shadows
+  - Consistent spacing and padding
+  - Professional, calm appearance
+- **All functionality working**:
+  - Filter by source type (All: 49, Emails: 13, Uploads: 2, Attachments: 34)
+  - Search across filenames and extracted text
+  - File type icons render correctly (PDF, email, image, audio, etc.)
+  - Upload modal opens/closes
+  - Table displays all document metadata
+  - Download links work
+
+### What failed
+- Nothing
+
+### Resolution
+- N/A
+
+### Notes
+- Single-screen approach solves scalability issues of initial minimalist design
+- All controls accessible without page navigation
+- Information density achieved through table layout, not hiding features
+- File type icons provide instant visual recognition
+- Color-coded icons aid scanning (red=PDF, blue=email, green=image)
+- Sidebar counts give immediate overview of document distribution
+- Search auto-submit provides real-time filtering
+- Upload modal keeps main view clean while making upload accessible
+- Design is still "boring and calm" - just more complete
+- Ready for real-world use with hundreds of documents
+- No AI features, no tags, no manual categorization - stays true to core principles
+- This completes Layer 1 (Vault UI) - next is Layer 2 (AI Understanding)
+
+---
+
+## 2026-01-04 – OCR for Uploads, Duplicate Detection, and Delete
+
+### Goal
+- Add OCR text extraction for uploaded images (not just email attachments)
+- Implement duplicate detection to prevent uploading same file twice
+- Add soft delete functionality with UI controls
+
+### What worked
+- **OCR for uploads** (`app/extractors.py`, `app/main.py`):
+  - Moved `extract_image_text()` from gmail_ingest to shared extractors module
+  - Added image detection to upload endpoint
+  - Applied same 10 MB file size limit as email attachments
+  - Extracts text with Tesseract + OpenCV preprocessing
+  - Stores with "OCR:" prefix in extracted_text column
+  - Uploaded images now searchable (receipts, screenshots, scans)
+- **Duplicate detection** (`app/models.py`, `app/main.py`):
+  - Added `file_hash` column (SHA256 hash of file content)
+  - Upload endpoint calculates hash before uploading
+  - Checks database for existing file with same hash
+  - Returns duplicate=true with existing item details if found
+  - Prevents duplicate storage in R2 and database
+- **Soft delete** (`app/models.py`, `app/main.py`, `app/templates/index.html`):
+  - Added `deleted_at` column to items table
+  - DELETE `/items/{item_id}` endpoint marks items as deleted (doesn't remove from R2)
+  - All queries filter out deleted items (`WHERE deleted_at IS NULL`)
+  - UI shows delete button on row hover (appears in 4th column)
+  - JavaScript confirmation dialog before delete
+  - Page reloads after successful deletion
+  - Preserves data integrity - files remain in R2, just hidden from UI
+- **Database schema updates**:
+  - `ALTER TABLE items ADD COLUMN file_hash TEXT;`
+  - `ALTER TABLE items ADD COLUMN deleted_at TEXT;`
+  - Applied to existing database without data loss
+
+### What failed
+- Nothing
+
+### Resolution
+- N/A
+
+### Notes
+- OCR now consistent: email attachments AND direct uploads get indexed
+- Duplicate detection is content-based (SHA256), not filename-based
+  - Uploading same file with different name is still detected as duplicate
+  - Prevents accidental re-uploads
+- Soft delete preserves "documents as source of truth" principle
+  - Items marked as deleted but not removed from storage
+  - Can be undeleted if needed (just clear deleted_at timestamp)
+  - No data loss, just visibility control
+- Delete requires confirmation to prevent accidental removal
+- All existing items work with new schema (nullable columns)
+- Upload flow now:
+  1. Read file content
+  2. Calculate SHA256 hash
+  3. Check for duplicates → return existing if found
+  4. Extract text (PDF or OCR for images)
+  5. Upload to R2
+  6. Store in database with hash
+- Search now works across all document types: emails, PDFs, images
+- Delete button only shows on hover to keep UI clean

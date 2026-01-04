@@ -19,4 +19,6 @@ class Item(Base):
     parent_id = Column(String, nullable=True)
     source_type = Column(String, nullable=True)
     source_id = Column(String, nullable=True)
+    file_hash = Column(String, nullable=True)  # SHA256 hash for duplicate detection
     created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
+    deleted_at = Column(DateTime, nullable=True)  # Soft delete - item hidden but not removed

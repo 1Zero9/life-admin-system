@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Upload - Vault</title>
+    <style>
+      * { box-sizing: border-box; }
+
+      body {
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #fafafa;
+        color: #333;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 32px 24px;
+      }
+
+      /* Header */
+      header {
+        margin-bottom: 32px;
+      }
+
+      h1 {
+        font-size: 20px;
+        font-weight: 500;
+        margin: 0 0 8px 0;
+        color: #333;
+      }
+
+      .back-link {
+        font-size: 14px;
+        color: #666;
+        text-decoration: none;
+      }
+
+      .back-link:hover {
+        color: #333;
+      }
+
+      /* Upload form */
+      .upload-card {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        padding: 32px;
+      }
+
+      .form-group {
+        margin-bottom: 24px;
+      }
+
+      label {
+        display: block;
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 8px;
+      }
+
+      input[type="file"] {
+        width: 100%;
+        padding: 12px;
+        font-size: 14px;
+        border: 2px dashed #ddd;
+        border-radius: 8px;
+        background: #fafafa;
+        cursor: pointer;
+        font-family: inherit;
+      }
+
+      input[type="file"]:hover {
+        border-color: #999;
+      }
+
+      button {
+        width: 100%;
+        padding: 12px 24px;
+        font-size: 15px;
+        font-weight: 500;
+        color: #fff;
+        background: #333;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: inherit;
+        transition: background 0.2s;
+      }
+
+      button:hover {
+        background: #000;
+      }
+
+      button:active {
+        transform: translateY(1px);
+      }
+
+      .help-text {
+        font-size: 13px;
+        color: #999;
+        margin-top: 24px;
+        line-height: 1.8;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <a href="/" class="back-link">← Back to vault</a>
+        <h1>Upload document</h1>
+      </header>
+
+      <div class="upload-card">
+        <form action="/ui/upload" method="post" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="file">Choose a file</label>
+            <input type="file" id="file" name="file" required />
+          </div>
+
+          <button type="submit">Upload</button>
+        </form>
+
+        <div class="help-text">
+          Documents are stored permanently and become searchable immediately.
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
