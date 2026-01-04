@@ -481,3 +481,72 @@ Upload life admin documents and store originals safely.
   6. Store in database with hash
 - Search now works across all document types: emails, PDFs, images
 - Delete button only shows on hover to keep UI clean
+
+---
+
+## 2026-01-04 – Item Detail Page (Layer 1)
+
+### Goal
+- Implement item detail page following Layer 1 contract
+- Display full metadata without AI summaries
+- Show attachments for emails, parent link for attachments
+- Provide download and delete actions
+
+### What worked
+- **Backend route** (`app/main.py`):
+  - GET `/items/{item_id}` returns item detail page
+  - Fetches item with relationships (parent, children)
+  - Formats metadata for display
+  - Returns 404 if item deleted or not found
+  - Added `format_file_size()` helper (B, KB, MB)
+- **Detail template** (`app/templates/item_detail.html`):
+  - Single-column centered layout (max 900px)
+  - Header: normalized title + original filename in grey
+  - Metadata panel: key-value rows for factual attributes
+  - Date captured (formatted: "3 January 2026, 14:32")
+  - File size (human-readable: "2.1 MB")
+  - File type (MIME type displayed)
+  - Source (Email, Upload, Attachment)
+  - Download button (primary action)
+  - Attachments list (if email): filename, size, download link
+  - Parent email link (if attachment): clickable link to parent
+  - Extracted text: expandable section with character count
+  - Delete button (footer, confirmation required)
+- **Navigation**:
+  - Table rows now link to `/items/{id}` instead of `/download/{id}`
+  - Back button returns to vault
+  - Parent/attachment links navigate between related items
+  - Download remains accessible from detail page
+- **Extracted text display**:
+  - Collapsed by default (shows character count)
+  - Click to expand
+  - Monospace font, scrollable if long
+  - Quality marker visible (PDF:, OCR:, EMAIL:)
+  - No editing capability
+
+### What failed
+- Nothing
+
+### Resolution
+- N/A
+
+### Notes
+- Detail page follows Layer 1 contract exactly:
+  - No AI summaries
+  - No tags or categories
+  - No inferred meaning
+  - Only factual, known metadata
+  - Calm, readable, family-friendly
+- Metadata shown: date, size, type, source, extracted text count
+- Metadata hidden: database IDs, object keys, file hashes
+- Immutable: cannot edit title, metadata, or document
+- Actions allowed: download, delete, navigate to related items
+- Actions forbidden: edit, tag, share, rename, extract pages
+- Email detail shows list of attachments with download links
+- Attachment detail shows parent email as clickable link
+- Extracted text preserves raw output (no formatting or highlighting)
+- Delete works same as vault table (confirmation + soft delete)
+- Download generates presigned R2 URL (5 min expiry)
+- Page title uses normalized filename for browser tab
+- Clean typography and spacing matches vault UI
+- All tests passed: emails with attachments, standalone uploads, attachments with parents

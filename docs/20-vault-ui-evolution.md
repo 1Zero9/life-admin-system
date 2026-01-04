@@ -1,108 +1,205 @@
-# Vault UI Evolution
+Vault UI Evolution
+Initial Design (Layer 1 – Minimalist)
 
-## Initial Design (Layer 1 - Minimalist)
+Date: 2026-01-04
 
-**Date:** 2026-01-04
+Approach: Ultra-minimal, single-column list
 
-**Approach:** Ultra-minimal, single-column list
-- No sidebar
-- No filters
-- No tabs
-- Search bar at top
-- Simple chronological list
-- Separate upload page
+No sidebar
 
-**Philosophy:**
-- Reduce cognitive load
-- Hide all complexity
-- Make it "boring and calm"
-- Scannable within seconds
+No filters
 
----
+No tabs
 
-## Design Pivot: Single-Screen System
+Search bar at top
 
-**Date:** 2026-01-04
+Simple chronological list
 
-**Decision:** Move to a more complete single-screen interface with navigation, filtering, and richer layout.
+Separate upload page
 
-### Reasons for Change
+Philosophy:
 
-1. **Practical usability over theoretical minimalism**
-   - A document vault with hundreds or thousands of items needs filtering
-   - Constantly navigating between pages creates friction
-   - Search alone is not enough - users need to browse by type, date, source
-   - Real-world use reveals that "just scroll" doesn't scale
+Reduce cognitive load
 
-2. **One-screen efficiency**
-   - All controls visible at once
-   - No context switching between upload/search/browse modes
-   - Faster decision-making when everything is accessible
-   - Reduces mental model complexity (one view, multiple tools)
+Hide all complexity
 
-3. **Information density without clutter**
-   - More can fit on screen if layout is structured (table vs list)
-   - Users can scan multiple attributes at once (name, date, type, source)
-   - Visual hierarchy through layout, not through hiding information
+Make it boring and calm
 
-4. **Family member usability**
-   - Non-technical users benefit from visible options (not hidden behind pages)
-   - Clear visual structure (sidebar + main area) is familiar
-   - Filters prevent overwhelming "scroll through everything" experience
-   - Icons and visual cues aid recognition
+Scannable within seconds
 
-5. **Long-term viability**
-   - System needs to work with 5 years of documents, not just 50 items
-   - Filtering by date ranges, document types, sources is essential
-   - Quick access to common actions (upload, search, filter) needed
-   - Single screen reduces "where did I put that feature?" confusion
+This design prioritised clarity over capability and was intentionally constrained to validate the core ingestion and retrieval model.
 
-### What This Means
+Design Pivot: Single-Screen Vault UI
 
-**We keep:**
-- Zero decision-making at intake
-- Documents as source of truth
-- No AI features at this layer
-- Calm, trustworthy visual design
-- UK English, plain language
-- No tags, categories, or manual filing
+Date: 2026-01-04
 
-**We add:**
-- Left sidebar for navigation
-- Filter options (by source type, date range)
-- Table layout with multiple columns
-- File type icons for quick recognition
-- All controls on one screen
-- Upload integrated into main view
+Decision: Move to a structured single-screen interface with navigation, filtering, and a richer but controlled layout.
 
-**We reject:**
-- Status badges (Active, Critical, etc.) - not relevant to document vault
-- User avatars - single-user/family system
-- Configuration screens - keep it simple
-- Dashboards and analytics - future layer
+This remains Layer 1 (pre-AI).
 
-### Core Principle Update
+Reasons for Change
+1. Practical usability over theoretical minimalism
 
-The system remains **boring, durable, and understandable**.
+A real document vault will contain hundreds or thousands of items
 
-But "minimal" does not mean "featureless" - it means:
-- Every feature earns its place through utility
-- Visual design stays calm and neutral
-- No cognitive overhead during capture
-- Efficient access to stored documents
+Continuous scrolling does not scale
 
-**One screen > multiple simple screens**
+Search alone is insufficient for recall-based retrieval
 
-This is still Layer 1 (pre-AI). It's just a more complete Layer 1.
+Users need to browse by time and source, not just query text
 
----
+Minimalism that impedes use is not calm, it is frustrating.
 
-## Next Steps
+2. One-screen efficiency
 
-Build single-screen Vault UI with:
-1. Left sidebar (navigation + quick upload)
-2. Top bar (search + breadcrumb/title)
-3. Main area: table layout with columns
-4. Filter controls (source type, date range)
-5. File type icons (PDF, image, email, etc.)
-6. Clean, spacious design inspired by reference image
+All core actions are visible at once
+
+No context switching between upload, search, and browse
+
+Faster orientation and decision-making
+
+A single, stable mental model reduces confusion
+
+One well-designed screen is simpler than multiple sparse screens.
+
+3. Information density without clutter
+
+A structured table allows efficient scanning
+
+Multiple attributes can be read at a glance
+
+Visual hierarchy is created through layout, spacing, and typography
+
+Information is organised, not hidden
+
+Density is acceptable when it is predictable and calm.
+
+4. Family member usability
+
+Non-technical users benefit from visible, familiar patterns
+
+Sidebar navigation and tables are widely understood
+
+Filters prevent overwhelming “everything at once” views
+
+Icons assist recognition without requiring learning
+
+The system should feel obvious, not clever.
+
+5. Long-term viability
+
+The system must work after 5 to 10 years of use
+
+Filtering by date and source is essential at scale
+
+Core actions must be discoverable without instruction
+
+A single screen prevents “where is that feature” confusion
+
+This is a household system, not a demo.
+
+What This Means
+We keep
+
+Zero decision-making at intake
+
+Documents as the permanent source of truth
+
+No AI features at this layer
+
+Calm, neutral, trustworthy visual design
+
+UK English and plain language
+
+No tags, categories, or manual filing
+
+We add
+
+Left sidebar for navigation and scope control
+
+Filter controls based on factual metadata only
+
+Source type (email, upload)
+
+Date range
+
+Table-based layout with clear column hierarchy
+
+File type icons for format and source recognition only
+
+Integrated upload entry point in the main view
+
+All primary interactions available on one screen
+
+We explicitly reject
+
+Status or importance badges
+
+Colour-coded meaning
+
+Tags or categorisation
+
+Dashboards or analytics
+
+Configuration or settings screens
+
+Any AI-generated content at this layer
+
+Core Principle Update
+
+The system remains boring, durable, and understandable.
+
+Minimal does not mean featureless.
+Minimal means:
+
+Every feature earns its place through utility
+
+No interpretation or inference at this layer
+
+No cognitive overhead during capture
+
+Efficient, predictable access to stored documents
+
+One well-structured screen is preferable to multiple sparse screens.
+
+Layer 1 Contract (Non-Negotiable)
+
+The following rules define Layer 1 and must not be violated:
+
+Only factual, known metadata is visible
+
+No inferred importance
+
+No semantic meaning
+
+Icons indicate format or source only, never priority
+
+Upload is a single action with no prompts, choices, or required input
+
+No AI summaries, tags, or planning features
+
+No destructive actions without recovery
+
+The UI must remain readable and calm at scale
+
+Layer 1 answers one question only:
+
+“Can I safely find what I am looking for?”
+
+Next Steps
+
+Implement the Single-Screen Vault UI with:
+
+Left sidebar (navigation and scope)
+
+Top bar (search and context)
+
+Main table view with stable columns
+
+Filters limited to source and date
+
+File type icons with neutral styling
+
+Clean, spacious, low-noise visual design
+
+Only once Layer 1 feels boring, obvious, and trustworthy should Layer 2 (AI summaries) be introduced.

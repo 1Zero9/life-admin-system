@@ -522,7 +522,7 @@
                   {% for item in items %}
                     <tr>
                       <td>
-                        <a href="/download/{{ item.id }}">
+                        <a href="/items/{{ item.id }}">
                           <div class="file-icon" style="background-color: {{ item.file_icon_color }}">
                             {% if item.file_type == 'pdf' %}PDF{% endif %}
                             {% if item.file_type == 'email' %}✉{% endif %}

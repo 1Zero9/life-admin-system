@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{{ item.title }} - Document Vault</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: #F5F5F7;
+        color: #1D1D1F;
+        line-height: 1.6;
+        padding: 32px 24px;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      /* Back button */
+      .back-link {
+        display: inline-block;
+        color: #0071E3;
+        text-decoration: none;
+        font-size: 14px;
+        margin-bottom: 24px;
+      }
+
+      .back-link:hover {
+        text-decoration: underline;
+      }
+
+      /* Header */
+      .header {
+        margin-bottom: 32px;
+      }
+
+      .title {
+        font-size: 32px;
+        font-weight: 600;
+        color: #1D1D1F;
+        margin-bottom: 8px;
+      }
+
+      .original-filename {
+        font-size: 14px;
+        color: #86868B;
+      }
+
+      /* Metadata panel */
+      .metadata {
+        background: #FFFFFF;
+        border: 1px solid #D2D2D7;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 24px;
+      }
+
+      .metadata-row {
+        display: flex;
+        padding: 12px 0;
+        border-bottom: 1px solid #F5F5F7;
+      }
+
+      .metadata-row:last-child {
+        border-bottom: none;
+      }
+
+      .metadata-label {
+        width: 180px;
+        font-size: 14px;
+        color: #86868B;
+        flex-shrink: 0;
+      }
+
+      .metadata-value {
+        font-size: 14px;
+        color: #1D1D1F;
+        flex: 1;
+      }
+
+      .metadata-value a {
+        color: #0071E3;
+        text-decoration: none;
+      }
+
+      .metadata-value a:hover {
+        text-decoration: underline;
+      }
+
+      /* Actions */
+      .actions {
+        margin-bottom: 24px;
+      }
+
+      .download-btn {
+        display: inline-block;
+        padding: 12px 24px;
+        background: #0071E3;
+        color: #FFFFFF;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 500;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+
+      .download-btn:hover {
+        background: #0077ED;
+      }
+
+      /* Attachments section */
+      .attachments {
+        background: #FFFFFF;
+        border: 1px solid #D2D2D7;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 24px;
+      }
+
+      .attachments-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1D1D1F;
+        margin-bottom: 16px;
+      }
+
+      .attachment-list {
+        list-style: none;
+      }
+
+      .attachment-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #F5F5F7;
+      }
+
+      .attachment-item:last-child {
+        border-bottom: none;
+      }
+
+      .attachment-info {
+        flex: 1;
+      }
+
+      .attachment-name {
+        font-size: 14px;
+        color: #1D1D1F;
+        margin-bottom: 4px;
+      }
+
+      .attachment-meta {
+        font-size: 13px;
+        color: #86868B;
+      }
+
+      .attachment-download {
+        color: #0071E3;
+        text-decoration: none;
+        font-size: 14px;
+        padding: 6px 12px;
+      }
+
+      .attachment-download:hover {
+        text-decoration: underline;
+      }
+
+      /* Extracted text section */
+      .extracted-text {
+        background: #FFFFFF;
+        border: 1px solid #D2D2D7;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 24px;
+      }
+
+      .extracted-text-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        user-select: none;
+        font-size: 14px;
+        color: #1D1D1F;
+      }
+
+      .extracted-text-toggle:hover {
+        color: #0071E3;
+      }
+
+      .toggle-icon {
+        display: inline-block;
+        transition: transform 0.2s;
+      }
+
+      .toggle-icon.expanded {
+        transform: rotate(90deg);
+      }
+
+      .extracted-text-content {
+        display: none;
+        margin-top: 16px;
+        padding: 16px;
+        background: #F5F5F7;
+        border-radius: 8px;
+        font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Courier New', monospace;
+        font-size: 13px;
+        line-height: 1.8;
+        color: #1D1D1F;
+        max-height: 400px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+
+      .extracted-text-content.visible {
+        display: block;
+      }
+
+      /* Footer actions */
+      .footer-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 32px;
+      }
+
+      .delete-btn {
+        padding: 8px 16px;
+        background: transparent;
+        color: #FF3B30;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+
+      .delete-btn:hover {
+        background: rgba(255, 59, 48, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <a href="/" class="back-link">← Back to vault</a>
+
+      <div class="header">
+        <h1 class="title">{{ item.title }}</h1>
+        <div class="original-filename">Original filename: {{ item.original_filename }}</div>
+      </div>
+
+      <div class="metadata">
+        <div class="metadata-row">
+          <div class="metadata-label">Date captured:</div>
+          <div class="metadata-value">{{ item.date_full }}</div>
+        </div>
+
+        <div class="metadata-row">
+          <div class="metadata-label">File size:</div>
+          <div class="metadata-value">{{ item.size_human }}</div>
+        </div>
+
+        <div class="metadata-row">
+          <div class="metadata-label">File type:</div>
+          <div class="metadata-value">{{ item.content_type }}</div>
+        </div>
+
+        <div class="metadata-row">
+          <div class="metadata-label">Source:</div>
+          <div class="metadata-value">{{ item.source }}</div>
+        </div>
+
+        {% if parent %}
+        <div class="metadata-row">
+          <div class="metadata-label">From email:</div>
+          <div class="metadata-value">
+            <a href="/items/{{ parent.id }}">{{ parent.title }}</a>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if item.extracted_text %}
+        <div class="metadata-row">
+          <div class="metadata-label">Extracted text:</div>
+          <div class="metadata-value">{{ item.extracted_chars }} characters</div>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="actions">
+        <a href="/download/{{ item.id }}" class="download-btn">Download {{ item.source }}</a>
+      </div>
+
+      {% if attachments %}
+      <div class="attachments">
+        <h2 class="attachments-title">Attachments ({{ attachments|length }})</h2>
+        <ul class="attachment-list">
+          {% for attachment in attachments %}
+          <li class="attachment-item">
+            <div class="attachment-info">
+              <div class="attachment-name">{{ attachment.title }}</div>
+              <div class="attachment-meta">{{ attachment.size_human }}</div>
+            </div>
+            <a href="/download/{{ attachment.id }}" class="attachment-download">Download</a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      {% if item.extracted_text %}
+      <div class="extracted-text">
+        <div class="extracted-text-toggle" onclick="toggleExtractedText()">
+          <span class="toggle-icon" id="toggleIcon">▶</span>
+          <span>Show extracted text ({{ item.extracted_chars }} characters)</span>
+        </div>
+        <div class="extracted-text-content" id="extractedTextContent">{{ item.extracted_text }}</div>
+      </div>
+      {% endif %}
+
+      <div class="footer-actions">
+        <button class="delete-btn" onclick="deleteItem('{{ item.id }}', '{{ item.title }}')">Delete</button>
+      </div>
+    </div>
+
+    <script>
+      function toggleExtractedText() {
+        const content = document.getElementById('extractedTextContent');
+        const icon = document.getElementById('toggleIcon');
+
+        content.classList.toggle('visible');
+        icon.classList.toggle('expanded');
+      }
+
+      async function deleteItem(itemId, itemTitle) {
+        if (!confirm(`Delete "${itemTitle}"?\n\nThis will mark the item as deleted but preserve it in storage.`)) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`/items/${itemId}`, {
+            method: 'DELETE',
+          });
+
+          const result = await response.json();
+
+          if (result.ok) {
+            // Redirect to vault after deletion
+            window.location.href = '/';
+          } else {
+            alert('Failed to delete item: ' + (result.message || 'Unknown error'));
+          }
+        } catch (error) {
+          alert('Failed to delete item: ' + error.message);
+        }
+      }
+    </script>
+  </body>
+</html>

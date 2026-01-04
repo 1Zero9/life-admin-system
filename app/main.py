@@ -294,6 +294,92 @@ def ui_upload_page(request: Request):
     return templates.TemplateResponse("upload.html", {"request": request})
 
 
+@app.get("/items/{item_id}")
+def item_detail(request: Request, item_id: str):
+    """
+    Item detail page.
+    Shows full metadata, download link, attachments (if email), parent (if attachment).
+    Layer 1 only - no AI summaries.
+    """
+    db = SessionLocal()
+    try:
+        # Get the item
+        item = db.query(Item).filter(Item.id == item_id, Item.deleted_at.is_(None)).first()
+        if not item:
+            raise HTTPException(status_code=404, detail="Item not found")
+
+        # Format item for display
+        file_type = get_file_type(item.original_filename, item.content_type)
+
+        item_data = {
+            "id": item.id,
+            "title": normalize_title(item.original_filename, item.source_type, item.created_at),
+            "original_filename": item.original_filename,
+            "date": format_date_display(item.created_at),
+            "date_full": item.created_at.strftime("%-d %B %Y, %H:%M"),
+            "size_bytes": item.size_bytes,
+            "size_human": format_file_size(item.size_bytes) if item.size_bytes else "Unknown",
+            "content_type": item.content_type,
+            "source": format_source_type(item.source_type),
+            "file_type": file_type,
+            "extracted_text": item.extracted_text,
+            "extracted_chars": len(item.extracted_text) if item.extracted_text else 0,
+            "parent_id": item.parent_id,
+        }
+
+        # Get attachments if this is an email
+        attachments = []
+        if item.source_type == "email":
+            raw_attachments = (
+                db.query(Item)
+                .filter(Item.parent_id == item_id, Item.deleted_at.is_(None))
+                .order_by(Item.created_at.asc())
+                .all()
+            )
+
+            for att in raw_attachments:
+                attachments.append({
+                    "id": att.id,
+                    "title": normalize_title(att.original_filename, att.source_type, att.created_at),
+                    "original_filename": att.original_filename,
+                    "size_human": format_file_size(att.size_bytes) if att.size_bytes else "Unknown",
+                    "file_type": get_file_type(att.original_filename, att.content_type),
+                })
+
+        # Get parent email if this is an attachment
+        parent = None
+        if item.parent_id:
+            parent_item = db.query(Item).filter(Item.id == item.parent_id).first()
+            if parent_item:
+                parent = {
+                    "id": parent_item.id,
+                    "title": normalize_title(parent_item.original_filename, parent_item.source_type, parent_item.created_at),
+                    "date": format_date_display(parent_item.created_at),
+                }
+
+        return templates.TemplateResponse(
+            "item_detail.html",
+            {
+                "request": request,
+                "item": item_data,
+                "attachments": attachments,
+                "parent": parent,
+            },
+        )
+    finally:
+        db.close()
+
+
+def format_file_size(size_bytes: int) -> str:
+    """Format file size in human-readable form."""
+    if size_bytes < 1024:
+        return f"{size_bytes} B"
+    elif size_bytes < 1024 * 1024:
+        return f"{size_bytes / 1024:.1f} KB"
+    else:
+        return f"{size_bytes / (1024 * 1024):.1f} MB"
+
+
 @app.post("/ui/upload")
 async def ui_upload(file: UploadFile = File(...)):
     # reuse the existing upload logic by calling the API function directly
