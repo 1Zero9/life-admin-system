@@ -12,11 +12,13 @@ from botocore.client import Config
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from app.db import Base, engine, SessionLocal
-from app.models import Item
+from app.models import Item, AISummary
 from fastapi import Request
+from sqlalchemy.orm import joinedload
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from app.ui_helpers import normalize_title, format_date_display, format_source_type, get_file_type, get_file_icon_color
+from app.ai_summary import generate_summary, delete_summary, get_summary, AI_ENABLED
 
 
 
@@ -227,7 +229,8 @@ def ui_home(
     try:
         # Build query based on filters
         # Always exclude deleted items
-        query = db.query(Item).filter(Item.deleted_at.is_(None))
+        # Eager load AI summaries
+        query = db.query(Item).options(joinedload(Item.ai_summary)).filter(Item.deleted_at.is_(None))
 
         # Apply source filter if specified
         if source and source != "all":
@@ -250,6 +253,18 @@ def ui_home(
         for i in raw_items:
             file_type = get_file_type(i.original_filename, i.content_type)
 
+            # Include AI summary if it exists
+            ai_summary = None
+            if i.ai_summary:
+                ai_summary = {
+                    "summary_text": i.ai_summary.summary_text,
+                    "document_type": i.ai_summary.document_type,
+                    "extracted_date": i.ai_summary.extracted_date,
+                    "extracted_amount": i.ai_summary.extracted_amount,
+                    "extracted_vendor": i.ai_summary.extracted_vendor,
+                    "generated_at": i.ai_summary.generated_at.strftime("%d %b %Y") if i.ai_summary.generated_at else None,
+                }
+
             items.append({
                 "id": i.id,
                 "title": normalize_title(i.original_filename, i.source_type, i.created_at),
@@ -260,6 +275,8 @@ def ui_home(
                 "original_filename": i.original_filename,
                 "parent_id": i.parent_id,
                 "size_bytes": i.size_bytes,
+                "ai_summary": ai_summary,
+                "has_extracted_text": bool(i.extracted_text),
             })
 
         # Get filter counts for sidebar (exclude deleted items)
@@ -276,6 +293,7 @@ def ui_home(
                 "q": q,
                 "source": source or "all",
                 "view": view,
+                "ai_enabled": AI_ENABLED,
                 "counts": {
                     "all": all_count,
                     "email": email_count,
@@ -357,6 +375,9 @@ def item_detail(request: Request, item_id: str):
                     "date": format_date_display(parent_item.created_at),
                 }
 
+        # Get AI summary if exists
+        ai_summary = get_summary(item_id) if AI_ENABLED else None
+
         return templates.TemplateResponse(
             "item_detail.html",
             {
@@ -364,6 +385,8 @@ def item_detail(request: Request, item_id: str):
                 "item": item_data,
                 "attachments": attachments,
                 "parent": parent,
+                "ai_summary": ai_summary,
+                "ai_enabled": AI_ENABLED,
             },
         )
     finally:
@@ -378,6 +401,39 @@ def format_file_size(size_bytes: int) -> str:
         return f"{size_bytes / 1024:.1f} KB"
     else:
         return f"{size_bytes / (1024 * 1024):.1f} MB"
+
+
+@app.post("/items/{item_id}/summary")
+def generate_item_summary(item_id: str):
+    """
+    Generate AI summary for an item (Layer 2).
+    Requires extracted text and Anthropic API key.
+    """
+    if not AI_ENABLED:
+        raise HTTPException(status_code=501, detail="AI summaries not enabled. Set ANTHROPIC_API_KEY in .env")
+
+    result = generate_summary(item_id)
+    if not result:
+        raise HTTPException(status_code=500, detail="Failed to generate summary")
+
+    return {"ok": True, "summary": result}
+
+
+@app.delete("/items/{item_id}/summary")
+def delete_item_summary(item_id: str):
+    """Delete AI summary for an item."""
+    deleted = delete_summary(item_id)
+    return {"ok": True, "deleted": deleted}
+
+
+@app.get("/items/{item_id}/summary")
+def get_item_summary(item_id: str):
+    """Get existing AI summary for an item."""
+    summary = get_summary(item_id)
+    if not summary:
+        raise HTTPException(status_code=404, detail="No summary found")
+
+    return {"ok": True, "summary": summary}
 
 
 @app.post("/ui/upload")

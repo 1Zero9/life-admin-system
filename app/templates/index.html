@@ -425,6 +425,170 @@
       .upload-cancel:hover {
         background: #F5F5F7;
       }
+
+      /* Expandable rows for AI summaries */
+      .expand-btn {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #86868B;
+        transition: transform 0.2s, color 0.2s;
+      }
+
+      .expand-btn:hover {
+        color: #0071E3;
+      }
+
+      .expand-icon {
+        display: inline-block;
+        font-size: 16px;
+        font-weight: bold;
+        transition: transform 0.2s;
+      }
+
+      .expand-icon.expanded {
+        transform: rotate(90deg);
+      }
+
+      .expanded-row {
+        background: #FAFAFA;
+      }
+
+      .expanded-row td {
+        padding: 0;
+      }
+
+      .summary-card {
+        padding: 20px 24px;
+        border-top: 1px solid #E5E5EA;
+        animation: slideDown 0.2s ease-out;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .summary-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+
+      .summary-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        background: #E5E5EA;
+        color: #86868B;
+        font-size: 12px;
+        font-weight: 500;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .summary-date {
+        font-size: 12px;
+        color: #86868B;
+      }
+
+      .summary-fields {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px 24px;
+        margin-bottom: 16px;
+      }
+
+      .summary-field {
+        display: flex;
+        gap: 8px;
+      }
+
+      .field-label {
+        font-size: 13px;
+        color: #86868B;
+        font-weight: 500;
+        min-width: 70px;
+      }
+
+      .field-value {
+        font-size: 13px;
+        color: #1D1D1F;
+        font-style: italic;
+      }
+
+      .summary-actions {
+        display: flex;
+        gap: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #E5E5EA;
+      }
+
+      .summary-btn {
+        padding: 8px 16px;
+        background: transparent;
+        color: #0071E3;
+        border: 1px solid #D2D2D7;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.15s;
+      }
+
+      .summary-btn:hover {
+        background: #F5F5F7;
+        border-color: #0071E3;
+      }
+
+      .summary-btn-primary {
+        background: #0071E3;
+        color: #FFFFFF;
+        border-color: #0071E3;
+      }
+
+      .summary-btn-primary:hover {
+        background: #0077ED;
+      }
+
+      .summary-btn-secondary {
+        color: #86868B;
+      }
+
+      .summary-btn-secondary:hover {
+        color: #1D1D1F;
+      }
+
+      .no-summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 0;
+      }
+
+      .no-summary-text {
+        font-size: 14px;
+        color: #86868B;
+        font-style: italic;
+      }
+
+      .no-summary-hint {
+        font-size: 13px;
+        color: #86868B;
+      }
     </style>
   </head>
   <body>
@@ -520,24 +684,31 @@
                 </thead>
                 <tbody>
                   {% for item in items %}
-                    <tr>
+                    <tr class="table-row">
                       <td>
-                        <a href="/items/{{ item.id }}">
-                          <div class="file-icon" style="background-color: {{ item.file_icon_color }}">
-                            {% if item.file_type == 'pdf' %}PDF{% endif %}
-                            {% if item.file_type == 'email' %}✉{% endif %}
-                            {% if item.file_type == 'image' %}🖼{% endif %}
-                            {% if item.file_type == 'word' %}DOC{% endif %}
-                            {% if item.file_type == 'excel' %}XLS{% endif %}
-                            {% if item.file_type == 'audio' %}🎵{% endif %}
-                            {% if item.file_type == 'video' %}🎬{% endif %}
-                            {% if item.file_type == 'archive' %}📦{% endif %}
-                            {% if item.file_type == 'document' %}📄{% endif %}
-                          </div>
-                          <div class="file-name">
-                            <div class="file-name-text">{{ item.title }}</div>
-                          </div>
-                        </a>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                          {% if ai_enabled %}
+                          <button class="expand-btn" onclick="toggleExpand('{{ item.id }}')" aria-label="Expand details">
+                            <span class="expand-icon" id="expand-icon-{{ item.id }}">›</span>
+                          </button>
+                          {% endif %}
+                          <a href="/items/{{ item.id }}" style="display: flex; align-items: center; gap: 12px; flex: 1;">
+                            <div class="file-icon" style="background-color: {{ item.file_icon_color }}">
+                              {% if item.file_type == 'pdf' %}PDF{% endif %}
+                              {% if item.file_type == 'email' %}✉{% endif %}
+                              {% if item.file_type == 'image' %}🖼{% endif %}
+                              {% if item.file_type == 'word' %}DOC{% endif %}
+                              {% if item.file_type == 'excel' %}XLS{% endif %}
+                              {% if item.file_type == 'audio' %}🎵{% endif %}
+                              {% if item.file_type == 'video' %}🎬{% endif %}
+                              {% if item.file_type == 'archive' %}📦{% endif %}
+                              {% if item.file_type == 'document' %}📄{% endif %}
+                            </div>
+                            <div class="file-name">
+                              <div class="file-name-text">{{ item.title }}</div>
+                            </div>
+                          </a>
+                        </div>
                       </td>
                       <td class="file-date">{{ item.date }}</td>
                       <td class="file-source">{{ item.source }}</td>
@@ -547,6 +718,65 @@
                         </div>
                       </td>
                     </tr>
+                    {% if ai_enabled %}
+                    <tr class="expanded-row" id="expanded-{{ item.id }}" style="display: none;">
+                      <td colspan="4">
+                        <div class="summary-card">
+                          {% if item.ai_summary %}
+                            <div class="summary-header">
+                              <span class="summary-badge">AI Summary</span>
+                              <span class="summary-date">generated {{ item.ai_summary.generated_at }}</span>
+                            </div>
+                            <div class="summary-fields">
+                              {% if item.ai_summary.document_type %}
+                              <div class="summary-field">
+                                <span class="field-label">Type:</span>
+                                <span class="field-value">{{ item.ai_summary.document_type }}</span>
+                              </div>
+                              {% endif %}
+                              {% if item.ai_summary.extracted_vendor %}
+                              <div class="summary-field">
+                                <span class="field-label">Vendor:</span>
+                                <span class="field-value">{{ item.ai_summary.extracted_vendor }}</span>
+                              </div>
+                              {% endif %}
+                              {% if item.ai_summary.extracted_date %}
+                              <div class="summary-field">
+                                <span class="field-label">Date:</span>
+                                <span class="field-value">{{ item.ai_summary.extracted_date }}</span>
+                              </div>
+                              {% endif %}
+                              {% if item.ai_summary.extracted_amount %}
+                              <div class="summary-field">
+                                <span class="field-label">Amount:</span>
+                                <span class="field-value">{{ item.ai_summary.extracted_amount }}</span>
+                              </div>
+                              {% endif %}
+                              {% if item.ai_summary.summary_text %}
+                              <div class="summary-field" style="grid-column: 1 / -1;">
+                                <span class="field-label">Description:</span>
+                                <span class="field-value">{{ item.ai_summary.summary_text }}</span>
+                              </div>
+                              {% endif %}
+                            </div>
+                            <div class="summary-actions">
+                              <button class="summary-btn" onclick="regenerateSummary('{{ item.id }}')">Regenerate</button>
+                              <a href="/items/{{ item.id }}" class="summary-btn summary-btn-secondary">View Details</a>
+                            </div>
+                          {% else %}
+                            <div class="no-summary">
+                              <span class="no-summary-text">No AI summary yet</span>
+                              {% if item.has_extracted_text %}
+                              <button class="summary-btn summary-btn-primary" onclick="generateSummaryInline('{{ item.id }}')">Generate Summary</button>
+                              {% else %}
+                              <span class="no-summary-hint">No text extracted from this document</span>
+                              {% endif %}
+                            </div>
+                          {% endif %}
+                        </div>
+                      </td>
+                    </tr>
+                    {% endif %}
                   {% endfor %}
                 </tbody>
               </table>
@@ -629,6 +859,82 @@
           }
         } catch (error) {
           alert('Failed to delete item: ' + error.message);
+        }
+      }
+
+      // Toggle expand/collapse for AI summary
+      function toggleExpand(itemId) {
+        const expandedRow = document.getElementById(`expanded-${itemId}`);
+        const expandIcon = document.getElementById(`expand-icon-${itemId}`);
+
+        if (expandedRow.style.display === 'none') {
+          expandedRow.style.display = 'table-row';
+          expandIcon.classList.add('expanded');
+        } else {
+          expandedRow.style.display = 'none';
+          expandIcon.classList.remove('expanded');
+        }
+      }
+
+      // Generate AI summary inline (from table view)
+      async function generateSummaryInline(itemId) {
+        const button = event.target;
+        const originalText = button.textContent;
+        button.textContent = 'Generating...';
+        button.disabled = true;
+
+        try {
+          const response = await fetch(`/items/${itemId}/summary`, {
+            method: 'POST',
+          });
+
+          const result = await response.json();
+
+          if (result.ok) {
+            // Reload page to show new summary
+            window.location.reload();
+          } else {
+            alert('Failed to generate summary: ' + (result.message || 'Unknown error'));
+            button.textContent = originalText;
+            button.disabled = false;
+          }
+        } catch (error) {
+          alert('Failed to generate summary: ' + error.message);
+          button.textContent = originalText;
+          button.disabled = false;
+        }
+      }
+
+      // Regenerate AI summary (from expanded view)
+      async function regenerateSummary(itemId) {
+        if (!confirm('Regenerate AI summary?\n\nThis will replace the existing summary with a new one.')) {
+          return;
+        }
+
+        const button = event.target;
+        const originalText = button.textContent;
+        button.textContent = 'Regenerating...';
+        button.disabled = true;
+
+        try {
+          const response = await fetch(`/items/${itemId}/summary`, {
+            method: 'POST',
+          });
+
+          const result = await response.json();
+
+          if (result.ok) {
+            // Reload page to show updated summary
+            window.location.reload();
+          } else {
+            alert('Failed to regenerate summary: ' + (result.message || 'Unknown error'));
+            button.textContent = originalText;
+            button.disabled = false;
+          }
+        } catch (error) {
+          alert('Failed to regenerate summary: ' + error.message);
+          button.textContent = originalText;
+          button.disabled = false;
         }
       }
     </script>

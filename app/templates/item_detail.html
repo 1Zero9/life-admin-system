@@ -249,6 +249,104 @@
       .delete-btn:hover {
         background: rgba(255, 59, 48, 0.1);
       }
+
+      /* AI Summary section (Layer 2) */
+      .ai-summary {
+        background: #FAFAFA;
+        border: 1px solid #E5E5EA;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 24px;
+      }
+
+      .ai-summary-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+
+      .ai-summary-title {
+        font-size: 14px;
+        color: #86868B;
+        font-weight: 500;
+      }
+
+      .ai-summary-fields {
+        display: grid;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .ai-field {
+        display: flex;
+        gap: 12px;
+      }
+
+      .ai-field-label {
+        font-size: 14px;
+        color: #86868B;
+        min-width: 100px;
+      }
+
+      .ai-field-value {
+        font-size: 14px;
+        color: #1D1D1F;
+      }
+
+      .ai-summary-controls {
+        display: flex;
+        gap: 12px;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid #E5E5EA;
+      }
+
+      .ai-btn {
+        padding: 8px 16px;
+        background: transparent;
+        color: #0071E3;
+        border: 1px solid #D2D2D7;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .ai-btn:hover {
+        background: #F5F5F7;
+        border-color: #0071E3;
+      }
+
+      .ai-btn-primary {
+        background: #0071E3;
+        color: #FFFFFF;
+        border-color: #0071E3;
+      }
+
+      .ai-btn-primary:hover {
+        background: #0077ED;
+      }
+
+      .ai-btn-secondary {
+        color: #86868B;
+      }
+
+      .ai-btn-secondary:hover {
+        color: #1D1D1F;
+      }
+
+      /* Loading state */
+      .ai-loading {
+        display: none;
+        font-size: 14px;
+        color: #86868B;
+        padding: 16px 0;
+      }
+
+      .ai-loading.visible {
+        display: block;
+      }
     </style>
   </head>
   <body>
@@ -297,6 +395,70 @@
         </div>
         {% endif %}
       </div>
+
+      <!-- AI Summary (Layer 2) -->
+      {% if ai_enabled %}
+      <div class="ai-summary" id="aiSummarySection">
+        <div class="ai-summary-header">
+          <div class="ai-summary-title">
+            {% if ai_summary %}
+            AI Summary (generated {{ ai_summary.generated_at[:10] }})
+            {% else %}
+            AI Summary (not yet generated)
+            {% endif %}
+          </div>
+        </div>
+
+        {% if ai_summary %}
+        <div class="ai-summary-fields">
+          {% if ai_summary.document_type %}
+          <div class="ai-field">
+            <div class="ai-field-label">Type:</div>
+            <div class="ai-field-value">{{ ai_summary.document_type }}</div>
+          </div>
+          {% endif %}
+
+          {% if ai_summary.extracted_vendor %}
+          <div class="ai-field">
+            <div class="ai-field-label">Vendor:</div>
+            <div class="ai-field-value">{{ ai_summary.extracted_vendor }}</div>
+          </div>
+          {% endif %}
+
+          {% if ai_summary.extracted_date %}
+          <div class="ai-field">
+            <div class="ai-field-label">Date:</div>
+            <div class="ai-field-value">{{ ai_summary.extracted_date }}</div>
+          </div>
+          {% endif %}
+
+          {% if ai_summary.extracted_amount %}
+          <div class="ai-field">
+            <div class="ai-field-label">Amount:</div>
+            <div class="ai-field-value">{{ ai_summary.extracted_amount }}</div>
+          </div>
+          {% endif %}
+
+          {% if ai_summary.summary_text %}
+          <div class="ai-field">
+            <div class="ai-field-label">Description:</div>
+            <div class="ai-field-value">{{ ai_summary.summary_text }}</div>
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="ai-summary-controls">
+          <button class="ai-btn" onclick="regenerateSummary('{{ item.id }}')">Regenerate</button>
+          <button class="ai-btn ai-btn-secondary" onclick="hideSummary()">Hide AI summaries</button>
+        </div>
+        {% else %}
+        <div class="ai-loading" id="aiLoading">Generating summary...</div>
+        <div class="ai-summary-controls">
+          <button class="ai-btn ai-btn-primary" onclick="generateSummary('{{ item.id }}')">Generate Summary</button>
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
 
       <div class="actions">
         <a href="/download/{{ item.id }}" class="download-btn">Download {{ item.source }}</a>
@@ -365,6 +527,90 @@
           alert('Failed to delete item: ' + error.message);
         }
       }
+
+      async function generateSummary(itemId) {
+        const loadingEl = document.getElementById('aiLoading');
+        if (loadingEl) {
+          loadingEl.classList.add('visible');
+        }
+
+        try {
+          const response = await fetch(`/items/${itemId}/summary`, {
+            method: 'POST',
+          });
+
+          const result = await response.json();
+
+          if (result.ok) {
+            // Reload page to show new summary
+            window.location.reload();
+          } else {
+            alert('Failed to generate summary: ' + (result.message || 'Unknown error'));
+            if (loadingEl) {
+              loadingEl.classList.remove('visible');
+            }
+          }
+        } catch (error) {
+          alert('Failed to generate summary: ' + error.message);
+          if (loadingEl) {
+            loadingEl.classList.remove('visible');
+          }
+        }
+      }
+
+      async function regenerateSummary(itemId) {
+        if (!confirm('Regenerate AI summary?\n\nThis will replace the existing summary with a new one.')) {
+          return;
+        }
+
+        const loadingEl = document.getElementById('aiLoading');
+        if (loadingEl) {
+          loadingEl.classList.add('visible');
+        }
+
+        try {
+          const response = await fetch(`/items/${itemId}/summary`, {
+            method: 'POST',
+          });
+
+          const result = await response.json();
+
+          if (result.ok) {
+            // Reload page to show updated summary
+            window.location.reload();
+          } else {
+            alert('Failed to regenerate summary: ' + (result.message || 'Unknown error'));
+            if (loadingEl) {
+              loadingEl.classList.remove('visible');
+            }
+          }
+        } catch (error) {
+          alert('Failed to regenerate summary: ' + error.message);
+          if (loadingEl) {
+            loadingEl.classList.remove('visible');
+          }
+        }
+      }
+
+      function hideSummary() {
+        const section = document.getElementById('aiSummarySection');
+        if (section) {
+          section.style.display = 'none';
+          // Store preference in localStorage
+          localStorage.setItem('hideSummaries', 'true');
+        }
+      }
+
+      // Check if user has hidden summaries
+      window.addEventListener('DOMContentLoaded', function() {
+        const hideSummaries = localStorage.getItem('hideSummaries');
+        if (hideSummaries === 'true') {
+          const section = document.getElementById('aiSummarySection');
+          if (section) {
+            section.style.display = 'none';
+          }
+        }
+      });
     </script>
   </body>
 </html>
