@@ -65,7 +65,34 @@ def calculate_file_hash(file_content: bytes) -> str:
 
 @app.get("/health")
 def health():
-    return {"ok": True}
+    """Health check endpoint for monitoring."""
+    db = SessionLocal()
+    try:
+        # Check database connectivity
+        item_count = db.query(Item).filter(Item.deleted_at.is_(None)).count()
+        db_healthy = True
+    except Exception as e:
+        item_count = 0
+        db_healthy = False
+    finally:
+        db.close()
+
+    # Check R2 connectivity (basic check - endpoint configured)
+    r2_configured = bool(R2_ENDPOINT and R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY)
+
+    return {
+        "ok": True,
+        "database": {
+            "healthy": db_healthy,
+            "items": item_count,
+        },
+        "storage": {
+            "configured": r2_configured,
+        },
+        "ai": {
+            "enabled": AI_ENABLED,
+        },
+    }
 
 
 @app.post("/intake/upload")

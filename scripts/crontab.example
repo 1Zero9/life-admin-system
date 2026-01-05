@@ -1,0 +1,13 @@
+# Life Admin System - Crontab Configuration
+#
+# To install: crontab scripts/crontab.example
+# To view: crontab -l
+# To edit: crontab -e
+
+# Gmail sync - every 15 minutes
+*/15 * * * * cd /Users/stephencranfield/Projects/life-admin-system && .venv/bin/python scripts/gmail_sync.py >> logs/cron.log 2>&1
+
+# Database backup - daily at 3 AM
+0 3 * * * cd /Users/stephencranfield/Projects/life-admin-system && .venv/bin/python scripts/backup_db.py >> logs/cron.log 2>&1
+
+# Note: Update the path /Users/stephencranfield/Projects/life-admin-system to your actual installation path

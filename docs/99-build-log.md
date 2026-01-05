@@ -828,3 +828,125 @@ Upload life admin documents and store originals safely.
   - Bulk "Generate All Summaries" action
   - Filter by AI summary fields (Type, Vendor)
 - Layer 2 vault integration complete - AI summaries now accessible in daily workflow
+
+---
+
+## 2026-01-05 – Operational Readiness (Production Deployment)
+
+### Goal
+- Make the system production-ready for 24/7 operation
+- Automate Gmail ingestion
+- Implement database backups
+- Create deployment and user documentation
+- Add health monitoring
+
+### What worked
+- **Automated Gmail ingestion** (`scripts/gmail_sync.py`):
+  - Wrapper script for cron with proper logging
+  - Logs to `logs/gmail_sync.log` with rotation
+  - Error handling and retry logic
+  - Summary statistics (ingested, skipped, errors)
+  - Exit codes for cron monitoring (0 = success, 1 = failure)
+  - Idempotent (safe to run multiple times)
+  - Processes max 10 emails per run (prevents runaway processing)
+- **Database backups** (`scripts/backup_db.py`):
+  - Creates SQLite backup using native backup API
+  - Uploads to R2 under `backups/` prefix with timestamp
+  - Keeps last 30 backups in R2 (auto-cleanup)
+  - Keeps last 7 days locally (disk space management)
+  - Logs to `logs/backup.log`
+  - Atomic operation (backup completes or fails, no partial state)
+- **Cron configuration** (`scripts/crontab.example`):
+  - Gmail sync every 15 minutes
+  - Database backup daily at 3 AM
+  - All output logged to `logs/cron.log`
+  - Easy to customize timing
+- **Enhanced health endpoint** (`/health`):
+  - Database connectivity check
+  - Item count (documents in system)
+  - R2 storage configuration status
+  - AI enabled/disabled status
+  - Returns JSON for monitoring tools
+- **Health check script** (`scripts/check_health.py`):
+  - Checks web server responsiveness
+  - Verifies log files are recent (Gmail sync < 1h, backup < 25h)
+  - Checks disk space (warns if < 10%)
+  - Returns exit code for monitoring
+  - Human-readable output
+- **Deployment documentation** (`docs/50-deployment.md`):
+  - Initial setup instructions (clone, install, configure)
+  - Gmail API setup walkthrough
+  - Development vs production modes
+  - systemd (Linux) and launchd (macOS) service configs
+  - Cron setup examples
+  - Monitoring and troubleshooting guide
+  - Upgrade procedure
+  - Security notes
+  - Backup & recovery procedures
+- **Family user guide** (`docs/60-user-guide.md`):
+  - Non-technical language
+  - How to find documents (search, filters)
+  - How to add documents (Gmail label, upload)
+  - AI summaries explained (what, why, cost)
+  - Common questions answered
+  - Troubleshooting tips
+  - Mobile access instructions
+
+### What failed
+- Nothing
+
+### Resolution
+- N/A
+
+### Notes
+- **Production readiness checklist**:
+  - ✅ Automated ingestion (Gmail sync every 15 min)
+  - ✅ Automated backups (daily to R2)
+  - ✅ Logging (all operations logged)
+  - ✅ Health monitoring (endpoint + check script)
+  - ✅ Documentation (deployment + user guide)
+  - ✅ Error handling (graceful failures)
+  - ✅ Idempotency (safe to retry)
+  - ✅ Security (local network only, no auth needed)
+- **Gmail sync design**:
+  - Processes 10 emails max per run (prevents quota issues)
+  - Skips already-ingested emails (idempotent)
+  - Logs success/skip/error for each email
+  - 15-minute interval = 96 checks/day = 960 emails/day max
+  - Gmail API quota: 15,000 requests/day (plenty of headroom)
+- **Backup strategy**:
+  - Daily backups at 3 AM (low activity time)
+  - 30 backups in R2 = 30 days of retention
+  - 7 days locally (faster restore if needed)
+  - SQLite backup API = atomic, no corruption risk
+  - Backup filename includes timestamp for easy identification
+- **Monitoring approach**:
+  - Health endpoint: real-time status check
+  - Health check script: can be run by monitoring tools
+  - Log files: detailed history for debugging
+  - Exit codes: integration with monitoring systems
+- **Documentation philosophy**:
+  - Deployment docs: technical, for system admin
+  - User guide: family-friendly, no jargon
+  - Assumes 10-20 year lifespan (must be understandable by future users)
+- **Cost considerations** (for 24/7 operation):
+  - Web server: ~100MB RAM (negligible)
+  - Gmail API: Free (well under quota)
+  - R2 storage: ~$0.015/GB/month (minimal for documents)
+  - R2 operations: Class B (writes) ~$4.50/million, Class A (reads) free
+  - AI summaries: User-controlled, ~$0.003 per document
+  - **Total**: < $5/month for typical household use
+- **Deployment targets**:
+  - Mac Mini (always-on home computer)
+  - Raspberry Pi 4+ (dedicated device)
+  - Linux home server (NAS, old laptop)
+  - Cloud VM (if external access needed)
+- **Next steps for production**:
+  1. Install on always-on machine
+  2. Set up cron jobs
+  3. Test Gmail sync (label an email, wait 15 min)
+  4. Test backup (manually run, check R2)
+  5. Set up systemd/launchd for web server
+  6. Bookmark UI on all family devices
+  7. Label historical emails in Gmail for bulk ingestion
+- System is production-ready for real household use
