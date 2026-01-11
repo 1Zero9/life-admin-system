@@ -139,7 +139,7 @@ Before marking work complete, verify:
 
 - **`/docs/*.md`** - All markdown documentation
 - **MkDocs site** - Built from `/docs/`, served via `./serve-docs.sh`
-- **In-app** - Accessible at `/docs-info` route in web UI
+- **In-app** - Accessible at http://localhost:8000/docs/ in web UI
 - **GitHub** - https://github.com/1Zero9/life-admin-system
 - **Build log** - `/docs/99-build-log.md` (master record of all changes)
 

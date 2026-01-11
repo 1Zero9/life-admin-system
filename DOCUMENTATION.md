@@ -17,17 +17,7 @@ This serves the complete MkDocs documentation site with:
 - Mobile-friendly design
 - All 25+ documentation pages
 
-### 2. Documentation Info Page
-
-**http://localhost:8000/docs-info**
-
-This page provides:
-- Links to all key documentation files
-- Emergency information (if something happens to the owner)
-- GitHub repository link
-- Instructions for serving docs locally
-
-### 3. Raw Markdown Files
+### 2. Raw Markdown Files
 
 All documentation lives in the `/docs/` directory:
 
@@ -126,7 +116,7 @@ If something happened to the owner:
 1. Read **docs/ELEVATOR-PITCH.md** - Understand the system
 2. Read **docs/00-vision-and-principles.md** - Understand the philosophy
 3. Read **docs/99-build-log.md** - See the complete history
-4. Check `/docs-info` page in the web UI for data locations
+4. Check the documentation at http://localhost:8000/docs/ for all information
 
 All data is stored in:
 - **Cloudflare R2** - Original documents (credentials in `.env`)

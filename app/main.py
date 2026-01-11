@@ -383,12 +383,6 @@ def ui_upload_page(request: Request):
     return templates.TemplateResponse("upload.html", {"request": request})
 
 
-@app.get("/docs-info")
-def docs_info_page(request: Request):
-    """Documentation information page"""
-    return templates.TemplateResponse("docs-info.html", {"request": request})
-
-
 @app.get("/items/{item_id}")
 def item_detail(request: Request, item_id: str):
     """
