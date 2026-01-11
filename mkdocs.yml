@@ -1,7 +1,8 @@
 site_name: Life Admin System
 site_description: AI-powered document capture system for family life administration
 site_author: Stephen Cranfield
-repo_url: https://github.com/yourusername/life-admin-system
+repo_url: https://github.com/1Zero9/life-admin-system
+repo_name: 1Zero9/life-admin-system
 edit_uri: ""
 
 theme:
@@ -30,10 +31,13 @@ theme:
     - navigation.sections
     - navigation.expand
     - navigation.top
+    - navigation.indexes
     - search.suggest
     - search.highlight
     - content.code.copy
     - content.tabs.link
+  icon:
+    repo: fontawesome/brands/github
 
 markdown_extensions:
   - admonition
@@ -48,45 +52,60 @@ markdown_extensions:
   - tables
   - toc:
       permalink: true
+  - attr_list
+  - md_in_html
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
 
 nav:
   - Home: index.md
+
   - Getting Started:
-      - Overview: README.md
-      - Elevator Pitch: ELEVATOR-PITCH.md
-      - Mac App: README-MAC-APP.md
-  - Vision & Principles:
-      - Vision: docs/00-vision-and-principles.md
-      - Intake Rule: docs/01-intake-rule.md
-      - Core Concepts: docs/02-core-concepts-and-language.md
-      - Data & Longevity: docs/03-data-and-longevity-model.md
-      - Security & Access: docs/04-security-and-access-model.md
-      - User Experience: docs/05-user-experience-and-habits.md
-      - AI Responsibilities: docs/06-ai-responsibilities-and-limits.md
-      - Efficiency & Insight: docs/07-efficiency-and-insight-layer.md
-  - Architecture:
-      - Architecture Options: docs/08-architecture-options.md
-      - MVP Scope: docs/09-mvp-scope-and-phasing.md
-      - Build Guidance: docs/10-build-guidance-prompt.md
-      - MVP Architecture: docs/11-mvp-architecture.md
-      - Vault UI Evolution: docs/20-vault-ui-evolution.md
-  - Deployment:
-      - Deployment Guide: docs/50-deployment.md
-      - Google Cloud Setup: docs/google-cloud-setup.md
-  - User Guide:
-      - User Guide: docs/60-user-guide.md
-  - Development:
-      - Business Framework: docs/90-business-framework.md
-      - Agent Development: docs/91-agent-development-guide.md
-      - Build Log: docs/99-build-log.md
-  - Frameworks:
-      - Agent Framework: AGENT_FRAMEWORK_COMPLETE.md
+      - What Is This?: ELEVATOR-PITCH.md
+      - macOS Menu Bar App: README-MAC-APP.md
+
+  - Part I - Vision & Philosophy:
+      - Vision and Principles: 00-vision-and-principles.md
+      - The Intake Rule: 01-intake-rule.md
+      - Core Concepts: 02-core-concepts-and-language.md
+      - Data & Longevity: 03-data-and-longevity-model.md
+      - Security & Access: 04-security-and-access-model.md
+      - User Experience: 05-user-experience-and-habits.md
+      - AI Responsibilities: 06-ai-responsibilities-and-limits.md
+      - Efficiency & Insight: 07-efficiency-and-insight-layer.md
+
+  - Part II - Architecture & Implementation:
+      - Architecture Options: 08-architecture-options.md
+      - MVP Scope & Phasing: 09-mvp-scope-and-phasing.md
+      - Build Guidance: 10-build-guidance-prompt.md
+      - MVP Architecture: 11-mvp-architecture.md
+      - Vault UI Evolution: 20-vault-ui-evolution.md
+
+  - Part III - Major Frameworks:
+      - Agent Framework:
+          - Overview: AGENT_FRAMEWORK_COMPLETE.md
+          - Technical Details: app/agents/README.md
       - Entity Framework: ENTITY_FRAMEWORK_COMPLETE.md
+
+  - Part IV - User Guide:
+      - Using the System: 60-user-guide.md
+
+  - Part V - Deployment:
+      - Deployment Guide: 50-deployment.md
+      - Google Cloud Setup: google-cloud-setup.md
+
+  - Part VI - Development:
+      - AI Development Guide: CLAUDE.md
+      - Agent Development Guide: 91-agent-development-guide.md
+      - Business Framework: 90-business-framework.md
+      - Complete Build Log: 99-build-log.md
 
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/yourusername/life-admin-system
+      link: https://github.com/1Zero9/life-admin-system
+      name: View on GitHub
 
 plugins:
   - search
