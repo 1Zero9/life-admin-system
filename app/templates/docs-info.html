@@ -183,14 +183,15 @@
         <code># From the project directory
 cd /path/to/life-admin-system
 
-# Activate virtual environment
+# Option 1: Simple script (recommended)
+./serve-docs.sh
+
+# Then open: http://localhost:8002
+
+# Option 2: Manual build and serve
 source .venv/bin/activate
-
-# Serve documentation site (opens on http://localhost:8001)
-mkdocs serve
-
-# Or build static site
-mkdocs build  # Creates site/ directory
+mkdocs build
+python3 -m http.server 8002 --directory site
         </code>
       </div>
 
