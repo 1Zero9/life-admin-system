@@ -52,6 +52,11 @@ Base.metadata.create_all(bind=engine)
 # Mount static files
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
+# Mount documentation site (if it exists)
+docs_site_path = Path("site")
+if docs_site_path.exists():
+    app.mount("/docs", StaticFiles(directory="site", html=True), name="docs")
+
 templates = Jinja2Templates(directory="app/templates")
 
 

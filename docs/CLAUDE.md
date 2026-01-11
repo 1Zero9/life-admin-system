@@ -41,9 +41,107 @@ Intake → Archive → Understanding → Insight
 - Keep documents as permanent source of truth
 - Follow the one-way data flow rule
 - Test with the mindset: "Could a non-technical family member use this?"
-- **Keep `/docs/99-build-log.md` updated** - Document what was built, what worked, what failed, resolution, and notes. This is critical for future understanding and legacy handover.
+- **Keep documentation updated** - This system is built to last 10-20+ years. Documentation is critical.
 - Preserve data portability (no vendor lock-in)
 - **Call out principle violations** - Actively warn if anything strays from the core ethos
+
+### Documentation Requirements (CRITICAL)
+
+**Every change must update documentation.** This system needs to be maintainable for decades.
+
+#### 1. Build Log (`docs/99-build-log.md`)
+**ALWAYS update the build log** when you:
+- Build a new feature
+- Fix a bug
+- Make architectural changes
+- Add new dependencies
+- Modify the data model
+
+**Format:**
+```
+## YYYY-MM-DD – Feature Name
+
+### Goal
+What you're trying to achieve
+
+### What Was Built
+- File: path/to/file.py
+- What it does
+- How it works
+
+### What Worked
+- ✅ What succeeded
+
+### What Failed
+- ❌ What didn't work initially
+
+### Resolution
+- How you fixed it
+
+### Notes
+- Important decisions
+- Why you chose this approach
+- Cost implications
+- Future considerations
+```
+
+#### 2. Update Relevant Docs
+When changing functionality, update:
+- **README.md** - If setup/quick start changes
+- **ELEVATOR-PITCH.md** - If core value proposition changes
+- **Vision docs** (`00-07-*.md`) - If philosophy/principles change
+- **Architecture docs** (`08-11-*.md`, `20-*.md`) - If technical architecture changes
+- **User Guide** (`60-user-guide.md`) - If user-facing features change
+- **Deployment** (`50-deployment.md`) - If deployment process changes
+- **Agent/Entity Framework docs** - If frameworks evolve
+
+#### 3. Framework Documentation
+When building new frameworks or systems:
+- Create a `*_FRAMEWORK_COMPLETE.md` file (like AGENT_FRAMEWORK_COMPLETE.md)
+- Document what it is, why it exists, how it works
+- Include examples and use cases
+- Update `mkdocs.yml` to include it in navigation
+
+#### 4. Code Comments
+**Only add comments where logic isn't self-evident:**
+- Complex AI prompts (explain intent)
+- Database queries (explain what data you're fetching and why)
+- Business logic (explain the rule being implemented)
+- Workarounds (explain why the workaround exists)
+
+**Don't comment:**
+- Obvious code (`x = x + 1  # increment x` ❌)
+- Standard patterns (CRUD operations, etc.)
+- Framework conventions (FastAPI routes, etc.)
+
+#### 5. Why Documentation Matters
+
+**This is a 10-20+ year system.**
+
+When you're gone or unavailable:
+- Family members need to understand it
+- Future maintainers need context
+- The owner needs to remember why decisions were made
+
+**Every undocumented decision is technical debt.**
+
+#### 6. Documentation Checklist
+
+Before marking work complete, verify:
+- [ ] Build log updated with what was built
+- [ ] Relevant docs updated (README, architecture, user guide, etc.)
+- [ ] New features explained in appropriate doc files
+- [ ] Breaking changes documented
+- [ ] Complex logic has comments explaining WHY (not what)
+- [ ] MkDocs site still builds (`mkdocs build`)
+
+#### 7. Where Documentation Lives
+
+- **`/docs/*.md`** - All markdown documentation
+- **MkDocs site** - Built from `/docs/`, served via `./serve-docs.sh`
+- **In-app** - Accessible at `/docs-info` route in web UI
+- **GitHub** - https://github.com/1Zero9/life-admin-system
+- **Build log** - `/docs/99-build-log.md` (master record of all changes)
 
 ### Never Do
 - Add categorization, tagging, or filing at intake
