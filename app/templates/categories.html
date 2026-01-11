@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Category Overview - Life Admin System</title>
+    <link rel="stylesheet" href="/static/styles/enhancements.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: #F5F5F7;
+        color: #1D1D1F;
+        line-height: 1.5;
+      }
+
+      /* Layout */
+      .app-container {
+        display: flex;
+        height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 240px;
+        background: #FFFFFF;
+        border-right: 1px solid #D2D2D7;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+      }
+
+      .sidebar-header {
+        padding: 24px 20px;
+        border-bottom: 1px solid #D2D2D7;
+      }
+
+      .sidebar-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1D1D1F;
+      }
+
+      .sidebar-nav {
+        flex: 1;
+        padding: 16px 0;
+        overflow-y: auto;
+      }
+
+      .nav-section {
+        margin-bottom: 24px;
+      }
+
+      .nav-section-title {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: #86868B;
+        padding: 8px 20px;
+        letter-spacing: 0.5px;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 20px;
+        color: #1D1D1F;
+        text-decoration: none;
+        font-size: 14px;
+        transition: background 0.15s;
+      }
+
+      .nav-item:hover {
+        background: #F5F5F7;
+      }
+
+      .nav-item.active {
+        background: #E8E8ED;
+        font-weight: 500;
+      }
+
+      /* Main content */
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      /* Top bar */
+      .top-bar {
+        background: #FFFFFF;
+        border-bottom: 1px solid #D2D2D7;
+        padding: 16px 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .breadcrumb {
+        font-size: 14px;
+        color: #86868B;
+      }
+
+      .breadcrumb a {
+        color: #0071E3;
+        text-decoration: none;
+      }
+
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+
+      /* Content area */
+      .content-area {
+        flex: 1;
+        overflow-y: auto;
+        padding: 24px 32px;
+      }
+
+      .content-header {
+        margin-bottom: 32px;
+      }
+
+      .content-title {
+        font-size: 32px;
+        font-weight: 600;
+        color: #1D1D1F;
+        margin-bottom: 8px;
+      }
+
+      .content-subtitle {
+        font-size: 16px;
+        color: #86868B;
+      }
+
+      /* Overall stats grid */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 32px;
+      }
+
+      .stat-card {
+        background: #FFFFFF;
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid #E8E8ED;
+      }
+
+      .stat-value {
+        font-size: 32px;
+        font-weight: 600;
+        color: #1D1D1F;
+        margin-bottom: 4px;
+      }
+
+      .stat-label {
+        font-size: 14px;
+        color: #86868B;
+      }
+
+      .stat-card.urgent {
+        border-color: #FF3B30;
+        background: #FFF5F5;
+      }
+
+      .stat-card.urgent .stat-value {
+        color: #FF3B30;
+      }
+
+      /* Category grid */
+      .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 16px;
+        margin-bottom: 32px;
+      }
+
+      .category-card {
+        background: #FFFFFF;
+        border-radius: 12px;
+        padding: 20px;
+        border: 2px solid #E8E8ED;
+        transition: all 0.2s;
+        cursor: pointer;
+      }
+
+      .category-card:hover {
+        border-color: #667eea;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+      }
+
+      .category-card.status-urgent {
+        border-color: #FF3B30;
+      }
+
+      .category-card.status-warning {
+        border-color: #FF9500;
+      }
+
+      .category-card.status-empty {
+        opacity: 0.5;
+      }
+
+      .category-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+
+      .category-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .category-icon {
+        font-size: 24px;
+      }
+
+      .category-name {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1D1D1F;
+      }
+
+      .category-status {
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 8px;
+        font-weight: 500;
+      }
+
+      .category-status.urgent {
+        background: #FFEBEE;
+        color: #D32F2F;
+      }
+
+      .category-status.warning {
+        background: #FFF3E0;
+        color: #F57C00;
+      }
+
+      .category-status.good {
+        background: #E8F5E9;
+        color: #388E3C;
+      }
+
+      .category-status.info {
+        background: #E3F2FD;
+        color: #1976D2;
+      }
+
+      .category-status.empty {
+        background: #FAFAFA;
+        color: #86868B;
+      }
+
+      .category-description {
+        font-size: 13px;
+        color: #86868B;
+        margin-bottom: 16px;
+      }
+
+      .category-stats {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 12px;
+      }
+
+      .category-stat {
+        flex: 1;
+      }
+
+      .category-stat-value {
+        font-size: 24px;
+        font-weight: 600;
+        color: #1D1D1F;
+      }
+
+      .category-stat-label {
+        font-size: 12px;
+        color: #86868B;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* Progress bar */
+      .progress-bar {
+        width: 100%;
+        height: 6px;
+        background: #E8E8ED;
+        border-radius: 3px;
+        overflow: hidden;
+        margin-bottom: 8px;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        transition: width 0.3s ease;
+      }
+
+      .progress-label {
+        font-size: 11px;
+        color: #86868B;
+      }
+
+      /* Insight badges */
+      .insight-badges {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .insight-badge {
+        padding: 4px 8px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 500;
+      }
+
+      .insight-badge.high {
+        background: #FFEBEE;
+        color: #D32F2F;
+      }
+
+      .insight-badge.medium {
+        background: #FFF3E0;
+        color: #F57C00;
+      }
+
+      .insight-badge.low {
+        background: #E3F2FD;
+        color: #1976D2;
+      }
+
+      /* Empty state */
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #86868B;
+      }
+
+      .empty-state-icon {
+        font-size: 64px;
+        margin-bottom: 16px;
+      }
+
+      .empty-state-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #1D1D1F;
+        margin-bottom: 8px;
+      }
+
+      .empty-state-text {
+        font-size: 14px;
+      }
+
+      /* Future: Chart placeholder */
+      .chart-placeholder {
+        background: #FFFFFF;
+        border-radius: 12px;
+        padding: 40px;
+        border: 2px dashed #E8E8ED;
+        text-align: center;
+        color: #86868B;
+        margin-bottom: 32px;
+      }
+
+      .chart-placeholder-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+      }
+
+      .chart-placeholder-text {
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-title">Life Admin System</div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <div class="nav-section">
+            <div class="nav-section-title">Views</div>
+            <a href="/dashboard" class="nav-item">
+              <span>Dashboard</span>
+            </a>
+            <a href="/actions" class="nav-item">
+              <span>Action Items</span>
+            </a>
+            <a href="/categories" class="nav-item active">
+              <span>Categories</span>
+            </a>
+            <a href="/agents" class="nav-item">
+              <span>Agents</span>
+            </a>
+            <a href="/" class="nav-item">
+              <span>Vault</span>
+            </a>
+            <a href="/upload" class="nav-item">
+              <span>Upload</span>
+            </a>
+          </div>
+        </nav>
+      </aside>
+
+      <!-- Main content -->
+      <main class="main-content">
+        <!-- Top bar -->
+        <div class="top-bar">
+          <div class="breadcrumb">
+            <a href="/">Home</a> › Category Overview
+          </div>
+        </div>
+
+        <!-- Content area -->
+        <div class="content-area">
+          <div class="content-header">
+            <h1 class="content-title">Category Overview</h1>
+            <p class="content-subtitle">Your complete life admin status at a glance</p>
+          </div>
+
+          <!-- Overall statistics -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value">{{ overview.total_documents }}</div>
+              <div class="stat-label">Total Documents</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">{{ overview.categories_with_docs }}</div>
+              <div class="stat-label">Active Categories</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">{{ overview.total_insights }}</div>
+              <div class="stat-label">Active Insights</div>
+            </div>
+            <div class="stat-card {% if overview.categories_needing_attention > 0 %}urgent{% endif %}">
+              <div class="stat-value">{{ overview.categories_needing_attention }}</div>
+              <div class="stat-label">Need Attention</div>
+            </div>
+          </div>
+
+          <!-- Future: Document distribution chart -->
+          <!-- <div class="chart-placeholder">
+            <div class="chart-placeholder-icon">📊</div>
+            <div class="chart-placeholder-text">Document distribution chart coming soon</div>
+          </div> -->
+
+          <!-- Category grid -->
+          <div class="category-grid">
+            {% for category_id, category in sorted_categories %}
+            <div class="category-card status-{{ category.status }}" onclick="window.location.href='/category/{{ category_id }}'">
+              <div class="category-header">
+                <div class="category-title">
+                  <span class="category-icon">{{ category.icon }}</span>
+                  <span class="category-name">{{ category.name }}</span>
+                </div>
+                <span class="category-status {{ category.status }}">
+                  {{ category.status_label }}
+                </span>
+              </div>
+
+              <div class="category-description">{{ category.description }}</div>
+
+              <div class="category-stats">
+                <div class="category-stat">
+                  <div class="category-stat-value">{{ category.doc_count }}</div>
+                  <div class="category-stat-label">Documents</div>
+                </div>
+                <div class="category-stat">
+                  <div class="category-stat-value">{{ category.insight_count }}</div>
+                  <div class="category-stat-label">Insights</div>
+                </div>
+              </div>
+
+              <!-- Progress bar showing % of total documents -->
+              {% if category.doc_count > 0 %}
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ category.percentage }}%"></div>
+              </div>
+              <div class="progress-label">{{ category.percentage }}% of total documents</div>
+              {% endif %}
+
+              <!-- Insight priority badges -->
+              {% if category.insight_count > 0 %}
+              <div class="insight-badges" style="margin-top: 12px;">
+                {% if category.high_priority > 0 %}
+                <span class="insight-badge high">{{ category.high_priority }} high priority</span>
+                {% endif %}
+                {% if category.medium_priority > 0 %}
+                <span class="insight-badge medium">{{ category.medium_priority }} medium</span>
+                {% endif %}
+                {% if category.low_priority > 0 %}
+                <span class="insight-badge low">{{ category.low_priority }} low</span>
+                {% endif %}
+              </div>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+
+          {% if overview.uncategorized > 0 %}
+          <div class="stat-card" style="max-width: 600px; margin: 0 auto;">
+            <div class="stat-value">{{ overview.uncategorized }}</div>
+            <div class="stat-label">Uncategorized Documents</div>
+            <p style="margin-top: 12px; font-size: 14px; color: #86868B;">
+              These documents don't have AI summaries yet. Generate summaries to enable categorization.
+            </p>
+          </div>
+          {% endif %}
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // Future: Add chart rendering with Chart.js or similar
+      // Future: Add gauge widgets for category health scores
+      // Future: Add trend lines showing document growth over time
+    </script>
+  </body>
+</html>

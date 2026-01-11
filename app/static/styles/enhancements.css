@@ -1,0 +1,320 @@
+/**
+ * UI Enhancements - Life Admin System
+ * Additional styles for improved UX, loading states, and polish
+ */
+
+/* Loading states */
+.btn-loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+}
+
+.btn-loading::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin-left: -8px;
+  margin-top: -8px;
+  border: 2px solid #FFFFFF;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spinner 0.6s linear infinite;
+}
+
+@keyframes spinner {
+  to { transform: rotate(360deg); }
+}
+
+/* Toast notifications */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.toast {
+  background: #1D1D1F;
+  color: #FFFFFF;
+  padding: 16px 20px;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  min-width: 300px;
+  max-width: 400px;
+  pointer-events: auto;
+  animation: slideIn 0.3s ease-out;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toast.success {
+  background: #34C759;
+}
+
+.toast.error {
+  background: #FF3B30;
+}
+
+.toast.info {
+  background: #007AFF;
+}
+
+.toast-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.toast-content {
+  flex: 1;
+}
+
+.toast-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.toast-message {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+}
+
+.toast.removing {
+  animation: slideOut 0.3s ease-in;
+}
+
+/* Smooth transitions for interactive elements */
+button, a, input, .nav-item, .expand-btn {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Subtle hover lift effect */
+.insight-card:hover,
+.documents-table tbody tr:hover {
+  transform: translateY(-1px);
+}
+
+/* Focus states for accessibility */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 2px solid #0071E3;
+  outline-offset: 2px;
+}
+
+/* Skeleton loading states */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #F5F5F7 0%,
+    #E5E5EA 50%,
+    #F5F5F7 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Improved empty states */
+.empty-state {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Micro-interactions */
+.upload-button:active,
+.summary-btn:active,
+.dismiss-btn:active {
+  transform: scale(0.98);
+}
+
+/* Better disabled states */
+button:disabled,
+button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Improved table row interactions */
+tbody tr {
+  cursor: pointer;
+}
+
+tbody tr:active {
+  background: #F0F0F2;
+}
+
+/* Search input enhancements */
+.search-input {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search-input:focus {
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+}
+
+/* Badge animations */
+.summary-badge {
+  transition: all 0.2s ease;
+}
+
+.summary-card:hover .summary-badge {
+  transform: translateY(-1px);
+}
+
+/* Smooth color transitions */
+* {
+  transition-property: background-color, border-color, color;
+  transition-duration: 0.15s;
+  transition-timing-function: ease-in-out;
+}
+
+/* Override for elements that shouldn't transition */
+.expand-icon,
+.spinner,
+.skeleton,
+button::after,
+.toast {
+  transition: none;
+}
+
+/* Mobile improvements */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: -240px;
+    top: 0;
+    bottom: 0;
+    z-index: 1000;
+    transition: left 0.3s ease;
+  }
+
+  .sidebar.mobile-open {
+    left: 0;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .mobile-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .mobile-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .mobile-menu-btn {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 24px;
+    padding: 8px;
+    cursor: pointer;
+    color: #1D1D1F;
+  }
+
+  .toast-container {
+    left: 20px;
+    right: 20px;
+  }
+
+  .toast {
+    min-width: auto;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-menu-btn {
+    display: none;
+  }
+}
+
+/* Keyboard shortcuts hint */
+.kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  font-size: 11px;
+  line-height: 1;
+  background: #E5E5EA;
+  border: 1px solid #D2D2D7;
+  border-radius: 4px;
+  font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+  font-weight: 600;
+}
+
+/* Progress indicator */
+.progress-bar {
+  height: 3px;
+  background: #0071E3;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10000;
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.progress-bar.active {
+  transform: scaleX(1);
+}

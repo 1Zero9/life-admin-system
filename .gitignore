@@ -16,3 +16,6 @@ secrets/
 !package.json
 !tsconfig.json
 *.db
+site/
+logs/
+backups/

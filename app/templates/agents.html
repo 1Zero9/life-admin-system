@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Agent Portfolio - Life Admin System</title>
+    <link rel="stylesheet" href="/static/styles/enhancements.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: #F5F5F7;
+        color: #1D1D1F;
+        line-height: 1.5;
+      }
+
+      /* Layout */
+      .app-container {
+        display: flex;
+        height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 240px;
+        background: #FFFFFF;
+        border-right: 1px solid #D2D2D7;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+      }
+
+      .sidebar-header {
+        padding: 24px 20px;
+        border-bottom: 1px solid #D2D2D7;
+      }
+
+      .sidebar-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1D1D1F;
+      }
+
+      .sidebar-nav {
+        flex: 1;
+        padding: 16px 0;
+        overflow-y: auto;
+      }
+
+      .nav-section {
+        margin-bottom: 24px;
+      }
+
+      .nav-section-title {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: #86868B;
+        padding: 8px 20px;
+        letter-spacing: 0.5px;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 20px;
+        color: #1D1D1F;
+        text-decoration: none;
+        font-size: 14px;
+        transition: background 0.15s;
+      }
+
+      .nav-item:hover {
+        background: #F5F5F7;
+      }
+
+      .nav-item.active {
+        background: #E8E8ED;
+        font-weight: 500;
+      }
+
+      /* Main content */
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      /* Top bar */
+      .top-bar {
+        background: #FFFFFF;
+        border-bottom: 1px solid #D2D2D7;
+        padding: 16px 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .page-title {
+        font-size: 24px;
+        font-weight: 600;
+      }
+
+      /* Content area */
+      .content-area {
+        flex: 1;
+        overflow-y: auto;
+        padding: 32px;
+      }
+
+      /* Stats cards */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 32px;
+      }
+
+      .stat-card {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #D2D2D7;
+      }
+
+      .stat-value {
+        font-size: 32px;
+        font-weight: 700;
+        color: #0071E3;
+        margin-bottom: 4px;
+      }
+
+      .stat-label {
+        font-size: 13px;
+        color: #86868B;
+        font-weight: 500;
+      }
+
+      /* Migration progress */
+      .progress-section {
+        background: white;
+        padding: 24px;
+        border-radius: 12px;
+        border: 1px solid #D2D2D7;
+        margin-bottom: 32px;
+      }
+
+      .progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+
+      .progress-title {
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      .progress-percentage {
+        font-size: 14px;
+        font-weight: 600;
+        color: #0071E3;
+      }
+
+      .progress-bar {
+        height: 8px;
+        background: #F5F5F7;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #0071E3, #00C7BE);
+        border-radius: 4px;
+        transition: width 0.3s ease;
+      }
+
+      .progress-info {
+        margin-top: 12px;
+        font-size: 13px;
+        color: #86868B;
+      }
+
+      /* Agent cards */
+      .agents-section {
+        margin-bottom: 32px;
+      }
+
+      .section-header {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        color: #1D1D1F;
+      }
+
+      .agent-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 16px;
+      }
+
+      .agent-card {
+        background: white;
+        padding: 24px;
+        border-radius: 12px;
+        border: 1px solid #D2D2D7;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .agent-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .agent-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+
+      .agent-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1D1D1F;
+      }
+
+      .agent-version {
+        font-size: 12px;
+        color: #86868B;
+        background: #F5F5F7;
+        padding: 4px 8px;
+        border-radius: 4px;
+      }
+
+      .agent-category {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: #0071E3;
+        background: #E8F4FF;
+        padding: 4px 8px;
+        border-radius: 4px;
+        margin-bottom: 12px;
+      }
+
+      .agent-description {
+        font-size: 14px;
+        color: #515154;
+        margin-bottom: 16px;
+        line-height: 1.5;
+      }
+
+      .agent-meta {
+        display: flex;
+        gap: 16px;
+        padding-top: 16px;
+        border-top: 1px solid #F5F5F7;
+      }
+
+      .meta-item {
+        display: flex;
+        flex-direction: column;
+        font-size: 12px;
+      }
+
+      .meta-label {
+        color: #86868B;
+        margin-bottom: 2px;
+      }
+
+      .meta-value {
+        color: #1D1D1F;
+        font-weight: 500;
+      }
+
+      .license-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      .license-personal {
+        background: #E8F4FF;
+        color: #0071E3;
+      }
+
+      .license-premium {
+        background: #FFF3E0;
+        color: #FF9500;
+      }
+
+      .license-free {
+        background: #F0F0F5;
+        color: #515154;
+      }
+
+      /* Empty state */
+      .empty-state {
+        text-align: center;
+        padding: 64px 32px;
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #D2D2D7;
+      }
+
+      .empty-state-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+      }
+
+      .empty-state-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .empty-state-text {
+        font-size: 14px;
+        color: #86868B;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-title">Life Admin</div>
+        </div>
+        <nav class="sidebar-nav">
+          <div class="nav-section">
+            <div class="nav-section-title">Overview</div>
+            <a href="/" class="nav-item">Vault</a>
+            <a href="/dashboard" class="nav-item">Dashboard</a>
+            <a href="/categories" class="nav-item">Categories</a>
+            <a href="/agents" class="nav-item active">Agents</a>
+          </div>
+          <div class="nav-section">
+            <div class="nav-section-title">Insights</div>
+            <a href="/actions" class="nav-item">Actions</a>
+          </div>
+        </nav>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <div class="top-bar">
+          <h1 class="page-title">Agent Portfolio</h1>
+        </div>
+
+        <div class="content-area">
+          <!-- Stats -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value">{{ total_agents }}</div>
+              <div class="stat-label">Total Agents</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">{{ migrated_count }}</div>
+              <div class="stat-label">Core Agents</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">{{ total_categories - migrated_count }}</div>
+              <div class="stat-label">To Migrate</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">{{ "%.0f"|format(migration_progress) }}%</div>
+              <div class="stat-label">Migration Progress</div>
+            </div>
+          </div>
+
+          <!-- Migration Progress -->
+          <div class="progress-section">
+            <div class="progress-header">
+              <div class="progress-title">Migration Status</div>
+              <div class="progress-percentage">{{ migrated_count }}/{{ total_categories }} complete</div>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: {{ migration_progress }}%"></div>
+            </div>
+            <div class="progress-info">
+              Converting category analyzers to modular agent framework. Each agent becomes a reusable, extractable module.
+            </div>
+          </div>
+
+          <!-- Agents by License Type -->
+          {% if total_agents > 0 %}
+            {% for license_type, agent_list in agents_by_license.items() %}
+              <div class="agents-section">
+                <h2 class="section-header">{{ license_type.title() }} Agents ({{ agent_list|length }})</h2>
+                <div class="agent-grid">
+                  {% for agent in agent_list %}
+                    <div class="agent-card">
+                      <div class="agent-header">
+                        <div class="agent-name">{{ agent.name }}</div>
+                        <div class="agent-version">v{{ agent.version }}</div>
+                      </div>
+                      <div class="agent-category">{{ agent.category }}</div>
+                      <div class="agent-description">{{ agent.description }}</div>
+                      <div class="agent-meta">
+                        <div class="meta-item">
+                          <div class="meta-label">Min Documents</div>
+                          <div class="meta-value">{{ agent.min_documents }}</div>
+                        </div>
+                        <div class="meta-item">
+                          <div class="meta-label">License</div>
+                          <div class="meta-value">
+                            <span class="license-badge license-{{ agent.license_type }}">
+                              {{ agent.license_type }}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="empty-state">
+              <div class="empty-state-icon">🤖</div>
+              <div class="empty-state-title">No Agents Found</div>
+              <div class="empty-state-text">
+                Start migrating category analyzers to the agent framework
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

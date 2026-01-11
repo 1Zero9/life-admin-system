@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{{ category.name }} - Life Admin System</title>
+    <link rel="stylesheet" href="/static/styles/enhancements.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: #F5F5F7;
+        color: #1D1D1F;
+        line-height: 1.5;
+      }
+
+      .app-container {
+        display: flex;
+        height: 100vh;
+      }
+
+      .sidebar {
+        width: 240px;
+        background: #FFFFFF;
+        border-right: 1px solid #D2D2D7;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+      }
+
+      .sidebar-header {
+        padding: 24px 20px;
+        border-bottom: 1px solid #D2D2D7;
+      }
+
+      .sidebar-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1D1D1F;
+      }
+
+      .sidebar-nav {
+        flex: 1;
+        padding: 16px 0;
+        overflow-y: auto;
+      }
+
+      .nav-section {
+        margin-bottom: 24px;
+      }
+
+      .nav-section-title {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: #86868B;
+        padding: 8px 20px;
+        letter-spacing: 0.5px;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        padding: 8px 20px;
+        color: #1D1D1F;
+        text-decoration: none;
+        font-size: 14px;
+        transition: background 0.15s;
+      }
+
+      .nav-item:hover {
+        background: #F5F5F7;
+      }
+
+      .nav-item.active {
+        background: #E8E8ED;
+        font-weight: 500;
+      }
+
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .top-bar {
+        background: #FFFFFF;
+        border-bottom: 1px solid #D2D2D7;
+        padding: 16px 32px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .back-button {
+        padding: 8px 12px;
+        background: #F5F5F7;
+        border: 1px solid #D2D2D7;
+        border-radius: 8px;
+        font-size: 14px;
+        text-decoration: none;
+        color: #1D1D1F;
+        transition: background 0.15s;
+      }
+
+      .back-button:hover {
+        background: #E8E8ED;
+      }
+
+      .category-header {
+        flex: 1;
+      }
+
+      .category-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 24px;
+        font-weight: 600;
+      }
+
+      .category-icon {
+        font-size: 32px;
+      }
+
+      .category-subtitle {
+        font-size: 14px;
+        color: #86868B;
+        margin-top: 4px;
+      }
+
+      .content-area {
+        flex: 1;
+        overflow-y: auto;
+        padding: 32px;
+      }
+
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 32px;
+      }
+
+      .stat-card {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #D2D2D7;
+      }
+
+      .stat-value {
+        font-size: 32px;
+        font-weight: 700;
+        color: #0071E3;
+      }
+
+      .stat-label {
+        font-size: 13px;
+        color: #86868B;
+        margin-top: 4px;
+      }
+
+      .section {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #D2D2D7;
+        margin-bottom: 24px;
+      }
+
+      .section-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid #F5F5F7;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .section-title {
+        font-size: 18px;
+        font-weight: 600;
+      }
+
+      .section-count {
+        font-size: 14px;
+        color: #86868B;
+      }
+
+      .section-content {
+        padding: 24px;
+      }
+
+      .insight-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .insight-card {
+        padding: 16px;
+        background: #F5F5F7;
+        border-radius: 8px;
+        border-left: 4px solid #0071E3;
+      }
+
+      .insight-card.priority-high {
+        border-left-color: #FF3B30;
+        background: #FFF5F5;
+      }
+
+      .insight-card.priority-medium {
+        border-left-color: #FF9500;
+        background: #FFF9F0;
+      }
+
+      .insight-card.priority-low {
+        border-left-color: #34C759;
+        background: #F5FFF7;
+      }
+
+      .insight-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+
+      .insight-title {
+        font-size: 15px;
+        font-weight: 600;
+      }
+
+      .insight-priority {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        padding: 4px 8px;
+        border-radius: 4px;
+      }
+
+      .priority-high {
+        background: #FF3B30;
+        color: white;
+      }
+
+      .priority-medium {
+        background: #FF9500;
+        color: white;
+      }
+
+      .priority-low {
+        background: #34C759;
+        color: white;
+      }
+
+      .insight-description {
+        font-size: 14px;
+        color: #515154;
+        margin-bottom: 12px;
+      }
+
+      .insight-action {
+        font-size: 14px;
+        color: #0071E3;
+        font-weight: 500;
+      }
+
+      .document-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .document-table th {
+        text-align: left;
+        font-size: 12px;
+        font-weight: 600;
+        color: #86868B;
+        text-transform: uppercase;
+        padding: 12px;
+        border-bottom: 1px solid #D2D2D7;
+      }
+
+      .document-table td {
+        padding: 16px 12px;
+        border-bottom: 1px solid #F5F5F7;
+        font-size: 14px;
+      }
+
+      .document-table tr:hover {
+        background: #F5F5F7;
+      }
+
+      .document-name {
+        font-weight: 500;
+        color: #1D1D1F;
+      }
+
+      .document-summary {
+        font-size: 13px;
+        color: #86868B;
+        margin-top: 4px;
+      }
+
+      .document-type {
+        display: inline-block;
+        padding: 4px 8px;
+        background: #F5F5F7;
+        border-radius: 4px;
+        font-size: 12px;
+        color: #515154;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 64px 32px;
+        color: #86868B;
+      }
+
+      .empty-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-title">Life Admin</div>
+        </div>
+        <nav class="sidebar-nav">
+          <div class="nav-section">
+            <div class="nav-section-title">Overview</div>
+            <a href="/" class="nav-item">Vault</a>
+            <a href="/dashboard" class="nav-item">Dashboard</a>
+            <a href="/categories" class="nav-item active">Categories</a>
+            <a href="/agents" class="nav-item">Agents</a>
+          </div>
+          <div class="nav-section">
+            <div class="nav-section-title">Insights</div>
+            <a href="/actions" class="nav-item">Actions</a>
+          </div>
+          <div class="nav-section">
+            <div class="nav-section-title">Settings</div>
+            <a href="/entities-manage" class="nav-item">Entities</a>
+          </div>
+        </nav>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <div class="top-bar">
+          <a href="/categories" class="back-button">← Back to Categories</a>
+          <div class="category-header">
+            <div class="category-title">
+              <span class="category-icon">{{ category.icon }}</span>
+              <span>{{ category.name }}</span>
+            </div>
+            <div class="category-subtitle">{{ category.description }}</div>
+          </div>
+        </div>
+
+        <div class="content-area">
+          <!-- Stats -->
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-value">{{ category.doc_count }}</div>
+              <div class="stat-label">Documents</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">{{ category.insight_count }}</div>
+              <div class="stat-label">Active Insights</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">{{ category.percentage }}%</div>
+              <div class="stat-label">Of Total Documents</div>
+            </div>
+          </div>
+
+          <!-- Insights Section -->
+          {% if insights %}
+            <div class="section">
+              <div class="section-header">
+                <div class="section-title">Intelligence & Actions</div>
+                <div class="section-count">{{ insights|length }} insight{{ 's' if insights|length != 1 else '' }}</div>
+              </div>
+              <div class="section-content">
+                <div class="insight-list">
+                  {% for insight in insights %}
+                    <div class="insight-card priority-{{ insight.priority }}">
+                      <div class="insight-header">
+                        <div class="insight-title">{{ insight.title }}</div>
+                        <span class="insight-priority priority-{{ insight.priority }}">{{ insight.priority }}</span>
+                      </div>
+                      <div class="insight-description">{{ insight.description }}</div>
+                      {% if insight.action %}
+                        <div class="insight-action">→ {{ insight.action }}</div>
+                      {% endif %}
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          {% endif %}
+
+          <!-- Documents Section -->
+          <div class="section">
+            <div class="section-header">
+              <div class="section-title">Documents</div>
+              <div class="section-count">{{ documents|length }} document{{ 's' if documents|length != 1 else '' }}</div>
+            </div>
+            <div class="section-content">
+              {% if documents %}
+                <table class="document-table">
+                  <thead>
+                    <tr>
+                      <th>Document</th>
+                      <th>Type</th>
+                      <th>Vendor</th>
+                      <th>Date</th>
+                      <th>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for doc in documents %}
+                      <tr onclick="window.location.href='/items/{{ doc.id }}'">
+                        <td>
+                          <div class="document-name">{{ doc.filename }}</div>
+                          {% if doc.summary %}
+                            <div class="document-summary">{{ doc.summary }}</div>
+                          {% endif %}
+                        </td>
+                        <td>
+                          {% if doc.document_type %}
+                            <span class="document-type">{{ doc.document_type }}</span>
+                          {% endif %}
+                        </td>
+                        <td>{{ doc.vendor or '—' }}</td>
+                        <td>{{ doc.date or '—' }}</td>
+                        <td>{{ doc.amount or '—' }}</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              {% else %}
+                <div class="empty-state">
+                  <div class="empty-icon">{{ category.icon }}</div>
+                  <div>No documents in this category yet</div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

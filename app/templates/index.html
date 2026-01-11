@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Document Vault</title>
+    <link rel="stylesheet" href="/static/styles/enhancements.css" />
     <style>
       * {
         box-sizing: border-box;
@@ -109,6 +110,25 @@
 
       .upload-button:hover {
         background: #0077ED;
+      }
+
+      .ai-batch-button {
+        padding: 8px 16px;
+        background: #34C759;
+        color: #FFFFFF;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .ai-batch-button:hover {
+        background: #30B350;
       }
 
       /* Main content */
@@ -250,6 +270,24 @@
       .row-actions {
         opacity: 0;
         transition: opacity 0.15s;
+        display: flex;
+        gap: 8px;
+      }
+
+      .preview-btn {
+        background: transparent;
+        border: none;
+        color: #667eea;
+        font-size: 13px;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: background 0.15s;
+        font-weight: 500;
+      }
+
+      .preview-btn:hover {
+        background: rgba(102, 126, 234, 0.1);
       }
 
       .delete-btn {
@@ -265,6 +303,87 @@
 
       .delete-btn:hover {
         background: rgba(255, 59, 48, 0.1);
+      }
+
+      /* Preview Modal */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.75);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: #FFFFFF;
+        border-radius: 16px;
+        width: 90%;
+        max-width: 1200px;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 24px;
+        border-bottom: 1px solid #E8E8ED;
+      }
+
+      .modal-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1D1D1F;
+      }
+
+      .modal-close {
+        background: #F5F5F7;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 18px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .modal-close:hover {
+        background: #E8E8ED;
+      }
+
+      .modal-body {
+        flex: 1;
+        overflow: auto;
+        padding: 24px;
+      }
+
+      .preview-container {
+        text-align: center;
+      }
+
+      .preview-container img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .preview-container iframe {
+        width: 100%;
+        height: 70vh;
+        border: 1px solid #E8E8ED;
+        border-radius: 8px;
       }
 
       /* File icon */
@@ -424,6 +543,164 @@
 
       .upload-cancel:hover {
         background: #F5F5F7;
+      }
+
+      /* Upload tabs */
+      .upload-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      .upload-tab {
+        flex: 1;
+        padding: 10px 16px;
+        background: transparent;
+        color: #1D1D1F;
+        border: 1px solid #D2D2D7;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .upload-tab:hover {
+        background: #F5F5F7;
+      }
+
+      .upload-tab.active {
+        background: #0071E3;
+        color: #FFFFFF;
+        border-color: #0071E3;
+      }
+
+      /* File list */
+      .file-list {
+        max-height: 200px;
+        overflow-y: auto;
+        background: #F5F5F7;
+        border-radius: 8px;
+        padding: 12px;
+      }
+
+      .file-list-item {
+        padding: 8px 12px;
+        background: #FFFFFF;
+        border-radius: 6px;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 13px;
+      }
+
+      .file-list-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .file-list-name {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #1D1D1F;
+      }
+
+      .file-list-size {
+        color: #86868B;
+        margin-left: 12px;
+        font-size: 12px;
+      }
+
+      /* Progress bar */
+      .progress-container {
+        width: 100%;
+        height: 8px;
+        background: #E5E5EA;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 8px;
+      }
+
+      .progress-bar-upload {
+        height: 100%;
+        background: #0071E3;
+        transition: width 0.3s ease;
+        width: 0%;
+      }
+
+      .progress-text {
+        font-size: 13px;
+        color: #86868B;
+        text-align: center;
+      }
+
+      /* Batch summary modal */
+      .batch-summary-content {
+        max-width: 600px;
+      }
+
+      .batch-stats {
+        background: #F5F5F7;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 24px;
+      }
+
+      .stat-loading {
+        text-align: center;
+        color: #86868B;
+        font-size: 14px;
+      }
+
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+
+      .stat-item {
+        text-align: center;
+      }
+
+      .stat-value {
+        font-size: 32px;
+        font-weight: 600;
+        color: #1D1D1F;
+        display: block;
+      }
+
+      .stat-label {
+        font-size: 13px;
+        color: #86868B;
+        margin-top: 4px;
+        display: block;
+      }
+
+      .batch-description {
+        font-size: 14px;
+        color: #1D1D1F;
+        line-height: 1.6;
+        margin-bottom: 24px;
+      }
+
+      .batch-description p {
+        margin-bottom: 12px;
+      }
+
+      .batch-description ul {
+        margin-left: 20px;
+        margin-bottom: 12px;
+      }
+
+      .batch-description li {
+        margin-bottom: 6px;
+        color: #6E6E73;
+      }
+
+      .batch-description strong {
+        color: #34C759;
       }
 
       /* Expandable rows for AI summaries */
@@ -589,6 +866,73 @@
         font-size: 13px;
         color: #86868B;
       }
+
+      /* Category filters and badges */
+      .category-filter-bar {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .category-filter-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #86868B;
+        margin-right: 8px;
+      }
+
+      .category-filter-btn {
+        padding: 6px 14px;
+        background: #FFFFFF;
+        border: 1px solid #D2D2D7;
+        border-radius: 16px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #1D1D1F;
+        cursor: pointer;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+
+      .category-filter-btn:hover {
+        border-color: #0071E3;
+        background: #F5F5F7;
+      }
+
+      .category-filter-btn.active {
+        background: #0071E3;
+        border-color: #0071E3;
+        color: #FFFFFF;
+      }
+
+      .category-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+        white-space: nowrap;
+      }
+
+      .category-vehicle { background: #E3F2FD; color: #1976D2; }
+      .category-medical { background: #FCE4EC; color: #C2185B; }
+      .category-home { background: #F3E5F5; color: #7B1FA2; }
+      .category-utilities { background: #FFF9C4; color: #F57F17; }
+      .category-financial { background: #E8F5E9; color: #388E3C; }
+      .category-insurance { background: #E0F2F1; color: #00796B; }
+      .category-employment { background: #E1F5FE; color: #0277BD; }
+      .category-tax { background: #FFEBEE; color: #C62828; }
+      .category-legal { background: #F1F8E9; color: #558B2F; }
+      .category-education { background: #FFF3E0; color: #E65100; }
+      .category-travel { background: #E8EAF6; color: #3F51B5; }
+      .category-shopping { background: #FCE4EC; color: #880E4F; }
+      .category-government { background: #ECEFF1; color: #455A64; }
+      .category-personal { background: #F3E5F5; color: #6A1B9A; }
+      .category-other { background: #F5F5F5; color: #757575; }
     </style>
   </head>
   <body>
@@ -601,15 +945,30 @@
 
         <nav class="sidebar-nav">
           <div class="nav-section">
-            <div class="nav-section-title">Library</div>
+            <div class="nav-section-title">Views</div>
+            <a href="/dashboard" class="nav-item">
+              <span>Dashboard</span>
+            </a>
+            <a href="/actions" class="nav-item">
+              <span>Action Items</span>
+            </a>
+            <a href="/categories" class="nav-item">
+              <span>Categories</span>
+            </a>
+            <a href="/agents" class="nav-item">
+              <span>Agents</span>
+            </a>
             <a href="/?source=all" class="nav-item {% if source == 'all' %}active{% endif %}">
-              <span>All Documents</span>
+              <span>Vault</span>
               <span class="nav-item-count">{{ counts.all }}</span>
+            </a>
+            <a href="/upload" class="nav-item">
+              <span>Upload</span>
             </a>
           </div>
 
           <div class="nav-section">
-            <div class="nav-section-title">Source</div>
+            <div class="nav-section-title">Filter</div>
             <a href="/?source=email" class="nav-item {% if source == 'email' %}active{% endif %}">
               <span>Emails</span>
               <span class="nav-item-count">{{ counts.email }}</span>
@@ -621,6 +980,22 @@
             <a href="/?source=attachment" class="nav-item {% if source == 'attachment' %}active{% endif %}">
               <span>Attachments</span>
               <span class="nav-item-count">{{ counts.attachment }}</span>
+            </a>
+          </div>
+
+          <div class="nav-section">
+            <div class="nav-section-title">AI Tools</div>
+            <a href="#" class="nav-item" onclick="event.preventDefault(); triggerGmailSync()">
+              <span>Sync Gmail</span>
+            </a>
+            <a href="#" class="nav-item" onclick="event.preventDefault(); triggerGenerateSummaries()">
+              <span>Generate Summaries</span>
+            </a>
+            <a href="#" class="nav-item" onclick="event.preventDefault(); triggerCategorizeAll()">
+              <span>Categorize Documents</span>
+            </a>
+            <a href="#" class="nav-item" onclick="event.preventDefault(); showCategoryStats()">
+              <span>Category Stats</span>
             </a>
           </div>
         </nav>
@@ -648,6 +1023,14 @@
               />
             </form>
           </div>
+          {% if ai_enabled %}
+          <button class="ai-batch-button" onclick="showBatchSummaryModal()">
+            <span>⚡</span> AI Summaries
+          </button>
+          <button class="ai-batch-button" onclick="categorizeAllDocuments()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <span>🏷️</span> Categorize All
+          </button>
+          {% endif %}
         </div>
 
         <!-- Content area -->
@@ -671,6 +1054,22 @@
             {% endif %}
           </div>
 
+          <!-- Category filter bar -->
+          <div class="category-filter-bar" id="categoryFilters">
+            <span class="category-filter-label">Categories:</span>
+            <button class="category-filter-btn active" data-category="all" onclick="filterByCategory('all')">All</button>
+            <button class="category-filter-btn" data-category="vehicle" onclick="filterByCategory('vehicle')">🚗 Vehicle</button>
+            <button class="category-filter-btn" data-category="medical" onclick="filterByCategory('medical')">🏥 Medical</button>
+            <button class="category-filter-btn" data-category="home" onclick="filterByCategory('home')">🏠 Home</button>
+            <button class="category-filter-btn" data-category="utilities" onclick="filterByCategory('utilities')">⚡ Utilities</button>
+            <button class="category-filter-btn" data-category="financial" onclick="filterByCategory('financial')">💰 Financial</button>
+            <button class="category-filter-btn" data-category="insurance" onclick="filterByCategory('insurance')">🛡️ Insurance</button>
+            <button class="category-filter-btn" data-category="employment" onclick="filterByCategory('employment')">💼 Employment</button>
+            <button class="category-filter-btn" data-category="tax" onclick="filterByCategory('tax')">📋 Tax</button>
+            <button class="category-filter-btn" data-category="shopping" onclick="filterByCategory('shopping')">🛒 Shopping</button>
+            <button class="category-filter-btn" data-category="education" onclick="filterByCategory('education')">🎓 Education</button>
+          </div>
+
           {% if items %}
             <div class="documents-table">
               <table>
@@ -684,7 +1083,7 @@
                 </thead>
                 <tbody>
                   {% for item in items %}
-                    <tr class="table-row">
+                    <tr class="table-row" data-category="{{ item.ai_summary.category if item.ai_summary and item.ai_summary.category else 'uncategorized' }}">
                       <td>
                         <div style="display: flex; align-items: center; gap: 8px;">
                           {% if ai_enabled %}
@@ -705,7 +1104,29 @@
                               {% if item.file_type == 'document' %}📄{% endif %}
                             </div>
                             <div class="file-name">
-                              <div class="file-name-text">{{ item.title }}</div>
+                              <div style="display: flex; align-items: center; gap: 8px;">
+                                <div class="file-name-text">{{ item.title }}</div>
+                                {% if item.ai_summary and item.ai_summary.category %}
+                                <span class="category-badge category-{{ item.ai_summary.category }}">
+                                  {% if item.ai_summary.category == 'vehicle' %}🚗
+                                  {% elif item.ai_summary.category == 'medical' %}🏥
+                                  {% elif item.ai_summary.category == 'home' %}🏠
+                                  {% elif item.ai_summary.category == 'utilities' %}⚡
+                                  {% elif item.ai_summary.category == 'financial' %}💰
+                                  {% elif item.ai_summary.category == 'insurance' %}🛡️
+                                  {% elif item.ai_summary.category == 'employment' %}💼
+                                  {% elif item.ai_summary.category == 'tax' %}📋
+                                  {% elif item.ai_summary.category == 'legal' %}⚖️
+                                  {% elif item.ai_summary.category == 'education' %}🎓
+                                  {% elif item.ai_summary.category == 'travel' %}✈️
+                                  {% elif item.ai_summary.category == 'shopping' %}🛒
+                                  {% elif item.ai_summary.category == 'government' %}🏛️
+                                  {% elif item.ai_summary.category == 'personal' %}👤
+                                  {% endif %}
+                                  {{ item.ai_summary.category | capitalize }}
+                                </span>
+                                {% endif %}
+                              </div>
                             </div>
                           </a>
                         </div>
@@ -714,6 +1135,7 @@
                       <td class="file-source">{{ item.source }}</td>
                       <td>
                         <div class="row-actions">
+                          <button class="preview-btn" onclick="event.stopPropagation(); previewDocument('{{ item.id }}', '{{ item.original_filename }}')">👁️ Preview</button>
                           <button class="delete-btn" onclick="deleteItem('{{ item.id }}', '{{ item.title }}')">Delete</button>
                         </div>
                       </td>
@@ -797,31 +1219,339 @@
       </main>
     </div>
 
+    <!-- Batch Summary Modal -->
+    <div class="upload-modal" id="batchSummaryModal">
+      <div class="upload-modal-content">
+        <h2 class="upload-modal-title">Generate AI Summaries</h2>
+        <div class="batch-summary-content">
+          <div class="batch-stats" id="batchStats">
+            <div class="stat-loading">Loading statistics...</div>
+          </div>
+          <div class="batch-description">
+            <p>AI summaries extract key information from your documents:</p>
+            <ul>
+              <li>Document type (Invoice, Receipt, Letter, etc.)</li>
+              <li>Vendor/sender name</li>
+              <li>Date mentioned in document</li>
+              <li>Amount/cost (if applicable)</li>
+              <li>One-sentence description</li>
+            </ul>
+            <p><strong>This data powers insights</strong> like recurring vendors, spending summaries, and upcoming renewal dates.</p>
+          </div>
+          <div class="batch-progress" id="batchProgress" style="display: none;">
+            <label class="upload-form-label">Processing...</label>
+            <div class="progress-container">
+              <div class="progress-bar-upload" id="batchProgressBar"></div>
+            </div>
+            <div class="progress-text" id="batchProgressText">0 / 0 documents</div>
+          </div>
+          <div class="upload-actions">
+            <button type="button" class="upload-submit" id="batchGenerateButton" onclick="startBatchGeneration()">
+              Generate All Summaries
+            </button>
+            <button type="button" class="upload-cancel" onclick="hideBatchSummaryModal()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Upload modal -->
     <div class="upload-modal" id="uploadModal">
       <div class="upload-modal-content">
-        <h2 class="upload-modal-title">Upload Document</h2>
-        <form action="/ui/upload" method="post" enctype="multipart/form-data">
+        <h2 class="upload-modal-title">Upload Documents</h2>
+        <form id="uploadForm" enctype="multipart/form-data">
           <div class="upload-form-group">
-            <label class="upload-form-label">Choose file</label>
-            <input type="file" name="file" required class="upload-file-input" />
+            <div class="upload-tabs">
+              <button type="button" class="upload-tab active" onclick="switchUploadMode('files')">Files</button>
+              <button type="button" class="upload-tab" onclick="switchUploadMode('folder')">Folder</button>
+            </div>
+          </div>
+          <div class="upload-form-group">
+            <label class="upload-form-label" id="uploadLabel">Choose files (you can select multiple)</label>
+            <input
+              type="file"
+              name="files"
+              id="fileInput"
+              multiple
+              class="upload-file-input"
+              onchange="updateFileList()"
+            />
+          </div>
+          <div class="upload-form-group" id="fileListContainer" style="display: none;">
+            <label class="upload-form-label">Selected files</label>
+            <div class="file-list" id="fileList"></div>
+          </div>
+          <div class="upload-form-group" id="uploadProgress" style="display: none;">
+            <label class="upload-form-label">Upload progress</label>
+            <div class="progress-container">
+              <div class="progress-bar-upload" id="progressBar"></div>
+            </div>
+            <div class="progress-text" id="progressText">0 / 0 files</div>
           </div>
           <div class="upload-actions">
-            <button type="submit" class="upload-submit">Upload</button>
+            <button type="submit" class="upload-submit" id="uploadButton">Upload</button>
             <button type="button" class="upload-cancel" onclick="hideUploadModal()">Cancel</button>
           </div>
         </form>
       </div>
     </div>
 
+    <script src="/static/js/enhancements.js"></script>
     <script>
       function showUploadModal() {
         document.getElementById('uploadModal').classList.add('active');
+        // Reset form
+        document.getElementById('uploadForm').reset();
+        document.getElementById('fileListContainer').style.display = 'none';
+        document.getElementById('uploadProgress').style.display = 'none';
+        switchUploadMode('files');
       }
 
       function hideUploadModal() {
         document.getElementById('uploadModal').classList.remove('active');
       }
+
+      // Batch Summary Modal
+      async function showBatchSummaryModal() {
+        document.getElementById('batchSummaryModal').classList.add('active');
+        await loadBatchStats();
+      }
+
+      function hideBatchSummaryModal() {
+        document.getElementById('batchSummaryModal').classList.remove('active');
+      }
+
+      async function loadBatchStats() {
+        const statsContainer = document.getElementById('batchStats');
+        const generateButton = document.getElementById('batchGenerateButton');
+
+        try {
+          const response = await fetch('/summaries/stats');
+          const stats = await response.json();
+
+          if (stats.ok) {
+            statsContainer.innerHTML = `
+              <div class="stat-grid">
+                <div class="stat-item">
+                  <span class="stat-value">${stats.total_items}</span>
+                  <span class="stat-label">Total Documents</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value">${stats.items_with_summaries}</span>
+                  <span class="stat-label">With Summaries</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value">${stats.items_with_text}</span>
+                  <span class="stat-label">Have Extracted Text</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value" style="color: #34C759">${stats.items_needing_summaries}</span>
+                  <span class="stat-label">Need Summaries</span>
+                </div>
+              </div>
+            `;
+
+            if (stats.items_needing_summaries === 0) {
+              generateButton.textContent = 'All Summaries Generated ✓';
+              generateButton.disabled = true;
+            } else {
+              generateButton.textContent = `Generate ${stats.items_needing_summaries} Summaries`;
+              generateButton.disabled = false;
+            }
+          }
+        } catch (error) {
+          statsContainer.innerHTML = '<div class="stat-loading">Failed to load statistics</div>';
+        }
+      }
+
+      async function startBatchGeneration() {
+        const button = document.getElementById('batchGenerateButton');
+        const progressContainer = document.getElementById('batchProgress');
+        const progressBar = document.getElementById('batchProgressBar');
+        const progressText = document.getElementById('batchProgressText');
+
+        // Show progress
+        progressContainer.style.display = 'block';
+        setButtonLoading(button, true);
+
+        try {
+          const response = await fetch('/summaries/generate-all', {
+            method: 'POST',
+          });
+
+          const result = await response.json();
+
+          if (result.ok) {
+            // Update progress bar
+            progressBar.style.width = '100%';
+            progressText.textContent = `${result.successful} / ${result.total} documents`;
+
+            Toast.success(
+              'Summaries Generated',
+              `${result.successful} summaries created successfully` +
+              (result.failed > 0 ? `\n${result.failed} failed` : '')
+            );
+
+            // Reload stats
+            await loadBatchStats();
+
+            // Hide progress after a moment
+            setTimeout(() => {
+              progressContainer.style.display = 'none';
+              progressBar.style.width = '0%';
+              setButtonLoading(button, false);
+            }, 2000);
+          } else {
+            Toast.error('Generation Failed', result.message || 'Unknown error');
+            progressContainer.style.display = 'none';
+            setButtonLoading(button, false);
+          }
+        } catch (error) {
+          Toast.error('Generation Failed', error.message);
+          progressContainer.style.display = 'none';
+          setButtonLoading(button, false);
+        }
+      }
+
+      function switchUploadMode(mode) {
+        const fileInput = document.getElementById('fileInput');
+        const uploadLabel = document.getElementById('uploadLabel');
+        const tabs = document.querySelectorAll('.upload-tab');
+
+        // Update active tab
+        tabs.forEach(tab => tab.classList.remove('active'));
+        event?.target?.classList.add('active');
+
+        if (mode === 'folder') {
+          fileInput.setAttribute('webkitdirectory', '');
+          fileInput.setAttribute('directory', '');
+          fileInput.removeAttribute('multiple');
+          uploadLabel.textContent = 'Choose a folder';
+        } else {
+          fileInput.removeAttribute('webkitdirectory');
+          fileInput.removeAttribute('directory');
+          fileInput.setAttribute('multiple', '');
+          uploadLabel.textContent = 'Choose files (you can select multiple)';
+        }
+
+        // Clear selection
+        fileInput.value = '';
+        updateFileList();
+      }
+
+      function updateFileList() {
+        const fileInput = document.getElementById('fileInput');
+        const fileListContainer = document.getElementById('fileListContainer');
+        const fileList = document.getElementById('fileList');
+        const files = fileInput.files;
+
+        if (files.length === 0) {
+          fileListContainer.style.display = 'none';
+          return;
+        }
+
+        fileListContainer.style.display = 'block';
+        fileList.innerHTML = '';
+
+        Array.from(files).forEach(file => {
+          const item = document.createElement('div');
+          item.className = 'file-list-item';
+
+          const name = document.createElement('div');
+          name.className = 'file-list-name';
+          name.textContent = file.webkitRelativePath || file.name;
+          name.title = file.webkitRelativePath || file.name;
+
+          const size = document.createElement('div');
+          size.className = 'file-list-size';
+          size.textContent = formatFileSize(file.size);
+
+          item.appendChild(name);
+          item.appendChild(size);
+          fileList.appendChild(item);
+        });
+      }
+
+      function formatFileSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+      }
+
+      // Handle upload form submission
+      document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const fileInput = document.getElementById('fileInput');
+        const files = fileInput.files;
+
+        if (files.length === 0) {
+          Toast.error('No files selected', 'Please select at least one file');
+          return;
+        }
+
+        const uploadButton = document.getElementById('uploadButton');
+        const progressContainer = document.getElementById('uploadProgress');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+
+        // Show progress
+        progressContainer.style.display = 'block';
+        setButtonLoading(uploadButton, true);
+
+        const formData = new FormData();
+        Array.from(files).forEach(file => {
+          formData.append('files', file);
+        });
+
+        try {
+          let uploadedCount = 0;
+          const totalFiles = files.length;
+
+          // Update progress
+          const updateProgress = () => {
+            const percent = (uploadedCount / totalFiles) * 100;
+            progressBar.style.width = percent + '%';
+            progressText.textContent = `${uploadedCount} / ${totalFiles} files`;
+          };
+
+          updateProgress();
+
+          // Upload all files
+          const response = await fetch('/intake/upload-multiple', {
+            method: 'POST',
+            body: formData,
+          });
+
+          const result = await response.json();
+
+          // Update progress to complete
+          uploadedCount = totalFiles;
+          updateProgress();
+
+          // Show result
+          if (result.ok) {
+            const message = [
+              `${result.successful} file(s) uploaded successfully`,
+              result.duplicates > 0 ? `${result.duplicates} duplicate(s) skipped` : '',
+              result.failed > 0 ? `${result.failed} file(s) failed` : ''
+            ].filter(Boolean).join('\n');
+
+            Toast.success('Upload Complete', message);
+
+            setTimeout(() => {
+              hideUploadModal();
+              window.location.reload();
+            }, 2000);
+          } else {
+            Toast.error('Upload Failed', result.message || 'Unknown error');
+            setButtonLoading(uploadButton, false);
+          }
+        } catch (error) {
+          Toast.error('Upload Failed', error.message);
+          setButtonLoading(uploadButton, false);
+        }
+      });
 
       // Close modal on outside click
       document.getElementById('uploadModal').addEventListener('click', function(e) {
@@ -838,105 +1568,256 @@
         }, 500);
       });
 
-      // Delete item
-      async function deleteItem(itemId, itemTitle) {
-        if (!confirm(`Delete "${itemTitle}"?\n\nThis will mark the item as deleted but preserve it in storage.`)) {
-          return;
-        }
+      // Functions moved to enhancements.js:
+      // - deleteItem()
+      // - toggleExpand()
+      // - generateSummaryInline()
+      // - regenerateSummary()
 
-        try {
-          const response = await fetch(`/items/${itemId}`, {
-            method: 'DELETE',
-          });
+      // Categorize all documents
+      async function categorizeAllDocuments() {
+        const button = event.target.closest('button');
+        const originalHTML = button.innerHTML;
 
-          const result = await response.json();
-
-          if (result.ok) {
-            // Reload page to refresh the list
-            window.location.reload();
-          } else {
-            alert('Failed to delete item: ' + (result.message || 'Unknown error'));
-          }
-        } catch (error) {
-          alert('Failed to delete item: ' + error.message);
-        }
-      }
-
-      // Toggle expand/collapse for AI summary
-      function toggleExpand(itemId) {
-        const expandedRow = document.getElementById(`expanded-${itemId}`);
-        const expandIcon = document.getElementById(`expand-icon-${itemId}`);
-
-        if (expandedRow.style.display === 'none') {
-          expandedRow.style.display = 'table-row';
-          expandIcon.classList.add('expanded');
-        } else {
-          expandedRow.style.display = 'none';
-          expandIcon.classList.remove('expanded');
-        }
-      }
-
-      // Generate AI summary inline (from table view)
-      async function generateSummaryInline(itemId) {
-        const button = event.target;
-        const originalText = button.textContent;
-        button.textContent = 'Generating...';
         button.disabled = true;
+        button.innerHTML = '<span>⏳</span> Categorizing...';
 
         try {
-          const response = await fetch(`/items/${itemId}/summary`, {
+          const response = await fetch('/categories/categorize-all', {
             method: 'POST',
           });
 
           const result = await response.json();
 
           if (result.ok) {
-            // Reload page to show new summary
-            window.location.reload();
+            Toast.success('Categorization Complete', `Categorized ${result.categorized} documents`);
+            setTimeout(() => window.location.reload(), 1500);
           } else {
-            alert('Failed to generate summary: ' + (result.message || 'Unknown error'));
-            button.textContent = originalText;
+            Toast.error('Categorization Failed', result.message || 'Unknown error');
             button.disabled = false;
+            button.innerHTML = originalHTML;
           }
         } catch (error) {
-          alert('Failed to generate summary: ' + error.message);
-          button.textContent = originalText;
+          Toast.error('Categorization Failed', error.message);
           button.disabled = false;
+          button.innerHTML = originalHTML;
         }
       }
 
-      // Regenerate AI summary (from expanded view)
-      async function regenerateSummary(itemId) {
-        if (!confirm('Regenerate AI summary?\n\nThis will replace the existing summary with a new one.')) {
-          return;
-        }
+      // Category filtering
+      function filterByCategory(category) {
+        // Update active button
+        document.querySelectorAll('.category-filter-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.category === category);
+        });
 
-        const button = event.target;
-        const originalText = button.textContent;
-        button.textContent = 'Regenerating...';
-        button.disabled = true;
+        // Filter table rows
+        const rows = document.querySelectorAll('.table-row');
+        rows.forEach(row => {
+          const rowCategory = row.dataset.category;
+
+          if (category === 'all') {
+            row.style.display = '';
+            // Also show the expanded row if it exists
+            const expandedRow = document.getElementById('expanded-' + row.querySelector('a').href.split('/').pop());
+            if (expandedRow && expandedRow.style.display !== 'none') {
+              expandedRow.style.display = 'table-row';
+            }
+          } else if (rowCategory === category) {
+            row.style.display = '';
+            // Also show the expanded row if it exists
+            const expandedRow = document.getElementById('expanded-' + row.querySelector('a').href.split('/').pop());
+            if (expandedRow && expandedRow.style.display !== 'none') {
+              expandedRow.style.display = 'table-row';
+            }
+          } else {
+            row.style.display = 'none';
+            // Hide the expanded row too
+            const itemId = row.querySelector('a').href.split('/').pop();
+            const expandedRow = document.getElementById('expanded-' + itemId);
+            if (expandedRow) {
+              expandedRow.style.display = 'none';
+            }
+          }
+        });
+      }
+
+      // Sidebar AI Tools functions
+      async function triggerGmailSync() {
+        Toast.info('Syncing Gmail', 'Fetching new emails...');
 
         try {
-          const response = await fetch(`/items/${itemId}/summary`, {
+          const response = await fetch('/gmail/sync', {
             method: 'POST',
           });
 
           const result = await response.json();
 
           if (result.ok) {
-            // Reload page to show updated summary
-            window.location.reload();
+            Toast.success('Gmail Synced', result.message || 'Gmail sync completed successfully');
+            // Reload after a short delay to show new documents
+            setTimeout(() => window.location.reload(), 1500);
           } else {
-            alert('Failed to regenerate summary: ' + (result.message || 'Unknown error'));
-            button.textContent = originalText;
-            button.disabled = false;
+            Toast.error('Sync Failed', result.message || 'Unknown error');
           }
         } catch (error) {
-          alert('Failed to regenerate summary: ' + error.message);
-          button.textContent = originalText;
-          button.disabled = false;
+          Toast.error('Sync Failed', error.message);
         }
+      }
+
+      async function triggerGenerateSummaries() {
+        if (!confirm('Generate AI summaries for all documents without summaries?\n\nThis may take several minutes depending on how many documents need processing.')) {
+          return;
+        }
+
+        Toast.info('Generating Summaries', 'Processing documents...');
+
+        try {
+          const response = await fetch('/summaries/generate-all', {
+            method: 'POST',
+          });
+
+          const result = await response.json();
+
+          if (result.ok) {
+            Toast.success('Summaries Generated', `Successfully generated ${result.successful} summaries. ${result.failed} failed.`);
+            setTimeout(() => window.location.reload(), 1500);
+          } else {
+            Toast.error('Generation Failed', result.message || 'Unknown error');
+          }
+        } catch (error) {
+          Toast.error('Generation Failed', error.message);
+        }
+      }
+
+      async function triggerCategorizeAll() {
+        if (!confirm('Categorize all uncategorized documents?\n\nThis will analyze documents and assign them to life admin categories.')) {
+          return;
+        }
+
+        Toast.info('Categorizing', 'Analyzing documents...');
+
+        try {
+          const response = await fetch('/categories/categorize-all', {
+            method: 'POST',
+          });
+
+          const result = await response.json();
+
+          if (result.ok) {
+            Toast.success('Documents Categorized', `Categorized ${result.categorized} documents`);
+            setTimeout(() => window.location.reload(), 1500);
+          } else {
+            Toast.error('Categorization Failed', result.message || 'Unknown error');
+          }
+        } catch (error) {
+          Toast.error('Categorization Failed', error.message);
+        }
+      }
+
+      async function showCategoryStats() {
+        Toast.info('Loading Stats', 'Fetching category statistics...');
+
+        try {
+          const response = await fetch('/categories/stats');
+          const result = await response.json();
+
+          if (result.ok) {
+            let statsMessage = `Total Categories: ${result.categories.length}\n`;
+            statsMessage += `Uncategorized Documents: ${result.uncategorized}\n\n`;
+            statsMessage += 'Category Breakdown:\n';
+
+            result.categories.forEach(cat => {
+              statsMessage += `  ${cat.category}: ${cat.count} documents\n`;
+            });
+
+            alert(statsMessage);
+          } else {
+            Toast.error('Stats Failed', result.message || 'Unknown error');
+          }
+        } catch (error) {
+          Toast.error('Stats Failed', error.message);
+        }
+      }
+
+      // Preview Document Modal
+      async function previewDocument(itemId, filename) {
+        const modal = document.getElementById('preview-modal');
+        const title = document.getElementById('preview-title');
+        const body = document.getElementById('preview-body');
+
+        title.textContent = filename;
+        body.innerHTML = '<div style="text-align: center; padding: 40px; color: #86868B;">Loading preview...</div>';
+        modal.classList.add('active');
+
+        try {
+          const response = await fetch(`/preview/${itemId}`);
+          const result = await response.json();
+
+          if (result.ok) {
+            const contentType = result.content_type || '';
+
+            if (contentType.includes('image')) {
+              // Show image
+              body.innerHTML = `
+                <div class="preview-container">
+                  <img src="${result.url}" alt="${escapeHtml(filename)}" />
+                </div>
+              `;
+            } else if (contentType.includes('pdf')) {
+              // Show PDF in iframe
+              body.innerHTML = `
+                <div class="preview-container">
+                  <iframe src="${result.url}" title="${escapeHtml(filename)}"></iframe>
+                </div>
+              `;
+            } else {
+              // Unsupported type
+              body.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #86868B;">
+                  <div style="font-size: 48px; margin-bottom: 16px;">📄</div>
+                  <div style="font-size: 16px;">Preview not available for this file type</div>
+                  <div style="font-size: 14px; margin-top: 8px;">Click download to view the file</div>
+                  <button class="summary-btn summary-btn-primary" onclick="window.location.href='/download/${itemId}'" style="margin-top: 20px;">
+                    ⬇️ Download File
+                  </button>
+                </div>
+              `;
+            }
+          } else {
+            body.innerHTML = `<div style="text-align: center; padding: 40px; color: #D32F2F;">❌ Failed to load preview</div>`;
+          }
+        } catch (error) {
+          body.innerHTML = `<div style="text-align: center; padding: 40px; color: #D32F2F;">❌ ${escapeHtml(error.message)}</div>`;
+        }
+      }
+
+      function closePreviewModal(event) {
+        if (!event || event.target.id === 'preview-modal') {
+          document.getElementById('preview-modal').classList.remove('active');
+        }
+      }
+
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
       }
     </script>
+
+    <!-- Preview Modal -->
+    <div id="preview-modal" class="modal-overlay" onclick="closePreviewModal(event)">
+      <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+          <span class="modal-title" id="preview-title">Document Preview</span>
+          <button class="modal-close" onclick="closePreviewModal()">✕</button>
+        </div>
+        <div class="modal-body" id="preview-body">
+          <div class="preview-container">
+            Loading preview...
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

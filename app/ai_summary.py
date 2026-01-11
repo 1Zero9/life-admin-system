@@ -12,7 +12,7 @@ from anthropic import Anthropic
 from dotenv import load_dotenv
 
 from app.db import SessionLocal
-from app.models import Item, AISummary
+from app.models import Item, AISummary, Entity
 
 load_dotenv()
 
@@ -48,6 +48,18 @@ def generate_summary(item_id: str) -> Optional[Dict[str, Any]]:
         if not item.extracted_text:
             return None
 
+        # Get existing entities for entity matching
+        existing_entities = db.query(Entity).filter(Entity.is_active == True).all()
+        entities_list = [
+            {
+                "id": e.id,
+                "type": e.entity_type,
+                "name": e.entity_name,
+                "identifier": e.entity_identifier,
+            }
+            for e in existing_entities
+        ]
+
         # Build the prompt
         prompt = f"""You are analysing a document for a household document management system.
 
@@ -58,11 +70,39 @@ The document text is below. Generate a structured summary with the following fie
 3. extracted_date: Any date mentioned in the document (as a string, e.g., "3 January 2026")
 4. extracted_amount: Any monetary amount (as a string with currency, e.g., "€75.00" or "$20.00")
 5. extracted_vendor: The name of the company, organization, or person who issued this document
+6. category: The life admin category (vehicle, medical, financial, home, utilities, tax, insurance, legal, employment, education, travel, shopping, government, personal, or other)
 
-If any field cannot be determined, use null.
+7. entity_match: WHO or WHAT this document is about. Check against these existing entities:
+{json.dumps(entities_list, indent=2)}
 
-Return ONLY a JSON object with these exact keys. No other text.
+If you find a match, return the entity ID. If this document is about an entity not in the list, suggest a new entity with:
+{{
+  "entity_match": {{
+    "matched_id": null,
+    "confidence": 0.0,
+    "suggested_entity": {{
+      "type": "person|vehicle|pet|property|family",
+      "name": "Name of the person/vehicle/etc",
+      "identifier": "registration/email/address if found"
+    }}
+  }}
+}}
 
+If matched, return:
+{{
+  "entity_match": {{
+    "matched_id": "entity-id-here",
+    "confidence": 0.8,
+    "suggested_entity": null
+  }}
+}}
+
+If this is a family-wide document (like home insurance), match to entity_id with type "family".
+If unclear, use null for entity_match.
+
+Return ONLY a JSON object with these keys. No other text.
+
+Document filename: {item.original_filename}
 Document text:
 {item.extracted_text[:3000]}
 """
@@ -102,6 +142,28 @@ Document text:
             print(f"Failed to parse Claude response as JSON: {response_text[:200]}")
             return None
 
+        # Process entity matching
+        entity_id = None
+        entity_confidence = None
+        suggested_entity_data = None
+
+        entity_match = summary_data.get("entity_match")
+        if entity_match and isinstance(entity_match, dict):
+            matched_id = entity_match.get("matched_id")
+            confidence = entity_match.get("confidence", 0.0)
+            suggested_entity = entity_match.get("suggested_entity")
+
+            if matched_id:
+                # Verify entity exists
+                entity_exists = db.query(Entity).filter(Entity.id == matched_id).first()
+                if entity_exists:
+                    entity_id = matched_id
+                    entity_confidence = confidence
+
+            if suggested_entity and not matched_id:
+                # Store suggested entity for user review
+                suggested_entity_data = suggested_entity
+
         # Delete existing summary if present
         existing = db.query(AISummary).filter(AISummary.item_id == item_id).first()
         if existing:
@@ -116,6 +178,10 @@ Document text:
             extracted_date=summary_data.get("extracted_date"),
             extracted_amount=summary_data.get("extracted_amount"),
             extracted_vendor=summary_data.get("extracted_vendor"),
+            category=summary_data.get("category"),
+            entity_id=entity_id,
+            entity_confidence=entity_confidence,
+            suggested_entity_data=suggested_entity_data,
             model_version=CLAUDE_MODEL,
             generated_at=datetime.now(timezone.utc),
         )
@@ -131,6 +197,10 @@ Document text:
             "extracted_date": ai_summary.extracted_date,
             "extracted_amount": ai_summary.extracted_amount,
             "extracted_vendor": ai_summary.extracted_vendor,
+            "category": ai_summary.category,
+            "entity_id": ai_summary.entity_id,
+            "entity_confidence": ai_summary.entity_confidence,
+            "suggested_entity_data": ai_summary.suggested_entity_data,
             "model_version": ai_summary.model_version,
             "generated_at": ai_summary.generated_at.isoformat(),
         }
@@ -172,6 +242,10 @@ def get_summary(item_id: str) -> Optional[Dict[str, Any]]:
             "extracted_date": summary.extracted_date,
             "extracted_amount": summary.extracted_amount,
             "extracted_vendor": summary.extracted_vendor,
+            "category": summary.category,
+            "entity_id": summary.entity_id,
+            "entity_confidence": summary.entity_confidence,
+            "suggested_entity_data": summary.suggested_entity_data,
             "model_version": summary.model_version,
             "generated_at": summary.generated_at.isoformat(),
         }

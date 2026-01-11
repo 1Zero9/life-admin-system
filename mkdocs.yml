@@ -1,0 +1,92 @@
+site_name: Life Admin System
+site_description: AI-powered document capture system for family life administration
+site_author: Stephen Cranfield
+repo_url: https://github.com/yourusername/life-admin-system
+edit_uri: ""
+
+theme:
+  name: material
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.tabs.link
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Overview: README.md
+      - Elevator Pitch: ELEVATOR-PITCH.md
+      - Mac App: README-MAC-APP.md
+  - Vision & Principles:
+      - Vision: docs/00-vision-and-principles.md
+      - Intake Rule: docs/01-intake-rule.md
+      - Core Concepts: docs/02-core-concepts-and-language.md
+      - Data & Longevity: docs/03-data-and-longevity-model.md
+      - Security & Access: docs/04-security-and-access-model.md
+      - User Experience: docs/05-user-experience-and-habits.md
+      - AI Responsibilities: docs/06-ai-responsibilities-and-limits.md
+      - Efficiency & Insight: docs/07-efficiency-and-insight-layer.md
+  - Architecture:
+      - Architecture Options: docs/08-architecture-options.md
+      - MVP Scope: docs/09-mvp-scope-and-phasing.md
+      - Build Guidance: docs/10-build-guidance-prompt.md
+      - MVP Architecture: docs/11-mvp-architecture.md
+      - Vault UI Evolution: docs/20-vault-ui-evolution.md
+  - Deployment:
+      - Deployment Guide: docs/50-deployment.md
+      - Google Cloud Setup: docs/google-cloud-setup.md
+  - User Guide:
+      - User Guide: docs/60-user-guide.md
+  - Development:
+      - Business Framework: docs/90-business-framework.md
+      - Agent Development: docs/91-agent-development-guide.md
+      - Build Log: docs/99-build-log.md
+  - Frameworks:
+      - Agent Framework: AGENT_FRAMEWORK_COMPLETE.md
+      - Entity Framework: ENTITY_FRAMEWORK_COMPLETE.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/yourusername/life-admin-system
+
+plugins:
+  - search

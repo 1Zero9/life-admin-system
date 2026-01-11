@@ -1,0 +1,1877 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Dashboard - Life Admin System</title>
+    <link rel="stylesheet" href="/static/styles/enhancements.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: #F5F5F7;
+        color: #1D1D1F;
+        line-height: 1.5;
+      }
+
+      /* Layout */
+      .app-container {
+        display: flex;
+        height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 240px;
+        background: #FFFFFF;
+        border-right: 1px solid #D2D2D7;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+      }
+
+      .sidebar-header {
+        padding: 24px 20px;
+        border-bottom: 1px solid #D2D2D7;
+      }
+
+      .sidebar-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1D1D1F;
+      }
+
+      .sidebar-nav {
+        flex: 1;
+        padding: 16px 0;
+        overflow-y: auto;
+      }
+
+      .nav-section {
+        margin-bottom: 24px;
+      }
+
+      .nav-section-title {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: #86868B;
+        padding: 8px 20px;
+        letter-spacing: 0.5px;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 20px;
+        color: #1D1D1F;
+        text-decoration: none;
+        font-size: 14px;
+        transition: background 0.15s;
+      }
+
+      .nav-item:hover {
+        background: #F5F5F7;
+      }
+
+      .nav-item.active {
+        background: #E8E8ED;
+        font-weight: 500;
+      }
+
+      /* Main content */
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      /* Top bar */
+      .top-bar {
+        background: #FFFFFF;
+        border-bottom: 1px solid #D2D2D7;
+        padding: 16px 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .breadcrumb {
+        font-size: 14px;
+        color: #86868B;
+      }
+
+      .breadcrumb a {
+        color: #0071E3;
+        text-decoration: none;
+      }
+
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+
+      /* Content area */
+      .content-area {
+        flex: 1;
+        overflow-y: auto;
+        padding: 24px 32px;
+      }
+
+      .content-header {
+        margin-bottom: 32px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+      }
+
+      .content-title {
+        font-size: 32px;
+        font-weight: 600;
+        color: #1D1D1F;
+        margin-bottom: 8px;
+      }
+
+      .content-subtitle {
+        font-size: 16px;
+        color: #86868B;
+      }
+
+      .ai-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .generate-ai-btn {
+        padding: 12px 24px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #FFFFFF;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        white-space: nowrap;
+      }
+
+      .generate-ai-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+      }
+
+      .generate-ai-btn:active {
+        transform: translateY(0);
+      }
+
+      .generate-ai-btn.category-intelligence {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3);
+      }
+
+      .generate-ai-btn.category-intelligence:hover {
+        box-shadow: 0 6px 16px rgba(245, 87, 108, 0.4);
+      }
+
+      /* Natural Language Search */
+      .nl-search-container {
+        margin-bottom: 32px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 16px;
+        padding: 24px;
+      }
+
+      .nl-search-box {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #FFFFFF;
+        border-radius: 12px;
+        padding: 12px 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .nl-search-icon {
+        font-size: 24px;
+        flex-shrink: 0;
+      }
+
+      .nl-search-input {
+        flex: 1;
+        border: none;
+        outline: none;
+        font-size: 16px;
+        color: #1D1D1F;
+        background: transparent;
+      }
+
+      .nl-search-input::placeholder {
+        color: #86868B;
+      }
+
+      .nl-search-btn {
+        padding: 8px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #FFFFFF;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+      }
+
+      .nl-search-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+      }
+
+      .nl-search-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .nl-search-results {
+        margin-top: 20px;
+        background: #FFFFFF;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .nl-search-explanation {
+        padding: 16px;
+        background: #F5F5F7;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        color: #1D1D1F;
+        line-height: 1.6;
+      }
+
+      .nl-search-explanation strong {
+        color: #667eea;
+      }
+
+      .nl-search-stats {
+        font-size: 14px;
+        color: #86868B;
+        margin-bottom: 16px;
+      }
+
+      .nl-result-card {
+        background: #FFFFFF;
+        border: 1px solid #D2D2D7;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+        transition: all 0.2s;
+        cursor: pointer;
+      }
+
+      .nl-result-card:hover {
+        border-color: #667eea;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        transform: translateY(-2px);
+      }
+
+      .nl-result-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .nl-result-icon {
+        font-size: 24px;
+        flex-shrink: 0;
+      }
+
+      .nl-result-info {
+        flex: 1;
+      }
+
+      .nl-result-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1D1D1F;
+        margin-bottom: 4px;
+      }
+
+      .nl-result-meta {
+        font-size: 13px;
+        color: #86868B;
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .nl-result-summary {
+        font-size: 14px;
+        color: #1D1D1F;
+        line-height: 1.6;
+        margin-bottom: 12px;
+      }
+
+      .nl-result-badges {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .nl-result-badge {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .nl-result-badge.category {
+        background: #E3F2FD;
+        color: #1976D2;
+      }
+
+      .nl-result-badge.type {
+        background: #F3E5F5;
+        color: #7B1FA2;
+      }
+
+      .nl-result-badge.vendor {
+        background: #E8F5E9;
+        color: #388E3C;
+      }
+
+      .nl-result-badge.amount {
+        background: #FFF3E0;
+        color: #F57C00;
+      }
+
+      .nl-result-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #E8E8ED;
+      }
+
+      .nl-action-btn {
+        padding: 6px 16px;
+        background: #FFFFFF;
+        border: 1px solid #D2D2D7;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: #1D1D1F;
+      }
+
+      .nl-action-btn:hover {
+        background: #F5F5F7;
+        border-color: #667eea;
+      }
+
+      .nl-action-btn.primary {
+        background: #667eea;
+        color: #FFFFFF;
+        border-color: #667eea;
+      }
+
+      .nl-action-btn.primary:hover {
+        background: #5568d3;
+      }
+
+      /* Preview Modal */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.75);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: #FFFFFF;
+        border-radius: 16px;
+        width: 90%;
+        max-width: 1200px;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 24px;
+        border-bottom: 1px solid #E8E8ED;
+      }
+
+      .modal-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1D1D1F;
+      }
+
+      .modal-close {
+        background: #F5F5F7;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 18px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .modal-close:hover {
+        background: #E8E8ED;
+      }
+
+      .modal-body {
+        flex: 1;
+        overflow: auto;
+        padding: 24px;
+      }
+
+      .preview-container {
+        text-align: center;
+      }
+
+      .preview-container img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .preview-container iframe {
+        width: 100%;
+        height: 70vh;
+        border: 1px solid #E8E8ED;
+        border-radius: 8px;
+      }
+
+      /* Category Selector */
+      .category-selector {
+        padding: 16px;
+        background: #F5F5F7;
+        border-radius: 8px;
+      }
+
+      .category-selector-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1D1D1F;
+        margin-bottom: 12px;
+        display: block;
+      }
+
+      .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 8px;
+      }
+
+      .category-option {
+        padding: 10px;
+        background: #FFFFFF;
+        border: 2px solid #D2D2D7;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
+      }
+
+      .category-option:hover {
+        border-color: #667eea;
+        background: #F5F7FF;
+      }
+
+      .category-option.selected {
+        background: #667eea;
+        color: #FFFFFF;
+        border-color: #667eea;
+      }
+
+      .category-save-btn {
+        margin-top: 16px;
+        padding: 10px 24px;
+        background: #667eea;
+        color: #FFFFFF;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        width: 100%;
+      }
+
+      .category-save-btn:hover {
+        background: #5568d3;
+      }
+
+      .category-save-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      /* Insight sections */
+      .insight-section {
+        margin-bottom: 32px;
+      }
+
+      .section-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .section-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #1D1D1F;
+      }
+
+      .section-badge {
+        padding: 4px 10px;
+        background: #E5E5EA;
+        color: #86868B;
+        font-size: 12px;
+        font-weight: 600;
+        border-radius: 12px;
+      }
+
+      .section-badge.high {
+        background: #FFEBEE;
+        color: #D32F2F;
+      }
+
+      .section-badge.medium {
+        background: #FFF3E0;
+        color: #F57C00;
+      }
+
+      .section-badge.low {
+        background: #E3F2FD;
+        color: #1976D2;
+      }
+
+      /* Filter buttons */
+      .filter-bar {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 32px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .filter-group {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .filter-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #86868B;
+        margin-right: 4px;
+      }
+
+      .filter-btn {
+        padding: 8px 16px;
+        background: #FFFFFF;
+        border: 1px solid #D2D2D7;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #1D1D1F;
+        cursor: pointer;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+
+      .filter-btn:hover {
+        border-color: #0071E3;
+        background: #F5F5F7;
+      }
+
+      .filter-btn.active {
+        background: #0071E3;
+        border-color: #0071E3;
+        color: #FFFFFF;
+      }
+
+      /* Insight cards */
+      .insights-grid {
+        display: grid;
+        gap: 16px;
+      }
+
+      .insight-card {
+        background: #FFFFFF;
+        border: 1px solid #D2D2D7;
+        border-radius: 12px;
+        padding: 20px 24px;
+        transition: all 0.15s;
+        cursor: pointer;
+      }
+
+      .insight-card:hover {
+        border-color: #0071E3;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .insight-card.expanded {
+        border-color: #0071E3;
+        box-shadow: 0 4px 16px rgba(0, 113, 227, 0.12);
+      }
+
+      .insight-card[data-hidden="true"] {
+        display: none;
+      }
+
+      .insight-header {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+
+      .insight-title-group {
+        flex: 1;
+      }
+
+      .insight-type {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: #86868B;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+      }
+
+      .insight-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1D1D1F;
+        margin-bottom: 8px;
+      }
+
+      .insight-description {
+        font-size: 14px;
+        color: #6E6E73;
+        line-height: 1.5;
+        margin-bottom: 16px;
+      }
+
+      .insight-action {
+        font-size: 13px;
+        color: #0071E3;
+        font-weight: 500;
+      }
+
+      .insight-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 12px;
+        border-top: 1px solid #F5F5F7;
+        margin-top: 12px;
+      }
+
+      .insight-meta {
+        font-size: 12px;
+        color: #86868B;
+      }
+
+      .dismiss-btn {
+        padding: 6px 14px;
+        background: transparent;
+        color: #86868B;
+        border: 1px solid #D2D2D7;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .dismiss-btn:hover {
+        background: #F5F5F7;
+        border-color: #0071E3;
+        color: #0071E3;
+      }
+
+      /* Empty state */
+      .empty-state {
+        background: #FFFFFF;
+        border: 1px solid #D2D2D7;
+        border-radius: 12px;
+        text-align: center;
+        padding: 60px 24px;
+      }
+
+      .empty-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.3;
+      }
+
+      .empty-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1D1D1F;
+        margin-bottom: 8px;
+      }
+
+      .empty-text {
+        font-size: 14px;
+        color: #86868B;
+        line-height: 1.5;
+      }
+
+      .ai-disabled {
+        background: #FFF3E0;
+        border: 1px solid #FFD54F;
+        border-radius: 12px;
+        padding: 20px 24px;
+        margin-bottom: 32px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .ai-disabled-icon {
+        font-size: 32px;
+      }
+
+      .ai-disabled-content {
+        flex: 1;
+      }
+
+      .ai-disabled-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #F57C00;
+        margin-bottom: 4px;
+      }
+
+      .ai-disabled-text {
+        font-size: 14px;
+        color: #6E6E73;
+      }
+
+      /* Expanded insight details */
+      .insight-details {
+        display: none;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #F5F5F7;
+      }
+
+      .insight-card.expanded .insight-details {
+        display: block;
+        animation: slideDown 0.3s ease-out;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .details-section {
+        margin-bottom: 20px;
+      }
+
+      .details-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #1D1D1F;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .metadata-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .metadata-item {
+        padding: 12px;
+        background: #F5F5F7;
+        border-radius: 8px;
+      }
+
+      .metadata-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: #86868B;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+      }
+
+      .metadata-value {
+        font-size: 14px;
+        font-weight: 500;
+        color: #1D1D1F;
+      }
+
+      .related-documents {
+        display: grid;
+        gap: 8px;
+      }
+
+      .related-doc {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: #F5F5F7;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #1D1D1F;
+        transition: all 0.15s;
+      }
+
+      .related-doc:hover {
+        background: #E8E8ED;
+        transform: translateX(4px);
+      }
+
+      .doc-icon {
+        font-size: 20px;
+      }
+
+      .doc-info {
+        flex: 1;
+      }
+
+      .doc-name {
+        font-size: 14px;
+        font-weight: 500;
+        color: #1D1D1F;
+        margin-bottom: 2px;
+      }
+
+      .doc-date {
+        font-size: 12px;
+        color: #86868B;
+      }
+
+      .expand-icon {
+        font-size: 14px;
+        color: #86868B;
+        transition: transform 0.3s;
+      }
+
+      .insight-card.expanded .expand-icon {
+        transform: rotate(180deg);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-title">Life Admin System</div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <div class="nav-section">
+            <div class="nav-section-title">Views</div>
+            <a href="/dashboard" class="nav-item active">
+              <span>Dashboard</span>
+            </a>
+            <a href="/actions" class="nav-item">
+              <span>Action Items</span>
+            </a>
+            <a href="/categories" class="nav-item">
+              <span>Categories</span>
+            </a>
+            <a href="/agents" class="nav-item">
+              <span>Agents</span>
+            </a>
+            <a href="/" class="nav-item">
+              <span>Vault</span>
+            </a>
+            <a href="/upload" class="nav-item">
+              <span>Upload</span>
+            </a>
+          </div>
+
+          <div class="nav-section">
+            <div class="nav-section-title">AI Tools</div>
+            <a href="#" class="nav-item" onclick="event.preventDefault(); triggerGmailSync()">
+              <span>Sync Gmail</span>
+            </a>
+            <a href="#" class="nav-item" onclick="event.preventDefault(); triggerGenerateSummaries()">
+              <span>Generate Summaries</span>
+            </a>
+            <a href="#" class="nav-item" onclick="event.preventDefault(); triggerCategorizeAll()">
+              <span>Categorize Documents</span>
+            </a>
+            <a href="#" class="nav-item" onclick="event.preventDefault(); showCategoryStats()">
+              <span>Category Stats</span>
+            </a>
+          </div>
+        </nav>
+      </aside>
+
+      <!-- Main content -->
+      <main class="main-content">
+        <!-- Top bar -->
+        <div class="top-bar">
+          <div class="breadcrumb">
+            <a href="/">Home</a> › Dashboard
+          </div>
+        </div>
+
+        <!-- Content area -->
+        <div class="content-area">
+          <div class="content-header">
+            <div>
+              <h1 class="content-title">Dashboard</h1>
+              <p class="content-subtitle">AI-powered insights and analysis from your documents</p>
+            </div>
+            <div class="ai-actions">
+              <button class="generate-ai-btn" onclick="generateAIInsights()">
+                ⚡ Generate AI Insights
+              </button>
+              <button class="generate-ai-btn category-intelligence" onclick="generateCategoryIntelligence()">
+                🎯 Category Intelligence
+              </button>
+            </div>
+          </div>
+
+          <!-- Natural Language Search -->
+          <div class="nl-search-container">
+            <div class="nl-search-box">
+              <span class="nl-search-icon">💬</span>
+              <input
+                type="text"
+                id="nl-search-input"
+                class="nl-search-input"
+                placeholder="Ask me anything... (e.g., 'show me everything related to my car', 'find electricity bills from 2025')"
+                onkeypress="handleNLSearchKeypress(event)"
+              />
+              <button class="nl-search-btn" onclick="performNLSearch()">Search</button>
+            </div>
+            <div id="nl-search-results" class="nl-search-results" style="display: none;"></div>
+          </div>
+
+          {% if insights %}
+          <!-- Filter bar -->
+          <div class="filter-bar">
+            <div class="filter-group">
+              <span class="filter-label">Type:</span>
+              <button class="filter-btn active" data-filter-type="all" onclick="filterInsights('type', 'all')">All</button>
+              <button class="filter-btn" data-filter-type="category_intelligence" onclick="filterInsights('type', 'category_intelligence')">🎯 Category Intelligence</button>
+              <button class="filter-btn" data-filter-type="anomaly" onclick="filterInsights('type', 'anomaly')">🚨 Anomalies</button>
+              <button class="filter-btn" data-filter-type="trend" onclick="filterInsights('type', 'trend')">📈 Trends</button>
+              <button class="filter-btn" data-filter-type="recommendation" onclick="filterInsights('type', 'recommendation')">💡 Recommendations</button>
+              <button class="filter-btn" data-filter-type="relationship" onclick="filterInsights('type', 'relationship')">🔗 Relationships</button>
+              <button class="filter-btn" data-filter-type="renewal" onclick="filterInsights('type', 'renewal')">📅 Renewals</button>
+              <button class="filter-btn" data-filter-type="pattern" onclick="filterInsights('type', 'pattern')">📊 Patterns</button>
+              <button class="filter-btn" data-filter-type="summary" onclick="filterInsights('type', 'summary')">📝 Summaries</button>
+            </div>
+            <div class="filter-group">
+              <span class="filter-label">Priority:</span>
+              <button class="filter-btn active" data-filter-priority="all" onclick="filterInsights('priority', 'all')">All</button>
+              <button class="filter-btn" data-filter-priority="high" onclick="filterInsights('priority', 'high')">High</button>
+              <button class="filter-btn" data-filter-priority="medium" onclick="filterInsights('priority', 'medium')">Medium</button>
+              <button class="filter-btn" data-filter-priority="low" onclick="filterInsights('priority', 'low')">Low</button>
+            </div>
+          </div>
+          {% endif %}
+
+          {% if not ai_enabled %}
+            <div class="ai-disabled">
+              <div class="ai-disabled-icon">⚠️</div>
+              <div class="ai-disabled-content">
+                <div class="ai-disabled-title">AI Features Disabled</div>
+                <div class="ai-disabled-text">Set ANTHROPIC_API_KEY in .env to enable insights and AI summaries</div>
+              </div>
+            </div>
+          {% endif %}
+
+          {% if insights %}
+            <!-- High Priority Insights -->
+            {% if high_priority %}
+            <div class="insight-section">
+              <div class="section-header">
+                <h2 class="section-title">Needs Attention</h2>
+                <span class="section-badge high">{{ high_priority|length }}</span>
+              </div>
+              <div class="insights-grid">
+                {% for insight in high_priority %}
+                <div class="insight-card"
+                     data-insight-id="{{ insight.id }}"
+                     data-insight-type="{{ insight.type }}"
+                     data-insight-priority="{{ insight.priority }}"
+                     onclick="toggleInsightDetails(event, '{{ insight.id }}')">
+                  <div class="insight-header">
+                    <div class="insight-title-group">
+                      <div class="insight-type">{{ insight.type }}</div>
+                      <h3 class="insight-title">{{ insight.title }}</h3>
+                    </div>
+                    <span class="expand-icon">▼</span>
+                  </div>
+                  <p class="insight-description">{{ insight.description }}</p>
+                  {% if insight.action %}
+                  <div class="insight-action">→ {{ insight.action }}</div>
+                  {% endif %}
+                  <div class="insight-footer">
+                    <span class="insight-meta">{{ insight.related_items|length }} related document{% if insight.related_items|length != 1 %}s{% endif %}</span>
+                    <button class="dismiss-btn" onclick="event.stopPropagation(); dismissInsight('{{ insight.id }}')">Dismiss</button>
+                  </div>
+
+                  <!-- Expanded details (loaded dynamically) -->
+                  <div class="insight-details" id="details-{{ insight.id }}">
+                    <div class="loading">Loading details...</div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
+
+            <!-- Medium Priority Insights -->
+            {% if medium_priority %}
+            <div class="insight-section">
+              <div class="section-header">
+                <h2 class="section-title">Worth Reviewing</h2>
+                <span class="section-badge medium">{{ medium_priority|length }}</span>
+              </div>
+              <div class="insights-grid">
+                {% for insight in medium_priority %}
+                <div class="insight-card"
+                     data-insight-id="{{ insight.id }}"
+                     data-insight-type="{{ insight.type }}"
+                     data-insight-priority="{{ insight.priority }}"
+                     onclick="toggleInsightDetails(event, '{{ insight.id }}')">
+                  <div class="insight-header">
+                    <div class="insight-title-group">
+                      <div class="insight-type">{{ insight.type }}</div>
+                      <h3 class="insight-title">{{ insight.title }}</h3>
+                    </div>
+                    <span class="expand-icon">▼</span>
+                  </div>
+                  <p class="insight-description">{{ insight.description }}</p>
+                  {% if insight.action %}
+                  <div class="insight-action">→ {{ insight.action }}</div>
+                  {% endif %}
+                  <div class="insight-footer">
+                    <span class="insight-meta">{{ insight.related_items|length }} related document{% if insight.related_items|length != 1 %}s{% endif %}</span>
+                    <button class="dismiss-btn" onclick="event.stopPropagation(); dismissInsight('{{ insight.id }}')">Dismiss</button>
+                  </div>
+
+                  <!-- Expanded details (loaded dynamically) -->
+                  <div class="insight-details" id="details-{{ insight.id }}">
+                    <div class="loading">Loading details...</div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
+
+            <!-- Low Priority Insights -->
+            {% if low_priority %}
+            <div class="insight-section">
+              <div class="section-header">
+                <h2 class="section-title">Informational</h2>
+                <span class="section-badge low">{{ low_priority|length }}</span>
+              </div>
+              <div class="insights-grid">
+                {% for insight in low_priority %}
+                <div class="insight-card"
+                     data-insight-id="{{ insight.id }}"
+                     data-insight-type="{{ insight.type }}"
+                     data-insight-priority="{{ insight.priority }}"
+                     onclick="toggleInsightDetails(event, '{{ insight.id }}')">
+                  <div class="insight-header">
+                    <div class="insight-title-group">
+                      <div class="insight-type">{{ insight.type }}</div>
+                      <h3 class="insight-title">{{ insight.title }}</h3>
+                    </div>
+                    <span class="expand-icon">▼</span>
+                  </div>
+                  <p class="insight-description">{{ insight.description }}</p>
+                  {% if insight.action %}
+                  <div class="insight-action">→ {{ insight.action }}</div>
+                  {% endif %}
+                  <div class="insight-footer">
+                    <span class="insight-meta">{{ insight.related_items|length }} related document{% if insight.related_items|length != 1 %}s{% endif %}</span>
+                    <button class="dismiss-btn" onclick="event.stopPropagation(); dismissInsight('{{ insight.id }}')">Dismiss</button>
+                  </div>
+
+                  <!-- Expanded details (loaded dynamically) -->
+                  <div class="insight-details" id="details-{{ insight.id }}">
+                    <div class="loading">Loading details...</div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
+
+          {% else %}
+            <div class="empty-state">
+              <div class="empty-icon">💡</div>
+              <div class="empty-title">No insights yet</div>
+              <div class="empty-text">
+                Insights are generated daily from your documents.<br/>
+                Upload documents and generate AI summaries to see patterns and recommendations.
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </main>
+    </div>
+
+    <script src="/static/js/enhancements.js"></script>
+    <script>
+      // Track current filters
+      let currentTypeFilter = 'all';
+      let currentPriorityFilter = 'all';
+      let expandedInsights = new Set();
+
+      // Filter insights
+      function filterInsights(filterType, value) {
+        // Update filter state
+        if (filterType === 'type') {
+          currentTypeFilter = value;
+          // Update active button
+          document.querySelectorAll('[data-filter-type]').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.filterType === value);
+          });
+        } else if (filterType === 'priority') {
+          currentPriorityFilter = value;
+          // Update active button
+          document.querySelectorAll('[data-filter-priority]').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.filterPriority === value);
+          });
+        }
+
+        // Apply filters to all insight cards
+        document.querySelectorAll('.insight-card').forEach(card => {
+          const type = card.dataset.insightType;
+          const priority = card.dataset.insightPriority;
+
+          const typeMatch = currentTypeFilter === 'all' || type === currentTypeFilter;
+          const priorityMatch = currentPriorityFilter === 'all' || priority === currentPriorityFilter;
+
+          card.setAttribute('data-hidden', !(typeMatch && priorityMatch));
+        });
+
+        // Show/hide section headers if all cards in section are hidden
+        document.querySelectorAll('.insight-section').forEach(section => {
+          const visibleCards = section.querySelectorAll('.insight-card:not([data-hidden="true"])');
+          section.style.display = visibleCards.length > 0 ? 'block' : 'none';
+        });
+      }
+
+      // Toggle insight details
+      async function toggleInsightDetails(event, insightId) {
+        // Don't expand if clicking dismiss button
+        if (event.target.classList.contains('dismiss-btn')) {
+          return;
+        }
+
+        const card = document.querySelector(`[data-insight-id="${insightId}"]`);
+        const detailsDiv = document.getElementById(`details-${insightId}`);
+
+        // Toggle expanded state
+        if (card.classList.contains('expanded')) {
+          card.classList.remove('expanded');
+          expandedInsights.delete(insightId);
+        } else {
+          card.classList.add('expanded');
+          expandedInsights.add(insightId);
+
+          // Load details if not already loaded
+          if (!detailsDiv.dataset.loaded) {
+            try {
+              const response = await fetch(`/insights/${insightId}/details`);
+              const data = await response.json();
+
+              if (data.ok) {
+                renderInsightDetails(detailsDiv, data);
+                detailsDiv.dataset.loaded = 'true';
+              } else {
+                detailsDiv.innerHTML = '<div class="error">Failed to load details</div>';
+              }
+            } catch (error) {
+              detailsDiv.innerHTML = '<div class="error">Error loading details</div>';
+            }
+          }
+        }
+      }
+
+      // Render insight details
+      function renderInsightDetails(container, data) {
+        const { insight, documents } = data;
+        const metadata = insight.metadata || {};
+
+        let html = '';
+
+        // Metadata section
+        if (Object.keys(metadata).length > 0) {
+          html += '<div class="details-section">';
+          html += '<h4 class="details-title">Details</h4>';
+          html += '<div class="metadata-grid">';
+
+          // Show relevant metadata based on insight type
+          if (metadata.vendor) {
+            html += `
+              <div class="metadata-item">
+                <div class="metadata-label">Vendor</div>
+                <div class="metadata-value">${escapeHtml(metadata.vendor)}</div>
+              </div>
+            `;
+          }
+
+          if (metadata.document_count) {
+            html += `
+              <div class="metadata-item">
+                <div class="metadata-label">Document Count</div>
+                <div class="metadata-value">${metadata.document_count}</div>
+              </div>
+            `;
+          }
+
+          if (metadata.period_days) {
+            html += `
+              <div class="metadata-item">
+                <div class="metadata-label">Time Period</div>
+                <div class="metadata-value">${metadata.period_days} days</div>
+              </div>
+            `;
+          }
+
+          if (metadata.days_until) {
+            html += `
+              <div class="metadata-item">
+                <div class="metadata-label">Days Until</div>
+                <div class="metadata-value">${metadata.days_until} days</div>
+              </div>
+            `;
+          }
+
+          if (metadata.date) {
+            html += `
+              <div class="metadata-item">
+                <div class="metadata-label">Date</div>
+                <div class="metadata-value">${escapeHtml(metadata.date)}</div>
+              </div>
+            `;
+          }
+
+          if (metadata.types && metadata.types.length > 0) {
+            html += `
+              <div class="metadata-item">
+                <div class="metadata-label">Document Types</div>
+                <div class="metadata-value">${metadata.types.join(', ')}</div>
+              </div>
+            `;
+          }
+
+          html += '</div></div>';
+        }
+
+        // Related documents section
+        if (documents && documents.length > 0) {
+          html += '<div class="details-section">';
+          html += '<h4 class="details-title">Related Documents</h4>';
+          html += '<div class="related-documents">';
+
+          documents.forEach(doc => {
+            const icon = getFileIcon(doc.content_type);
+            const date = new Date(doc.created_at).toLocaleDateString();
+            const summary = doc.summary;
+
+            html += `
+              <a href="/?id=${doc.id}" class="related-doc" onclick="event.stopPropagation()">
+                <div class="doc-icon">${icon}</div>
+                <div class="doc-info">
+                  <div class="doc-name">${escapeHtml(doc.filename)}</div>
+                  <div class="doc-date">${date}${summary && summary.vendor ? ` • ${escapeHtml(summary.vendor)}` : ''}${summary && summary.amount ? ` • ${escapeHtml(summary.amount)}` : ''}</div>
+                </div>
+              </a>
+            `;
+          });
+
+          html += '</div></div>';
+        }
+
+        container.innerHTML = html;
+      }
+
+      // Helper function to get file icon
+      function getFileIcon(contentType) {
+        if (contentType.includes('pdf')) return '📄';
+        if (contentType.includes('image')) return '🖼️';
+        if (contentType.includes('text')) return '📝';
+        return '📎';
+      }
+
+      // Helper function to escape HTML
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      // Generate AI insights
+      async function generateAIInsights() {
+        const button = document.querySelector('.generate-ai-btn:not(.category-intelligence)');
+        const originalText = button.textContent;
+
+        button.disabled = true;
+        button.textContent = '⏳ Analyzing...';
+
+        try {
+          const response = await fetch('/insights/generate-ai', {
+            method: 'POST',
+          });
+
+          const result = await response.json();
+
+          if (result.ok) {
+            Toast.success('AI Insights Generated', `Generated ${result.insights_generated} new insights`);
+            // Reload page after a short delay to show new insights
+            setTimeout(() => window.location.reload(), 1500);
+          } else {
+            Toast.error('Generation Failed', result.message || 'Unknown error');
+            button.disabled = false;
+            button.textContent = originalText;
+          }
+        } catch (error) {
+          Toast.error('Generation Failed', error.message);
+          button.disabled = false;
+          button.textContent = originalText;
+        }
+      }
+
+      // Generate category intelligence
+      async function generateCategoryIntelligence() {
+        const button = document.querySelector('.generate-ai-btn.category-intelligence');
+        const originalText = button.textContent;
+
+        button.disabled = true;
+        button.textContent = '⏳ Analyzing categories...';
+
+        try {
+          const response = await fetch('/categories/generate-intelligence', {
+            method: 'POST',
+          });
+
+          const result = await response.json();
+
+          if (result.ok) {
+            Toast.success('Category Intelligence Generated', `Generated ${result.insights_generated} category-specific insights`);
+            // Reload page after a short delay to show new insights
+            setTimeout(() => window.location.reload(), 1500);
+          } else {
+            Toast.error('Generation Failed', result.message || 'Unknown error');
+            button.disabled = false;
+            button.textContent = originalText;
+          }
+        } catch (error) {
+          Toast.error('Generation Failed', error.message);
+          button.disabled = false;
+          button.textContent = originalText;
+        }
+      }
+
+      // Natural Language Search
+      function handleNLSearchKeypress(event) {
+        if (event.key === 'Enter') {
+          performNLSearch();
+        }
+      }
+
+      async function performNLSearch() {
+        const input = document.getElementById('nl-search-input');
+        const query = input.value.trim();
+        const resultsContainer = document.getElementById('nl-search-results');
+        const searchBtn = document.querySelector('.nl-search-btn');
+
+        if (!query || query.length < 3) {
+          Toast.error('Invalid Query', 'Please enter at least 3 characters');
+          return;
+        }
+
+        // Show loading state
+        searchBtn.disabled = true;
+        searchBtn.textContent = 'Searching...';
+        resultsContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: #86868B;">🔍 Analyzing your query...</div>';
+        resultsContainer.style.display = 'block';
+
+        try {
+          const response = await fetch(`/search/nl?q=${encodeURIComponent(query)}`);
+          const result = await response.json();
+
+          if (result.ok) {
+            renderNLSearchResults(result);
+          } else {
+            resultsContainer.innerHTML = `<div style="text-align: center; padding: 20px; color: #D32F2F;">❌ ${escapeHtml(result.error || 'Search failed')}</div>`;
+          }
+        } catch (error) {
+          resultsContainer.innerHTML = `<div style="text-align: center; padding: 20px; color: #D32F2F;">❌ ${escapeHtml(error.message)}</div>`;
+        } finally {
+          searchBtn.disabled = false;
+          searchBtn.textContent = 'Search';
+        }
+      }
+
+      function renderNLSearchResults(result) {
+        const resultsContainer = document.getElementById('nl-search-results');
+
+        if (result.total_results === 0) {
+          resultsContainer.innerHTML = `
+            <div class="nl-search-explanation">
+              <strong>No results found</strong><br>
+              ${escapeHtml(result.explanation)}
+            </div>
+            <div style="text-align: center; padding: 40px; color: #86868B;">
+              <div style="font-size: 48px; margin-bottom: 16px;">📭</div>
+              <div style="font-size: 16px;">No documents match your query</div>
+              <div style="font-size: 14px; margin-top: 8px;">Try rephrasing your search or use different keywords</div>
+            </div>
+          `;
+          return;
+        }
+
+        let html = `
+          <div class="nl-search-explanation">
+            <strong>Search Understanding:</strong><br>
+            ${escapeHtml(result.explanation)}
+          </div>
+          <div class="nl-search-stats">
+            Found ${result.total_results} document${result.total_results === 1 ? '' : 's'}
+          </div>
+        `;
+
+        result.documents.forEach(doc => {
+          const icon = getFileIcon(doc.content_type, doc.filename);
+          const date = new Date(doc.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+          let badges = '';
+          if (doc.summary) {
+            if (doc.summary.category) {
+              badges += `<span class="nl-result-badge category">${getCategoryIcon(doc.summary.category)} ${escapeHtml(doc.summary.category)}</span>`;
+            }
+            if (doc.summary.type) {
+              badges += `<span class="nl-result-badge type">${escapeHtml(doc.summary.type)}</span>`;
+            }
+            if (doc.summary.vendor) {
+              badges += `<span class="nl-result-badge vendor">${escapeHtml(doc.summary.vendor)}</span>`;
+            }
+            if (doc.summary.amount) {
+              badges += `<span class="nl-result-badge amount">${escapeHtml(doc.summary.amount)}</span>`;
+            }
+          }
+
+          html += `
+            <div class="nl-result-card" onclick="window.location.href='/items/${doc.id}'" style="cursor: pointer;">
+              <div class="nl-result-header">
+                <span class="nl-result-icon">${icon}</span>
+                <div class="nl-result-info">
+                  <div class="nl-result-title">${escapeHtml(doc.filename)}</div>
+                  <div class="nl-result-meta">
+                    <span>${date}</span>
+                    ${doc.source_type ? `<span>${formatSourceType(doc.source_type)}</span>` : ''}
+                  </div>
+                </div>
+              </div>
+              ${doc.summary && doc.summary.summary_text ? `
+                <div class="nl-result-summary">${escapeHtml(doc.summary.summary_text)}</div>
+              ` : ''}
+              ${badges ? `<div class="nl-result-badges">${badges}</div>` : ''}
+              <div class="nl-result-actions" onclick="event.stopPropagation()">
+                <button class="nl-action-btn primary" onclick="previewDocument('${doc.id}', '${escapeHtml(doc.filename)}')">
+                  👁️ Preview
+                </button>
+                <button class="nl-action-btn" onclick="changeCategoryForDocument('${doc.id}', '${doc.summary?.category || 'none'}')">
+                  🏷️ Change Category
+                </button>
+                <button class="nl-action-btn" onclick="window.location.href='/download/${doc.id}'">
+                  ⬇️ Download
+                </button>
+              </div>
+            </div>
+          `;
+        });
+
+        resultsContainer.innerHTML = html;
+      }
+
+      function getCategoryIcon(category) {
+        const icons = {
+          'vehicle': '🚗',
+          'medical': '🏥',
+          'home': '🏠',
+          'utilities': '⚡',
+          'financial': '💰',
+          'insurance': '🛡️',
+          'employment': '💼',
+          'tax': '📋',
+          'legal': '⚖️',
+          'education': '🎓',
+          'travel': '✈️',
+          'shopping': '🛍️',
+          'government': '🏛️',
+          'personal': '👤',
+          'other': '📄'
+        };
+        return icons[category] || '📄';
+      }
+
+      function getFileIcon(contentType, filename) {
+        if (contentType) {
+          if (contentType.includes('pdf')) return '📄';
+          if (contentType.includes('image')) return '🖼️';
+          if (contentType.includes('email')) return '✉️';
+        }
+        return '📄';
+      }
+
+      function formatSourceType(sourceType) {
+        if (sourceType === 'email') return '✉️ Email';
+        if (sourceType === 'attachment') return '📎 Attachment';
+        return '📤 Upload';
+      }
+
+      // Preview Document Modal
+      async function previewDocument(itemId, filename) {
+        const modal = document.getElementById('preview-modal');
+        const title = document.getElementById('preview-title');
+        const body = document.getElementById('preview-body');
+
+        title.textContent = filename;
+        body.innerHTML = '<div style="text-align: center; padding: 40px; color: #86868B;">Loading preview...</div>';
+        modal.classList.add('active');
+
+        try {
+          const response = await fetch(`/preview/${itemId}`);
+          const result = await response.json();
+
+          if (result.ok) {
+            const contentType = result.content_type || '';
+
+            if (contentType.includes('image')) {
+              // Show image
+              body.innerHTML = `
+                <div class="preview-container">
+                  <img src="${result.url}" alt="${escapeHtml(filename)}" />
+                </div>
+              `;
+            } else if (contentType.includes('pdf')) {
+              // Show PDF in iframe
+              body.innerHTML = `
+                <div class="preview-container">
+                  <iframe src="${result.url}" title="${escapeHtml(filename)}"></iframe>
+                </div>
+              `;
+            } else {
+              // Unsupported type
+              body.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #86868B;">
+                  <div style="font-size: 48px; margin-bottom: 16px;">📄</div>
+                  <div style="font-size: 16px;">Preview not available for this file type</div>
+                  <div style="font-size: 14px; margin-top: 8px;">Click download to view the file</div>
+                  <button class="nl-action-btn primary" onclick="window.location.href='/download/${itemId}'" style="margin-top: 20px;">
+                    ⬇️ Download File
+                  </button>
+                </div>
+              `;
+            }
+          } else {
+            body.innerHTML = `<div style="text-align: center; padding: 40px; color: #D32F2F;">❌ Failed to load preview</div>`;
+          }
+        } catch (error) {
+          body.innerHTML = `<div style="text-align: center; padding: 40px; color: #D32F2F;">❌ ${escapeHtml(error.message)}</div>`;
+        }
+      }
+
+      function closePreviewModal(event) {
+        if (!event || event.target.id === 'preview-modal') {
+          document.getElementById('preview-modal').classList.remove('active');
+        }
+      }
+
+      // Category Change Modal
+      const CATEGORIES = [
+        { id: 'vehicle', name: 'Vehicle', icon: '🚗' },
+        { id: 'medical', name: 'Medical', icon: '🏥' },
+        { id: 'home', name: 'Home', icon: '🏠' },
+        { id: 'utilities', name: 'Utilities', icon: '⚡' },
+        { id: 'financial', name: 'Financial', icon: '💰' },
+        { id: 'insurance', name: 'Insurance', icon: '🛡️' },
+        { id: 'employment', name: 'Employment', icon: '💼' },
+        { id: 'tax', name: 'Tax', icon: '📋' },
+        { id: 'legal', name: 'Legal', icon: '⚖️' },
+        { id: 'education', name: 'Education', icon: '🎓' },
+        { id: 'travel', name: 'Travel', icon: '✈️' },
+        { id: 'shopping', name: 'Shopping', icon: '🛍️' },
+        { id: 'government', name: 'Government', icon: '🏛️' },
+        { id: 'personal', name: 'Personal', icon: '👤' },
+        { id: 'other', name: 'Other', icon: '📄' }
+      ];
+
+      let currentDocumentId = null;
+      let selectedCategory = null;
+
+      function changeCategoryForDocument(itemId, currentCategory) {
+        currentDocumentId = itemId;
+        selectedCategory = currentCategory === 'none' ? null : currentCategory;
+
+        const modal = document.getElementById('category-modal');
+        const grid = document.getElementById('category-grid');
+
+        // Populate category grid
+        grid.innerHTML = CATEGORIES.map(cat => `
+          <div class="category-option ${cat.id === selectedCategory ? 'selected' : ''}"
+               data-category="${cat.id}"
+               onclick="selectCategory('${cat.id}')">
+            <div>${cat.icon}</div>
+            <div>${cat.name}</div>
+          </div>
+        `).join('');
+
+        // Enable/disable save button
+        document.getElementById('category-save-btn').disabled = !selectedCategory;
+
+        modal.classList.add('active');
+      }
+
+      function selectCategory(categoryId) {
+        selectedCategory = categoryId;
+
+        // Update UI
+        document.querySelectorAll('.category-option').forEach(option => {
+          if (option.dataset.category === categoryId) {
+            option.classList.add('selected');
+          } else {
+            option.classList.remove('selected');
+          }
+        });
+
+        // Enable save button
+        document.getElementById('category-save-btn').disabled = false;
+      }
+
+      async function saveCategoryChange() {
+        if (!currentDocumentId || !selectedCategory) return;
+
+        const saveBtn = document.getElementById('category-save-btn');
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving...';
+
+        try {
+          const response = await fetch(`/items/${currentDocumentId}/category?new_category=${selectedCategory}`, {
+            method: 'PATCH',
+          });
+
+          const result = await response.json();
+
+          if (result.ok) {
+            Toast.success('Category Updated', `Document category changed to ${selectedCategory}`);
+            closeCategoryModal();
+            // Reload search results if visible
+            const searchInput = document.getElementById('nl-search-input');
+            if (searchInput && searchInput.value) {
+              performNLSearch();
+            }
+          } else {
+            Toast.error('Update Failed', result.message || 'Unknown error');
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save Category';
+          }
+        } catch (error) {
+          Toast.error('Update Failed', error.message);
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Save Category';
+        }
+      }
+
+      function closeCategoryModal(event) {
+        if (!event || event.target.id === 'category-modal') {
+          document.getElementById('category-modal').classList.remove('active');
+          currentDocumentId = null;
+          selectedCategory = null;
+        }
+      }
+
+      // Sidebar AI Tools functions
+      async function triggerGmailSync() {
+        Toast.info('Syncing Gmail', 'Fetching new emails...');
+
+        try {
+          const response = await fetch('/gmail/sync', {
+            method: 'POST',
+          });
+
+          const result = await response.json();
+
+          if (result.ok) {
+            Toast.success('Gmail Synced', result.message || 'Gmail sync completed successfully');
+            // Reload after a short delay to show new documents
+            setTimeout(() => window.location.reload(), 1500);
+          } else {
+            Toast.error('Sync Failed', result.message || 'Unknown error');
+          }
+        } catch (error) {
+          Toast.error('Sync Failed', error.message);
+        }
+      }
+
+      async function triggerGenerateSummaries() {
+        if (!confirm('Generate AI summaries for all documents without summaries?\n\nThis may take several minutes depending on how many documents need processing.')) {
+          return;
+        }
+
+        Toast.info('Generating Summaries', 'Processing documents...');
+
+        try {
+          const response = await fetch('/summaries/generate-all', {
+            method: 'POST',
+          });
+
+          const result = await response.json();
+
+          if (result.ok) {
+            Toast.success('Summaries Generated', `Successfully generated ${result.successful} summaries. ${result.failed} failed.`);
+          } else {
+            Toast.error('Generation Failed', result.message || 'Unknown error');
+          }
+        } catch (error) {
+          Toast.error('Generation Failed', error.message);
+        }
+      }
+
+      async function triggerCategorizeAll() {
+        if (!confirm('Categorize all uncategorized documents?\n\nThis will analyze documents and assign them to life admin categories.')) {
+          return;
+        }
+
+        Toast.info('Categorizing', 'Analyzing documents...');
+
+        try {
+          const response = await fetch('/categories/categorize-all', {
+            method: 'POST',
+          });
+
+          const result = await response.json();
+
+          if (result.ok) {
+            Toast.success('Documents Categorized', `Categorized ${result.categorized} documents`);
+          } else {
+            Toast.error('Categorization Failed', result.message || 'Unknown error');
+          }
+        } catch (error) {
+          Toast.error('Categorization Failed', error.message);
+        }
+      }
+
+      async function showCategoryStats() {
+        Toast.info('Loading Stats', 'Fetching category statistics...');
+
+        try {
+          const response = await fetch('/categories/stats');
+          const result = await response.json();
+
+          if (result.ok) {
+            let statsMessage = `Total Categories: ${result.categories.length}\n`;
+            statsMessage += `Uncategorized Documents: ${result.uncategorized}\n\n`;
+            statsMessage += 'Category Breakdown:\n';
+
+            result.categories.forEach(cat => {
+              statsMessage += `  ${cat.category}: ${cat.count} documents\n`;
+            });
+
+            alert(statsMessage);
+          } else {
+            Toast.error('Stats Failed', result.message || 'Unknown error');
+          }
+        } catch (error) {
+          Toast.error('Stats Failed', error.message);
+        }
+      }
+    </script>
+
+    <!-- Preview Modal -->
+    <div id="preview-modal" class="modal-overlay" onclick="closePreviewModal(event)">
+      <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+          <span class="modal-title" id="preview-title">Document Preview</span>
+          <button class="modal-close" onclick="closePreviewModal()">✕</button>
+        </div>
+        <div class="modal-body" id="preview-body">
+          <div class="preview-container">
+            Loading preview...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Selector Modal -->
+    <div id="category-modal" class="modal-overlay" onclick="closeCategoryModal(event)">
+      <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+          <span class="modal-title">Change Document Category</span>
+          <button class="modal-close" onclick="closeCategoryModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="category-selector">
+            <label class="category-selector-label">Select a category:</label>
+            <div class="category-grid" id="category-grid">
+              <!-- Categories will be populated by JavaScript -->
+            </div>
+            <button class="category-save-btn" id="category-save-btn" onclick="saveCategoryChange()" disabled>
+              Save Category
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
