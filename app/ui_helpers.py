@@ -6,6 +6,10 @@ Handles title normalization and date formatting.
 from datetime import datetime, timezone
 from pathlib import Path
 import re
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from app.models import Item, AISummary
 
 
 def normalize_title(filename: str, source_type: str, created_at: datetime) -> str:
@@ -51,6 +55,106 @@ def normalize_title(filename: str, source_type: str, created_at: datetime) -> st
     title = re.sub(r'\s+', ' ', title).strip()
 
     return title if title else "Untitled"
+
+
+def get_display_title(item: "Item") -> str:
+    """
+    Get the display title for an item.
+
+    Uses custom display_title if set, otherwise computes from filename.
+    This is the primary function for displaying item titles in the UI.
+    """
+    if item.display_title:
+        return item.display_title
+    return normalize_title(item.original_filename, item.source_type, item.created_at)
+
+
+def generate_smart_title(item: "Item", ai_summary: "AISummary") -> str:
+    """
+    Generate a smart title from AI summary data.
+
+    Format: "Vendor - Type - Amount - Date"
+    Falls back gracefully when data is missing:
+    - "Vendor - Type - Date" (no amount)
+    - "Type - Date" (no vendor)
+    - "Vendor - Type" (no date/amount)
+    - summary_text (if available)
+    - computed title (ultimate fallback)
+
+    Args:
+        item: The Item object
+        ai_summary: The AISummary object with extracted data
+
+    Returns:
+        A formatted title string (max 200 chars)
+    """
+    if not ai_summary:
+        return normalize_title(item.original_filename, item.source_type, item.created_at)
+
+    parts = []
+
+    # Add vendor if available
+    if ai_summary.extracted_vendor:
+        parts.append(ai_summary.extracted_vendor)
+
+    # Add document type if available
+    if ai_summary.document_type:
+        parts.append(ai_summary.document_type)
+
+    # Add amount if available and > €10 (filter trivial amounts)
+    if ai_summary.extracted_amount:
+        amount_str = ai_summary.extracted_amount
+        # Try to parse amount to check if it's significant
+        # Handle formats like "€45.90", "$45.90", "45.90", etc.
+        import re
+        amount_match = re.search(r'[\d,]+\.?\d*', amount_str)
+        if amount_match:
+            try:
+                amount_value = float(amount_match.group().replace(',', ''))
+                # Only include if amount is significant (> €10)
+                if amount_value > 10:
+                    parts.append(amount_str)
+            except ValueError:
+                # If parsing fails, include it anyway
+                parts.append(amount_str)
+        else:
+            # If no numeric value found, include the string anyway
+            parts.append(amount_str)
+
+    # Add date if available (short format: "3 Jan 2026")
+    if ai_summary.extracted_date:
+        date_str = ai_summary.extracted_date
+        # Try to parse and format the date
+        try:
+            # Common date formats to try
+            for fmt in ["%Y-%m-%d", "%d/%m/%Y", "%m/%d/%Y", "%d-%m-%Y", "%Y/%m/%d"]:
+                try:
+                    dt = datetime.strptime(date_str, fmt)
+                    # Format as "3 Jan 2026"
+                    date_str = dt.strftime("%-d %b %Y").lstrip("0")
+                    break
+                except ValueError:
+                    continue
+        except:
+            pass  # Keep original date string if parsing fails
+
+        parts.append(date_str)
+
+    # Build the title
+    if parts:
+        title = " - ".join(parts)
+    elif ai_summary.summary_text:
+        # Fall back to summary text if no structured data
+        title = ai_summary.summary_text
+    else:
+        # Ultimate fallback to computed title
+        title = normalize_title(item.original_filename, item.source_type, item.created_at)
+
+    # Truncate to 200 characters max
+    if len(title) > 200:
+        title = title[:197] + "..."
+
+    return title
 
 
 def format_date_short(dt: datetime) -> str:

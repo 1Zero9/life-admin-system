@@ -3,132 +3,191 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Upload - Vault</title>
+    <title>Upload - Life Admin System</title>
+    <link rel="stylesheet" href="/static/styles/theme.css" />
+    <link rel="stylesheet" href="/static/styles/enhancements.css" />
     <style>
-      * { box-sizing: border-box; }
-
-      body {
-        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+      * {
+        box-sizing: border-box;
         margin: 0;
         padding: 0;
-        background: #fafafa;
-        color: #333;
-        line-height: 1.6;
       }
 
-      .container {
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: var(--gray-50);
+        color: var(--gray-900);
+        line-height: 1.5;
+      }
+
+      .app-container {
+        display: flex;
+        height: 100vh;
+      }
+
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .content-area {
+        flex: 1;
+        overflow-y: auto;
+        padding: var(--spacing-xl);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .upload-container {
         max-width: 600px;
-        margin: 0 auto;
-        padding: 32px 24px;
+        width: 100%;
       }
 
-      /* Header */
-      header {
-        margin-bottom: 32px;
-      }
-
-      h1 {
-        font-size: 20px;
-        font-weight: 500;
-        margin: 0 0 8px 0;
-        color: #333;
-      }
-
-      .back-link {
-        font-size: 14px;
-        color: #666;
-        text-decoration: none;
-      }
-
-      .back-link:hover {
-        color: #333;
-      }
-
-      /* Upload form */
       .upload-card {
-        background: #fff;
-        border: 1px solid #ddd;
-        border-radius: 12px;
-        padding: 32px;
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-2xl);
+        box-shadow: var(--shadow-lg);
+        animation: fadeIn 0.4s ease-out;
+      }
+
+      .upload-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--gray-900);
+        margin-bottom: var(--spacing-sm);
+        background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-700) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .upload-subtitle {
+        font-size: 14px;
+        color: var(--gray-500);
+        margin-bottom: var(--spacing-xl);
       }
 
       .form-group {
-        margin-bottom: 24px;
+        margin-bottom: var(--spacing-lg);
       }
 
       label {
         display: block;
         font-size: 14px;
-        color: #666;
-        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--gray-700);
+        margin-bottom: var(--spacing-sm);
       }
 
       input[type="file"] {
         width: 100%;
-        padding: 12px;
+        padding: 48px 24px;
         font-size: 14px;
-        border: 2px dashed #ddd;
-        border-radius: 8px;
-        background: #fafafa;
+        border: 2px dashed var(--gray-300);
+        border-radius: var(--radius-md);
+        background: var(--gray-50);
         cursor: pointer;
         font-family: inherit;
+        transition: all var(--transition-fast);
+        text-align: center;
+        color: var(--gray-600);
       }
 
       input[type="file"]:hover {
-        border-color: #999;
+        border-color: var(--primary);
+        background: var(--primary-light);
       }
 
-      button {
+      input[type="file"]:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+      }
+
+      .upload-button {
         width: 100%;
-        padding: 12px 24px;
+        padding: 14px 24px;
         font-size: 15px;
-        font-weight: 500;
-        color: #fff;
-        background: #333;
+        font-weight: 600;
+        color: white;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%);
         border: none;
-        border-radius: 8px;
+        border-radius: var(--radius-md);
         cursor: pointer;
         font-family: inherit;
-        transition: background 0.2s;
+        transition: all var(--transition-fast);
+        box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
       }
 
-      button:hover {
-        background: #000;
+      .upload-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 113, 227, 0.4);
       }
 
-      button:active {
-        transform: translateY(1px);
+      .upload-button:active {
+        transform: translateY(0);
       }
 
       .help-text {
         font-size: 13px;
-        color: #999;
-        margin-top: 24px;
-        line-height: 1.8;
+        color: var(--gray-500);
+        margin-top: var(--spacing-lg);
+        padding: var(--spacing-md);
+        background: var(--gray-50);
+        border-radius: var(--radius-md);
+        line-height: 1.6;
+        border-left: 3px solid var(--primary);
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <header>
-        <a href="/" class="back-link">← Back to vault</a>
-        <h1>Upload document</h1>
-      </header>
+    <div class="app-container">
+      <!-- Sidebar Component -->
+      {% include '_sidebar.html' %}
 
-      <div class="upload-card">
-        <form action="/ui/upload" method="post" enctype="multipart/form-data">
-          <div class="form-group">
-            <label for="file">Choose a file</label>
-            <input type="file" id="file" name="file" required />
+      <!-- Main content -->
+      <main class="main-content">
+        <!-- Header Component -->
+        {% set breadcrumb = [{'label': 'Home', 'url': '/'}, {'label': 'Upload', 'url': '/upload'}] %}
+        {% include '_header.html' %}
+
+        <!-- Content area -->
+        <div class="content-area">
+          <div class="upload-container">
+            <div class="upload-card">
+              <h1 class="upload-title">Upload Document</h1>
+              <p class="upload-subtitle">Add documents to your vault with zero friction</p>
+
+              <form action="/ui/upload" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                  <label for="file">Choose a file or drag and drop</label>
+                  <input type="file" id="file" name="file" required />
+                </div>
+
+                <button type="submit" class="upload-button">Upload to Vault</button>
+              </form>
+
+              <div class="help-text">
+                📁 Documents are stored permanently and become searchable immediately.<br>
+                🔒 Your documents are securely stored in Cloudflare R2.
+              </div>
+            </div>
           </div>
-
-          <button type="submit">Upload</button>
-        </form>
-
-        <div class="help-text">
-          Documents are stored permanently and become searchable immediately.
         </div>
-      </div>
+      </main>
     </div>
+
+    <script src="/static/js/enhancements.js"></script>
+    <script>
+      // Mobile sidebar toggle
+      function toggleMobileSidebar() {
+        document.querySelector('.sidebar').classList.toggle('mobile-open');
+      }
+    </script>
   </body>
 </html>

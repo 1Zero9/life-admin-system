@@ -12,6 +12,7 @@ class Item(Base):
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     original_filename = Column(String, nullable=False)
+    display_title = Column(String, nullable=True)  # Custom/smart display title (NULL = use computed title)
     content_type = Column(String, nullable=False)
     bucket = Column(String, nullable=False)
     object_key = Column(String, nullable=False)

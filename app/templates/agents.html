@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Agent Portfolio - Life Admin System</title>
+    <link rel="stylesheet" href="/static/styles/theme.css" />
     <link rel="stylesheet" href="/static/styles/enhancements.css" />
     <style>
       * {
@@ -14,78 +15,16 @@
 
       body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        background: #F5F5F7;
-        color: #1D1D1F;
+        background: var(--gray-50);
+        color: var(--gray-900);
         line-height: 1.5;
       }
 
-      /* Layout */
       .app-container {
         display: flex;
         height: 100vh;
       }
 
-      /* Sidebar */
-      .sidebar {
-        width: 240px;
-        background: #FFFFFF;
-        border-right: 1px solid #D2D2D7;
-        display: flex;
-        flex-direction: column;
-        flex-shrink: 0;
-      }
-
-      .sidebar-header {
-        padding: 24px 20px;
-        border-bottom: 1px solid #D2D2D7;
-      }
-
-      .sidebar-title {
-        font-size: 18px;
-        font-weight: 600;
-        color: #1D1D1F;
-      }
-
-      .sidebar-nav {
-        flex: 1;
-        padding: 16px 0;
-        overflow-y: auto;
-      }
-
-      .nav-section {
-        margin-bottom: 24px;
-      }
-
-      .nav-section-title {
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        color: #86868B;
-        padding: 8px 20px;
-        letter-spacing: 0.5px;
-      }
-
-      .nav-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 8px 20px;
-        color: #1D1D1F;
-        text-decoration: none;
-        font-size: 14px;
-        transition: background 0.15s;
-      }
-
-      .nav-item:hover {
-        background: #F5F5F7;
-      }
-
-      .nav-item.active {
-        background: #E8E8ED;
-        font-weight: 500;
-      }
-
-      /* Main content */
       .main-content {
         flex: 1;
         display: flex;
@@ -93,26 +32,10 @@
         overflow: hidden;
       }
 
-      /* Top bar */
-      .top-bar {
-        background: #FFFFFF;
-        border-bottom: 1px solid #D2D2D7;
-        padding: 16px 32px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-
-      .page-title {
-        font-size: 24px;
-        font-weight: 600;
-      }
-
-      /* Content area */
       .content-area {
         flex: 1;
         overflow-y: auto;
-        padding: 32px;
+        padding: var(--spacing-xl);
       }
 
       /* Stats cards */
@@ -120,36 +43,47 @@
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 16px;
-        margin-bottom: 32px;
+        margin-bottom: var(--spacing-xl);
       }
 
       .stat-card {
         background: white;
         padding: 20px;
-        border-radius: 12px;
-        border: 1px solid #D2D2D7;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--gray-200);
+        box-shadow: var(--shadow-sm);
+        transition: all var(--transition-fast);
+      }
+
+      .stat-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
       }
 
       .stat-value {
         font-size: 32px;
         font-weight: 700;
-        color: #0071E3;
         margin-bottom: 4px;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
 
       .stat-label {
         font-size: 13px;
-        color: #86868B;
+        color: var(--gray-500);
         font-weight: 500;
       }
 
       /* Migration progress */
       .progress-section {
         background: white;
-        padding: 24px;
-        border-radius: 12px;
-        border: 1px solid #D2D2D7;
-        margin-bottom: 32px;
+        padding: var(--spacing-lg);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--gray-200);
+        margin-bottom: var(--spacing-xl);
+        box-shadow: var(--shadow-sm);
       }
 
       .progress-header {
@@ -167,39 +101,39 @@
       .progress-percentage {
         font-size: 14px;
         font-weight: 600;
-        color: #0071E3;
+        color: var(--primary);
       }
 
       .progress-bar {
         height: 8px;
-        background: #F5F5F7;
-        border-radius: 4px;
+        background: var(--gray-100);
+        border-radius: var(--radius-sm);
         overflow: hidden;
       }
 
       .progress-fill {
         height: 100%;
-        background: linear-gradient(90deg, #0071E3, #00C7BE);
-        border-radius: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--accent-green));
+        border-radius: var(--radius-sm);
         transition: width 0.3s ease;
       }
 
       .progress-info {
         margin-top: 12px;
         font-size: 13px;
-        color: #86868B;
+        color: var(--gray-500);
       }
 
       /* Agent cards */
       .agents-section {
-        margin-bottom: 32px;
+        margin-bottom: var(--spacing-xl);
       }
 
       .section-header {
         font-size: 18px;
         font-weight: 600;
         margin-bottom: 16px;
-        color: #1D1D1F;
+        color: var(--gray-900);
       }
 
       .agent-grid {
@@ -210,15 +144,18 @@
 
       .agent-card {
         background: white;
-        padding: 24px;
-        border-radius: 12px;
-        border: 1px solid #D2D2D7;
-        transition: transform 0.2s, box-shadow 0.2s;
+        padding: var(--spacing-lg);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--gray-200);
+        transition: all var(--transition-fast);
+        box-shadow: var(--shadow-sm);
+        animation: fadeIn 0.3s ease-out;
       }
 
       .agent-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--shadow-md);
+        border-color: var(--primary);
       }
 
       .agent-header {
@@ -231,15 +168,15 @@
       .agent-name {
         font-size: 16px;
         font-weight: 600;
-        color: #1D1D1F;
+        color: var(--gray-900);
       }
 
       .agent-version {
         font-size: 12px;
-        color: #86868B;
-        background: #F5F5F7;
+        color: var(--gray-500);
+        background: var(--gray-100);
         padding: 4px 8px;
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
       }
 
       .agent-category {
@@ -247,16 +184,16 @@
         font-size: 11px;
         font-weight: 600;
         text-transform: uppercase;
-        color: #0071E3;
-        background: #E8F4FF;
+        color: var(--primary);
+        background: var(--primary-light);
         padding: 4px 8px;
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         margin-bottom: 12px;
       }
 
       .agent-description {
         font-size: 14px;
-        color: #515154;
+        color: var(--gray-600);
         margin-bottom: 16px;
         line-height: 1.5;
       }
@@ -265,7 +202,7 @@
         display: flex;
         gap: 16px;
         padding-top: 16px;
-        border-top: 1px solid #F5F5F7;
+        border-top: 1px solid var(--gray-100);
       }
 
       .meta-item {
@@ -275,37 +212,37 @@
       }
 
       .meta-label {
-        color: #86868B;
+        color: var(--gray-500);
         margin-bottom: 2px;
       }
 
       .meta-value {
-        color: #1D1D1F;
+        color: var(--gray-900);
         font-weight: 500;
       }
 
       .license-badge {
         display: inline-block;
         padding: 4px 8px;
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         font-size: 11px;
         font-weight: 600;
         text-transform: uppercase;
       }
 
       .license-personal {
-        background: #E8F4FF;
-        color: #0071E3;
+        background: var(--primary-light);
+        color: var(--primary);
       }
 
       .license-premium {
         background: #FFF3E0;
-        color: #FF9500;
+        color: var(--accent-orange);
       }
 
       .license-free {
-        background: #F0F0F5;
-        color: #515154;
+        background: var(--gray-100);
+        color: var(--gray-600);
       }
 
       /* Empty state */
@@ -313,13 +250,14 @@
         text-align: center;
         padding: 64px 32px;
         background: white;
-        border-radius: 12px;
-        border: 1px solid #D2D2D7;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--gray-200);
       }
 
       .empty-state-icon {
         font-size: 48px;
         margin-bottom: 16px;
+        opacity: 0.3;
       }
 
       .empty-state-title {
@@ -330,47 +268,21 @@
 
       .empty-state-text {
         font-size: 14px;
-        color: #86868B;
+        color: var(--gray-500);
       }
     </style>
   </head>
   <body>
     <div class="app-container">
-      <!-- Sidebar -->
-      <div class="sidebar">
-        <div class="sidebar-header">
-          <div class="sidebar-title">Life Admin</div>
-        </div>
-        <nav class="sidebar-nav">
-          <div class="nav-section">
-            <div class="nav-section-title">Overview</div>
-            <a href="/" class="nav-item">Vault</a>
-            <a href="/dashboard" class="nav-item">Dashboard</a>
-            <a href="/categories" class="nav-item">Categories</a>
-            <a href="/agents" class="nav-item active">Agents</a>
-          </div>
-          <div class="nav-section">
-            <div class="nav-section-title">Insights</div>
-            <a href="/actions" class="nav-item">Actions</a>
-          </div>
-
-          <div class="nav-section">
-            <div class="nav-section-title">Help</div>
-            <a href="/entities-manage" class="nav-item">
-              <span>Manage Entities</span>
-            </a>
-            <a href="/docs/" class="nav-item">
-              <span>📚 Documentation</span>
-            </a>
-          </div>
-        </nav>
-      </div>
+      <!-- Sidebar Component -->
+      {% include '_sidebar.html' %}
 
       <!-- Main Content -->
-      <div class="main-content">
-        <div class="top-bar">
-          <h1 class="page-title">Agent Portfolio</h1>
-        </div>
+      <main class="main-content">
+        <!-- Header Component -->
+        {% set breadcrumb = [{'label': 'Home', 'url': '/'}, {'label': 'Agents', 'url': '/agents'}] %}
+        {% set page_title = 'Agent Portfolio' %}
+        {% include '_header.html' %}
 
         <div class="content-area">
           <!-- Stats -->
@@ -450,7 +362,15 @@
             </div>
           {% endif %}
         </div>
-      </div>
+      </main>
     </div>
+
+    <script src="/static/js/enhancements.js"></script>
+    <script>
+      // Mobile sidebar toggle
+      function toggleMobileSidebar() {
+        document.querySelector('.sidebar').classList.toggle('mobile-open');
+      }
+    </script>
   </body>
 </html>

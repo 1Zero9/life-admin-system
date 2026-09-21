@@ -1,0 +1,256 @@
+<!-- Unified Sidebar Component -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="logo-container">
+      <div class="logo-icon">📁</div>
+      <div class="logo-text">
+        <div class="logo-title">Life Admin</div>
+        <div class="logo-subtitle">Document Intelligence</div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <!-- Main Navigation -->
+    <div class="nav-section">
+      <div class="nav-section-title">Navigation</div>
+      <a href="/dashboard" class="nav-item {% if request.path == '/dashboard' %}active{% endif %}">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">Dashboard</span>
+      </a>
+      <a href="/?source=all" class="nav-item {% if request.path == '/' %}active{% endif %}">
+        <span class="nav-icon">🗄️</span>
+        <span class="nav-label">Vault</span>
+        {% if counts and counts.all %}
+        <span class="nav-count">{{ counts.all }}</span>
+        {% endif %}
+      </a>
+      <a href="/actions" class="nav-item {% if request.path == '/actions' %}active{% endif %}">
+        <span class="nav-icon">⚡</span>
+        <span class="nav-label">Actions</span>
+        {% if action_count and action_count > 0 %}
+        <span class="nav-count badge-warning">{{ action_count }}</span>
+        {% endif %}
+      </a>
+    </div>
+
+    <!-- Intelligence -->
+    <div class="nav-section">
+      <div class="nav-section-title">Intelligence</div>
+      <a href="/categories" class="nav-item {% if request.path == '/categories' or request.path.startswith('/category/') %}active{% endif %}">
+        <span class="nav-icon">🏷️</span>
+        <span class="nav-label">Categories</span>
+      </a>
+      <a href="/agents" class="nav-item {% if request.path == '/agents' %}active{% endif %}">
+        <span class="nav-icon">🤖</span>
+        <span class="nav-label">Agents</span>
+      </a>
+      <a href="/entities-manage" class="nav-item {% if request.path == '/entities-manage' %}active{% endif %}">
+        <span class="nav-icon">👥</span>
+        <span class="nav-label">Entities</span>
+      </a>
+    </div>
+
+    <!-- Tools -->
+    <div class="nav-section">
+      <div class="nav-section-title">Tools</div>
+      <a href="/upload" class="nav-item">
+        <span class="nav-icon">⬆️</span>
+        <span class="nav-label">Upload</span>
+      </a>
+      <a href="/docs/" class="nav-item" target="_blank">
+        <span class="nav-icon">📚</span>
+        <span class="nav-label">Docs</span>
+        <span class="nav-external">↗</span>
+      </a>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button class="btn btn-primary btn-upload" onclick="showUploadModal()" style="width: 100%;">
+      <span>⬆️</span>
+      <span>Quick Upload</span>
+    </button>
+  </div>
+</aside>
+
+<style>
+/* Modern Sidebar Styles */
+.sidebar {
+  width: 260px;
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%);
+  border-right: 1px solid var(--gray-200);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  flex-shrink: 0;
+}
+
+.sidebar-header {
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px rgba(0, 113, 227, 0.2);
+}
+
+.logo-text {
+  flex: 1;
+}
+
+.logo-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gray-900);
+  line-height: 1.2;
+}
+
+.logo-subtitle {
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-top: 2px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-md) 0;
+}
+
+.nav-section {
+  margin-bottom: var(--spacing-lg);
+  padding: 0 var(--spacing-md);
+}
+
+.nav-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--gray-500);
+  padding: var(--spacing-sm) var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: var(--gray-700);
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  position: relative;
+  margin-bottom: 2px;
+}
+
+.nav-item:hover {
+  background: var(--gray-100);
+  color: var(--gray-900);
+  transform: translateX(2px);
+}
+
+.nav-item.active {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%);
+  color: white;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 113, 227, 0.3);
+}
+
+.nav-item.active .nav-icon {
+  filter: brightness(0) invert(1);
+}
+
+.nav-icon {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  flex-shrink: 0;
+}
+
+.nav-label {
+  flex: 1;
+}
+
+.nav-count {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  background: var(--gray-200);
+  color: var(--gray-700);
+  border-radius: var(--radius-full);
+  min-width: 24px;
+  text-align: center;
+}
+
+.nav-item.active .nav-count {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.nav-count.badge-warning {
+  background: var(--accent-orange);
+  color: white;
+}
+
+.nav-external {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.sidebar-footer {
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--gray-200);
+}
+
+.btn-upload {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%);
+  border: none;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+}
+
+.btn-upload:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 113, 227, 0.4);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: -260px;
+    top: 0;
+    bottom: 0;
+    z-index: var(--z-overlay);
+    transition: left var(--transition-base);
+    box-shadow: none;
+  }
+
+  .sidebar.mobile-open {
+    left: 0;
+    box-shadow: 2px 0 16px rgba(0, 0, 0, 0.15);
+  }
+}
+</style>

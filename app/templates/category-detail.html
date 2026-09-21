@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>{{ category.name }} - Life Admin System</title>
+    <link rel="stylesheet" href="/static/styles/theme.css" />
     <link rel="stylesheet" href="/static/styles/enhancements.css" />
     <style>
       * {
@@ -14,72 +15,14 @@
 
       body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        background: #F5F5F7;
-        color: #1D1D1F;
+        background: var(--gray-50);
+        color: var(--gray-900);
         line-height: 1.5;
       }
 
       .app-container {
         display: flex;
         height: 100vh;
-      }
-
-      .sidebar {
-        width: 240px;
-        background: #FFFFFF;
-        border-right: 1px solid #D2D2D7;
-        display: flex;
-        flex-direction: column;
-        flex-shrink: 0;
-      }
-
-      .sidebar-header {
-        padding: 24px 20px;
-        border-bottom: 1px solid #D2D2D7;
-      }
-
-      .sidebar-title {
-        font-size: 18px;
-        font-weight: 600;
-        color: #1D1D1F;
-      }
-
-      .sidebar-nav {
-        flex: 1;
-        padding: 16px 0;
-        overflow-y: auto;
-      }
-
-      .nav-section {
-        margin-bottom: 24px;
-      }
-
-      .nav-section-title {
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        color: #86868B;
-        padding: 8px 20px;
-        letter-spacing: 0.5px;
-      }
-
-      .nav-item {
-        display: flex;
-        align-items: center;
-        padding: 8px 20px;
-        color: #1D1D1F;
-        text-decoration: none;
-        font-size: 14px;
-        transition: background 0.15s;
-      }
-
-      .nav-item:hover {
-        background: #F5F5F7;
-      }
-
-      .nav-item.active {
-        background: #E8E8ED;
-        font-weight: 500;
       }
 
       .main-content {
@@ -89,94 +32,89 @@
         overflow: hidden;
       }
 
-      .top-bar {
-        background: #FFFFFF;
-        border-bottom: 1px solid #D2D2D7;
-        padding: 16px 32px;
-        display: flex;
-        align-items: center;
-        gap: 16px;
-      }
-
-      .back-button {
-        padding: 8px 12px;
-        background: #F5F5F7;
-        border: 1px solid #D2D2D7;
-        border-radius: 8px;
-        font-size: 14px;
-        text-decoration: none;
-        color: #1D1D1F;
-        transition: background 0.15s;
-      }
-
-      .back-button:hover {
-        background: #E8E8ED;
-      }
-
-      .category-header {
+      .content-area {
         flex: 1;
+        overflow-y: auto;
+        padding: var(--spacing-xl);
+      }
+
+      .category-header-section {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%);
+        padding: var(--spacing-xl);
+        color: white;
+        border-radius: var(--radius-lg);
+        margin-bottom: var(--spacing-xl);
+        box-shadow: var(--shadow-lg);
+        animation: fadeIn 0.3s ease-out;
       }
 
       .category-title {
         display: flex;
         align-items: center;
         gap: 12px;
-        font-size: 24px;
-        font-weight: 600;
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: var(--spacing-xs);
       }
 
       .category-icon {
-        font-size: 32px;
+        font-size: 36px;
       }
 
       .category-subtitle {
-        font-size: 14px;
-        color: #86868B;
-        margin-top: 4px;
-      }
-
-      .content-area {
-        flex: 1;
-        overflow-y: auto;
-        padding: 32px;
+        font-size: 15px;
+        opacity: 0.9;
       }
 
       .stats-row {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 16px;
-        margin-bottom: 32px;
+        margin-bottom: var(--spacing-xl);
       }
 
       .stat-card {
         background: white;
         padding: 20px;
-        border-radius: 12px;
-        border: 1px solid #D2D2D7;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--gray-200);
+        box-shadow: var(--shadow-sm);
+        transition: all var(--transition-fast);
+        animation: fadeIn 0.3s ease-out;
+      }
+
+      .stat-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
       }
 
       .stat-value {
         font-size: 32px;
         font-weight: 700;
-        color: #0071E3;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
 
       .stat-label {
         font-size: 13px;
-        color: #86868B;
+        color: var(--gray-500);
         margin-top: 4px;
       }
 
       .section {
         background: white;
-        border-radius: 12px;
-        border: 1px solid #D2D2D7;
-        margin-bottom: 24px;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--gray-200);
+        margin-bottom: var(--spacing-lg);
+        box-shadow: var(--shadow-sm);
+        animation: fadeIn 0.3s ease-out;
       }
 
       .section-header {
         padding: 20px 24px;
-        border-bottom: 1px solid #F5F5F7;
+        border-bottom: 1px solid var(--gray-100);
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -185,11 +123,12 @@
       .section-title {
         font-size: 18px;
         font-weight: 600;
+        color: var(--gray-900);
       }
 
       .section-count {
         font-size: 14px;
-        color: #86868B;
+        color: var(--gray-500);
       }
 
       .section-content {
@@ -204,23 +143,29 @@
 
       .insight-card {
         padding: 16px;
-        background: #F5F5F7;
-        border-radius: 8px;
-        border-left: 4px solid #0071E3;
+        background: var(--gray-50);
+        border-radius: var(--radius-md);
+        border-left: 4px solid var(--primary);
+        transition: all var(--transition-fast);
+      }
+
+      .insight-card:hover {
+        transform: translateX(4px);
+        box-shadow: var(--shadow-sm);
       }
 
       .insight-card.priority-high {
-        border-left-color: #FF3B30;
+        border-left-color: var(--accent-red);
         background: #FFF5F5;
       }
 
       .insight-card.priority-medium {
-        border-left-color: #FF9500;
+        border-left-color: var(--accent-orange);
         background: #FFF9F0;
       }
 
       .insight-card.priority-low {
-        border-left-color: #34C759;
+        border-left-color: var(--accent-green);
         background: #F5FFF7;
       }
 
@@ -234,6 +179,7 @@
       .insight-title {
         font-size: 15px;
         font-weight: 600;
+        color: var(--gray-900);
       }
 
       .insight-priority {
@@ -241,33 +187,33 @@
         font-weight: 600;
         text-transform: uppercase;
         padding: 4px 8px;
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
       }
 
       .priority-high {
-        background: #FF3B30;
+        background: var(--accent-red);
         color: white;
       }
 
       .priority-medium {
-        background: #FF9500;
+        background: var(--accent-orange);
         color: white;
       }
 
       .priority-low {
-        background: #34C759;
+        background: var(--accent-green);
         color: white;
       }
 
       .insight-description {
         font-size: 14px;
-        color: #515154;
+        color: var(--gray-600);
         margin-bottom: 12px;
       }
 
       .insight-action {
         font-size: 14px;
-        color: #0071E3;
+        color: var(--primary);
         font-weight: 500;
       }
 
@@ -280,95 +226,81 @@
         text-align: left;
         font-size: 12px;
         font-weight: 600;
-        color: #86868B;
+        color: var(--gray-500);
         text-transform: uppercase;
         padding: 12px;
-        border-bottom: 1px solid #D2D2D7;
+        border-bottom: 1px solid var(--gray-200);
       }
 
       .document-table td {
         padding: 16px 12px;
-        border-bottom: 1px solid #F5F5F7;
+        border-bottom: 1px solid var(--gray-100);
         font-size: 14px;
       }
 
+      .document-table tr {
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
       .document-table tr:hover {
-        background: #F5F5F7;
+        background: var(--gray-50);
+        transform: scale(1.01);
       }
 
       .document-name {
         font-weight: 500;
-        color: #1D1D1F;
+        color: var(--gray-900);
       }
 
       .document-summary {
         font-size: 13px;
-        color: #86868B;
+        color: var(--gray-500);
         margin-top: 4px;
       }
 
       .document-type {
         display: inline-block;
         padding: 4px 8px;
-        background: #F5F5F7;
-        border-radius: 4px;
+        background: var(--gray-100);
+        border-radius: var(--radius-sm);
         font-size: 12px;
-        color: #515154;
+        color: var(--gray-600);
       }
 
       .empty-state {
         text-align: center;
         padding: 64px 32px;
-        color: #86868B;
+        color: var(--gray-500);
       }
 
       .empty-icon {
         font-size: 48px;
         margin-bottom: 16px;
+        opacity: 0.3;
       }
     </style>
   </head>
   <body>
     <div class="app-container">
-      <!-- Sidebar -->
-      <div class="sidebar">
-        <div class="sidebar-header">
-          <div class="sidebar-title">Life Admin</div>
-        </div>
-        <nav class="sidebar-nav">
-          <div class="nav-section">
-            <div class="nav-section-title">Overview</div>
-            <a href="/" class="nav-item">Vault</a>
-            <a href="/dashboard" class="nav-item">Dashboard</a>
-            <a href="/categories" class="nav-item active">Categories</a>
-            <a href="/agents" class="nav-item">Agents</a>
-          </div>
-          <div class="nav-section">
-            <div class="nav-section-title">Insights</div>
-            <a href="/actions" class="nav-item">Actions</a>
-          </div>
-          <div class="nav-section">
-            <div class="nav-section-title">Settings</div>
-            <a href="/entities-manage" class="nav-item">Entities</a>
-            <a href="/docs/" class="nav-item">📚 Documentation</a>
-          </div>
-        </nav>
-      </div>
+      <!-- Sidebar Component -->
+      {% include '_sidebar.html' %}
 
       <!-- Main Content -->
-      <div class="main-content">
-        <div class="top-bar">
-          <a href="/categories" class="back-button">← Back to Categories</a>
-          <div class="category-header">
+      <main class="main-content">
+        <!-- Header Component -->
+        {% set breadcrumb = [{'label': 'Home', 'url': '/'}, {'label': 'Categories', 'url': '/categories'}, {'label': category.name, 'url': '/category/' + category.id}] %}
+        {% include '_header.html' %}
+
+        <div class="content-area">
+          <!-- Category Header Section -->
+          <div class="category-header-section">
             <div class="category-title">
               <span class="category-icon">{{ category.icon }}</span>
               <span>{{ category.name }}</span>
             </div>
             <div class="category-subtitle">{{ category.description }}</div>
           </div>
-        </div>
-
-        <div class="content-area">
           <!-- Stats -->
           <div class="stats-row">
             <div class="stat-card">
@@ -459,7 +391,15 @@
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
+
+    <script src="/static/js/enhancements.js"></script>
+    <script>
+      // Mobile sidebar toggle
+      function toggleMobileSidebar() {
+        document.querySelector('.sidebar').classList.toggle('mobile-open');
+      }
+    </script>
   </body>
 </html>

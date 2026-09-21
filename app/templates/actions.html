@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Action Items - Life Admin System</title>
+    <link rel="stylesheet" href="/static/styles/theme.css" />
     <link rel="stylesheet" href="/static/styles/enhancements.css" />
     <style>
       * {
@@ -14,78 +15,16 @@
 
       body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        background: #F5F5F7;
-        color: #1D1D1F;
+        background: var(--gray-50);
+        color: var(--gray-900);
         line-height: 1.5;
       }
 
-      /* Layout */
       .app-container {
         display: flex;
         height: 100vh;
       }
 
-      /* Sidebar */
-      .sidebar {
-        width: 240px;
-        background: #FFFFFF;
-        border-right: 1px solid #D2D2D7;
-        display: flex;
-        flex-direction: column;
-        flex-shrink: 0;
-      }
-
-      .sidebar-header {
-        padding: 24px 20px;
-        border-bottom: 1px solid #D2D2D7;
-      }
-
-      .sidebar-title {
-        font-size: 18px;
-        font-weight: 600;
-        color: #1D1D1F;
-      }
-
-      .sidebar-nav {
-        flex: 1;
-        padding: 16px 0;
-        overflow-y: auto;
-      }
-
-      .nav-section {
-        margin-bottom: 24px;
-      }
-
-      .nav-section-title {
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        color: #86868B;
-        padding: 8px 20px;
-        letter-spacing: 0.5px;
-      }
-
-      .nav-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 8px 20px;
-        color: #1D1D1F;
-        text-decoration: none;
-        font-size: 14px;
-        transition: background 0.15s;
-      }
-
-      .nav-item:hover {
-        background: #F5F5F7;
-      }
-
-      .nav-item.active {
-        background: #E8E8ED;
-        font-weight: 500;
-      }
-
-      /* Main content */
       .main-content {
         flex: 1;
         display: flex;
@@ -93,51 +32,30 @@
         overflow: hidden;
       }
 
-      /* Top bar */
-      .top-bar {
-        background: #FFFFFF;
-        border-bottom: 1px solid #D2D2D7;
-        padding: 16px 32px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-
-      .breadcrumb {
-        font-size: 14px;
-        color: #86868B;
-      }
-
-      .breadcrumb a {
-        color: #0071E3;
-        text-decoration: none;
-      }
-
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-
-      /* Content area */
       .content-area {
         flex: 1;
         overflow-y: auto;
-        padding: 24px 32px;
+        padding: var(--spacing-xl);
       }
 
       .content-header {
-        margin-bottom: 32px;
+        margin-bottom: var(--spacing-xl);
       }
 
       .content-title {
         font-size: 32px;
-        font-weight: 600;
-        color: #1D1D1F;
-        margin-bottom: 8px;
+        font-weight: 700;
+        color: var(--gray-900);
+        margin-bottom: var(--spacing-xs);
+        background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-700) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
 
       .content-subtitle {
         font-size: 16px;
-        color: #86868B;
+        color: var(--gray-500);
       }
 
       /* Stats cards */
@@ -145,34 +63,45 @@
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 16px;
-        margin-bottom: 32px;
+        margin-bottom: var(--spacing-xl);
       }
 
       .stat-card {
-        background: #FFFFFF;
-        border-radius: 12px;
+        background: white;
+        border-radius: var(--radius-lg);
         padding: 20px;
-        border: 1px solid #E8E8ED;
+        border: 1px solid var(--gray-200);
+        box-shadow: var(--shadow-sm);
+        transition: all var(--transition-fast);
+      }
+
+      .stat-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
       }
 
       .stat-value {
         font-size: 32px;
-        font-weight: 600;
-        color: #1D1D1F;
+        font-weight: 700;
+        color: var(--gray-900);
         margin-bottom: 4px;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
 
       .stat-label {
         font-size: 14px;
-        color: #86868B;
+        color: var(--gray-500);
       }
 
       /* Filter tabs */
       .filter-tabs {
         display: flex;
-        gap: 8px;
-        margin-bottom: 24px;
-        border-bottom: 1px solid #E8E8ED;
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-lg);
+        border-bottom: 1px solid var(--gray-200);
         padding-bottom: 16px;
       }
 
@@ -180,22 +109,24 @@
         padding: 8px 16px;
         background: transparent;
         border: none;
-        border-radius: 8px;
+        border-radius: var(--radius-md);
         font-size: 14px;
         font-weight: 500;
-        color: #86868B;
+        color: var(--gray-500);
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all var(--transition-fast);
+        text-decoration: none;
       }
 
       .filter-tab:hover {
-        background: #F5F5F7;
-        color: #1D1D1F;
+        background: var(--gray-100);
+        color: var(--gray-900);
       }
 
       .filter-tab.active {
-        background: #667eea;
-        color: #FFFFFF;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%);
+        color: white;
+        box-shadow: 0 2px 8px rgba(0, 113, 227, 0.3);
       }
 
       /* Action items */
@@ -206,21 +137,24 @@
       }
 
       .action-item {
-        background: #FFFFFF;
-        border-radius: 12px;
+        background: white;
+        border-radius: var(--radius-lg);
         padding: 20px;
-        border: 1px solid #E8E8ED;
-        transition: all 0.2s;
+        border: 1px solid var(--gray-200);
+        transition: all var(--transition-fast);
+        box-shadow: var(--shadow-sm);
+        animation: fadeIn 0.3s ease-out;
       }
 
       .action-item:hover {
-        border-color: #667eea;
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+        border-color: var(--primary);
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
       }
 
       .action-item.resolved {
         opacity: 0.6;
-        background: #FAFAFA;
+        background: var(--gray-50);
       }
 
       .action-item.resolved .action-title {
@@ -237,28 +171,29 @@
       .action-checkbox {
         width: 24px;
         height: 24px;
-        border: 2px solid #D2D2D7;
-        border-radius: 6px;
+        border: 2px solid var(--gray-300);
+        border-radius: var(--radius-sm);
         cursor: pointer;
         flex-shrink: 0;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.2s;
+        transition: all var(--transition-fast);
       }
 
       .action-checkbox:hover {
-        border-color: #667eea;
+        border-color: var(--primary);
+        background: var(--primary-light);
       }
 
       .action-checkbox.checked {
-        background: #667eea;
-        border-color: #667eea;
+        background: var(--primary);
+        border-color: var(--primary);
       }
 
       .action-checkbox.checked::after {
         content: '✓';
-        color: #FFFFFF;
+        color: white;
         font-size: 16px;
         font-weight: 600;
       }
@@ -270,7 +205,7 @@
       .action-title {
         font-size: 16px;
         font-weight: 600;
-        color: #1D1D1F;
+        color: var(--gray-900);
         margin-bottom: 8px;
       }
 
@@ -283,7 +218,7 @@
 
       .action-badge {
         padding: 4px 10px;
-        border-radius: 12px;
+        border-radius: var(--radius-full);
         font-size: 12px;
         font-weight: 500;
       }
@@ -310,7 +245,7 @@
 
       .action-description {
         font-size: 14px;
-        color: #1D1D1F;
+        color: var(--gray-900);
         margin-bottom: 12px;
         line-height: 1.6;
       }
@@ -320,7 +255,7 @@
         color: #667eea;
         background: #F5F7FF;
         padding: 12px;
-        border-radius: 8px;
+        border-radius: var(--radius-md);
         border-left: 3px solid #667eea;
       }
 
@@ -332,18 +267,22 @@
       .empty-state {
         text-align: center;
         padding: 60px 20px;
-        color: #86868B;
+        color: var(--gray-500);
+        background: white;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--gray-200);
       }
 
       .empty-state-icon {
         font-size: 64px;
         margin-bottom: 16px;
+        opacity: 0.3;
       }
 
       .empty-state-title {
         font-size: 20px;
         font-weight: 600;
-        color: #1D1D1F;
+        color: var(--gray-900);
         margin-bottom: 8px;
       }
 
@@ -354,55 +293,14 @@
   </head>
   <body>
     <div class="app-container">
-      <!-- Sidebar -->
-      <aside class="sidebar">
-        <div class="sidebar-header">
-          <div class="sidebar-title">Life Admin System</div>
-        </div>
-
-        <nav class="sidebar-nav">
-          <div class="nav-section">
-            <div class="nav-section-title">Views</div>
-            <a href="/dashboard" class="nav-item">
-              <span>Dashboard</span>
-            </a>
-            <a href="/actions" class="nav-item active">
-              <span>Action Items</span>
-            </a>
-            <a href="/categories" class="nav-item">
-              <span>Categories</span>
-            </a>
-            <a href="/agents" class="nav-item">
-              <span>Agents</span>
-            </a>
-            <a href="/" class="nav-item">
-              <span>Vault</span>
-            </a>
-            <a href="/upload" class="nav-item">
-              <span>Upload</span>
-            </a>
-          </div>
-
-          <div class="nav-section">
-            <div class="nav-section-title">Help</div>
-            <a href="/entities-manage" class="nav-item">
-              <span>Manage Entities</span>
-            </a>
-            <a href="/docs/" class="nav-item">
-              <span>📚 Documentation</span>
-            </a>
-          </div>
-        </nav>
-      </aside>
+      <!-- Sidebar Component -->
+      {% include '_sidebar.html' %}
 
       <!-- Main content -->
       <main class="main-content">
-        <!-- Top bar -->
-        <div class="top-bar">
-          <div class="breadcrumb">
-            <a href="/">Home</a> › Action Items
-          </div>
-        </div>
+        <!-- Header Component -->
+        {% set breadcrumb = [{'label': 'Home', 'url': '/'}, {'label': 'Action Items', 'url': '/actions'}] %}
+        {% include '_header.html' %}
 
         <!-- Content area -->
         <div class="content-area">
@@ -473,7 +371,7 @@
                       ⏰ {{ action.urgency_days }} days
                     </span>
                     {% endif %}
-                    <span style="font-size: 12px; color: #86868B;">{{ action.generated_at }}</span>
+                    <span style="font-size: 12px; color: var(--gray-500);">{{ action.generated_at }}</span>
                   </div>
                   <div class="action-description">{{ action.description }}</div>
                   {% if action.action %}
@@ -506,6 +404,7 @@
       </main>
     </div>
 
+    <script src="/static/js/enhancements.js"></script>
     <script>
       async function toggleActionStatus(actionId, currentStatus) {
         const isResolved = currentStatus === 'resolved';
@@ -519,14 +418,18 @@
           const result = await response.json();
 
           if (result.ok) {
-            // Reload page to show updated status
             window.location.reload();
           } else {
-            alert('Failed to update action status');
+            Toast.error('Update Failed', 'Failed to update action status');
           }
         } catch (error) {
-          alert('Error: ' + error.message);
+          Toast.error('Error', error.message);
         }
+      }
+
+      // Mobile sidebar toggle
+      function toggleMobileSidebar() {
+        document.querySelector('.sidebar').classList.toggle('mobile-open');
       }
     </script>
   </body>

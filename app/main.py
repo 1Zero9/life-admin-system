@@ -19,7 +19,7 @@ from sqlalchemy.orm import joinedload
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from app.ui_helpers import normalize_title, format_date_display, format_source_type, get_file_type, get_file_icon_color
+from app.ui_helpers import normalize_title, format_date_display, format_source_type, get_file_type, get_file_icon_color, get_display_title, generate_smart_title
 from app.ai_summary import generate_summary, delete_summary, get_summary, AI_ENABLED
 from app.insights import get_active_insights, dismiss_insight
 
@@ -338,7 +338,7 @@ def ui_home(
 
             items.append({
                 "id": i.id,
-                "title": normalize_title(i.original_filename, i.source_type, i.created_at),
+                "title": get_display_title(i),
                 "date": format_date_display(i.created_at),
                 "source": format_source_type(i.source_type),
                 "file_type": file_type,
@@ -402,7 +402,7 @@ def item_detail(request: Request, item_id: str):
 
         item_data = {
             "id": item.id,
-            "title": normalize_title(item.original_filename, item.source_type, item.created_at),
+            "title": get_display_title(item),
             "original_filename": item.original_filename,
             "date": format_date_display(item.created_at),
             "date_full": item.created_at.strftime("%-d %B %Y, %H:%M"),
@@ -429,7 +429,7 @@ def item_detail(request: Request, item_id: str):
             for att in raw_attachments:
                 attachments.append({
                     "id": att.id,
-                    "title": normalize_title(att.original_filename, att.source_type, att.created_at),
+                    "title": get_display_title(att),
                     "original_filename": att.original_filename,
                     "size_human": format_file_size(att.size_bytes) if att.size_bytes else "Unknown",
                     "file_type": get_file_type(att.original_filename, att.content_type),
@@ -442,7 +442,7 @@ def item_detail(request: Request, item_id: str):
             if parent_item:
                 parent = {
                     "id": parent_item.id,
-                    "title": normalize_title(parent_item.original_filename, parent_item.source_type, parent_item.created_at),
+                    "title": get_display_title(parent_item),
                     "date": format_date_display(parent_item.created_at),
                 }
 
@@ -505,6 +505,166 @@ def get_item_summary(item_id: str):
         raise HTTPException(status_code=404, detail="No summary found")
 
     return {"ok": True, "summary": summary}
+
+
+@app.patch("/items/{item_id}/title")
+def update_item_title(item_id: str, title: str):
+    """
+    Manually rename an item's display title.
+    Empty string is rejected. Max length 200 characters.
+    """
+    db = SessionLocal()
+    try:
+        item = db.query(Item).filter(Item.id == item_id).first()
+        if not item:
+            raise HTTPException(status_code=404, detail="Item not found")
+
+        # Validate title
+        title = title.strip()
+        if not title:
+            raise HTTPException(status_code=400, detail="Title cannot be empty")
+        if len(title) > 200:
+            raise HTTPException(status_code=400, detail="Title too long (max 200 characters)")
+
+        # Update display_title
+        item.display_title = title
+        db.commit()
+
+        return {
+            "ok": True,
+            "title": title,
+            "item_id": item_id
+        }
+    finally:
+        db.close()
+
+
+@app.get("/items/{item_id}/title/suggest")
+def suggest_item_title(item_id: str):
+    """
+    Get AI-suggested title for an item based on its summary data.
+    Returns 404 if no AI summary exists.
+    """
+    db = SessionLocal()
+    try:
+        item = db.query(Item).options(joinedload(Item.ai_summary)).filter(Item.id == item_id).first()
+        if not item:
+            raise HTTPException(status_code=404, detail="Item not found")
+
+        if not item.ai_summary:
+            raise HTTPException(status_code=404, detail="No AI summary found. Generate summary first.")
+
+        # Generate smart title from AI data
+        suggested_title = generate_smart_title(item, item.ai_summary)
+
+        return {
+            "ok": True,
+            "suggested_title": suggested_title,
+            "item_id": item_id
+        }
+    finally:
+        db.close()
+
+
+@app.delete("/items/{item_id}/title")
+def reset_item_title(item_id: str):
+    """
+    Reset item title to computed default (removes custom display_title).
+    """
+    db = SessionLocal()
+    try:
+        item = db.query(Item).filter(Item.id == item_id).first()
+        if not item:
+            raise HTTPException(status_code=404, detail="Item not found")
+
+        # Reset to NULL (will use computed title)
+        item.display_title = None
+        db.commit()
+
+        # Return the computed title that will now be displayed
+        computed_title = normalize_title(item.original_filename, item.source_type, item.created_at)
+
+        return {
+            "ok": True,
+            "reset": True,
+            "computed_title": computed_title,
+            "item_id": item_id
+        }
+    finally:
+        db.close()
+
+
+@app.post("/items/title/auto-generate")
+def auto_generate_titles(
+    overwrite_existing: bool = False,
+    require_summary: bool = True,
+    dry_run: bool = False
+):
+    """
+    Bulk generate smart titles for items based on AI summary data.
+
+    Parameters:
+    - overwrite_existing: If True, replace existing custom titles. Default: False
+    - require_summary: If True, only process items with AI summaries. Default: True
+    - dry_run: If True, return preview without applying changes. Default: False
+
+    Returns:
+    - List of items with proposed title changes
+    - Stats on how many items would be affected
+    """
+    db = SessionLocal()
+    try:
+        # Query items with AI summaries
+        query = db.query(Item).options(joinedload(Item.ai_summary))
+
+        if require_summary:
+            query = query.filter(Item.ai_summary != None)
+
+        items = query.all()
+
+        changes = []
+        for item in items:
+            # Skip if item already has custom title and we're not overwriting
+            if item.display_title and not overwrite_existing:
+                continue
+
+            # Skip if no AI summary
+            if not item.ai_summary:
+                continue
+
+            # Generate smart title
+            new_title = generate_smart_title(item, item.ai_summary)
+            current_title = get_display_title(item)
+
+            # Skip if title wouldn't change
+            if new_title == current_title:
+                continue
+
+            changes.append({
+                "item_id": item.id,
+                "original_filename": item.original_filename,
+                "current_title": current_title,
+                "proposed_title": new_title,
+                "has_custom_title": item.display_title is not None
+            })
+
+            # Apply change if not dry run
+            if not dry_run:
+                item.display_title = new_title
+
+        # Commit if not dry run
+        if not dry_run:
+            db.commit()
+
+        return {
+            "ok": True,
+            "dry_run": dry_run,
+            "total_items": len(items),
+            "changes_count": len(changes),
+            "changes": changes
+        }
+    finally:
+        db.close()
 
 
 @app.post("/summaries/generate-all")

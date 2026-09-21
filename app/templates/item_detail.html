@@ -4,6 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>{{ item.title }} - Document Vault</title>
+    <link rel="stylesheet" href="/static/styles/theme.css" />
+    <link rel="stylesheet" href="/static/styles/enhancements.css" />
     <style>
       * {
         box-sizing: border-box;
@@ -13,60 +15,152 @@
 
       body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        background: #F5F5F7;
-        color: #1D1D1F;
+        background: var(--gray-50);
+        color: var(--gray-900);
         line-height: 1.6;
-        padding: 32px 24px;
+        padding: var(--spacing-xl) var(--spacing-lg);
       }
 
       .container {
         max-width: 900px;
         margin: 0 auto;
+        animation: fadeIn 0.4s ease-out;
       }
 
-      /* Back button */
       .back-link {
         display: inline-block;
-        color: #0071E3;
+        color: var(--primary);
         text-decoration: none;
         font-size: 14px;
-        margin-bottom: 24px;
+        margin-bottom: var(--spacing-lg);
+        transition: all var(--transition-fast);
       }
 
       .back-link:hover {
-        text-decoration: underline;
+        transform: translateX(-4px);
+        color: var(--accent-purple);
       }
 
-      /* Header */
       .header {
-        margin-bottom: 32px;
+        margin-bottom: var(--spacing-xl);
       }
 
       .title {
         font-size: 32px;
-        font-weight: 600;
-        color: #1D1D1F;
-        margin-bottom: 8px;
+        font-weight: 700;
+        margin-bottom: var(--spacing-xs);
+        background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-700) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
 
       .original-filename {
         font-size: 14px;
-        color: #86868B;
+        color: var(--gray-500);
       }
 
-      /* Metadata panel */
+      .title-section {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-xs);
+      }
+
+      .title-section .title {
+        flex: 1;
+        margin-bottom: 0;
+      }
+
+      .edit-title-btn {
+        background: none;
+        border: 1px solid var(--gray-300);
+        border-radius: var(--radius-md);
+        padding: 6px 12px;
+        font-size: 14px;
+        color: var(--gray-700);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        flex-shrink: 0;
+        margin-top: 8px;
+      }
+
+      .edit-title-btn:hover {
+        background: var(--gray-100);
+        border-color: var(--gray-400);
+      }
+
+      .title-edit-mode {
+        margin-bottom: var(--spacing-sm);
+      }
+
+      .title-edit-input {
+        width: 100%;
+        font-size: 24px;
+        font-weight: 700;
+        padding: 8px 12px;
+        border: 2px solid var(--primary);
+        border-radius: var(--radius-md);
+        font-family: inherit;
+        margin-bottom: var(--spacing-sm);
+      }
+
+      .title-edit-actions {
+        display: flex;
+        gap: var(--spacing-sm);
+      }
+
+      .title-edit-actions button {
+        padding: 8px 16px;
+        font-size: 14px;
+        border: none;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        font-weight: 500;
+      }
+
+      .title-edit-actions button:first-child {
+        background: var(--primary);
+        color: white;
+      }
+
+      .title-edit-actions button:first-child:hover {
+        background: var(--accent-purple);
+      }
+
+      .title-edit-actions button:nth-child(2) {
+        background: var(--gray-200);
+        color: var(--gray-700);
+      }
+
+      .title-edit-actions button:nth-child(2):hover {
+        background: var(--gray-300);
+      }
+
+      .title-edit-actions button:nth-child(3) {
+        background: var(--accent-purple);
+        color: white;
+      }
+
+      .title-edit-actions button:nth-child(3):hover {
+        opacity: 0.9;
+      }
+
       .metadata {
-        background: #FFFFFF;
-        border: 1px solid #D2D2D7;
-        border-radius: 12px;
-        padding: 24px;
-        margin-bottom: 24px;
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-lg);
+        margin-bottom: var(--spacing-lg);
+        box-shadow: var(--shadow-sm);
+        animation: fadeIn 0.3s ease-out;
       }
 
       .metadata-row {
         display: flex;
         padding: 12px 0;
-        border-bottom: 1px solid #F5F5F7;
+        border-bottom: 1px solid var(--gray-100);
       }
 
       .metadata-row:last-child {
@@ -76,61 +170,65 @@
       .metadata-label {
         width: 180px;
         font-size: 14px;
-        color: #86868B;
+        color: var(--gray-500);
         flex-shrink: 0;
       }
 
       .metadata-value {
         font-size: 14px;
-        color: #1D1D1F;
+        color: var(--gray-900);
         flex: 1;
       }
 
       .metadata-value a {
-        color: #0071E3;
+        color: var(--primary);
         text-decoration: none;
+        transition: color var(--transition-fast);
       }
 
       .metadata-value a:hover {
+        color: var(--accent-purple);
         text-decoration: underline;
       }
 
-      /* Actions */
       .actions {
-        margin-bottom: 24px;
+        margin-bottom: var(--spacing-lg);
       }
 
       .download-btn {
         display: inline-block;
         padding: 12px 24px;
-        background: #0071E3;
-        color: #FFFFFF;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%);
+        color: white;
         border: none;
-        border-radius: 8px;
+        border-radius: var(--radius-md);
         font-size: 15px;
         font-weight: 500;
         text-decoration: none;
         cursor: pointer;
-        transition: background 0.15s;
+        transition: all var(--transition-fast);
+        box-shadow: 0 2px 8px rgba(0, 113, 227, 0.3);
       }
 
       .download-btn:hover {
-        background: #0077ED;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 113, 227, 0.4);
       }
 
-      /* Attachments section */
       .attachments {
-        background: #FFFFFF;
-        border: 1px solid #D2D2D7;
-        border-radius: 12px;
-        padding: 24px;
-        margin-bottom: 24px;
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-lg);
+        margin-bottom: var(--spacing-lg);
+        box-shadow: var(--shadow-sm);
+        animation: fadeIn 0.3s ease-out;
       }
 
       .attachments-title {
         font-size: 18px;
         font-weight: 600;
-        color: #1D1D1F;
+        color: var(--gray-900);
         margin-bottom: 16px;
       }
 
@@ -143,11 +241,21 @@
         align-items: center;
         justify-content: space-between;
         padding: 12px 0;
-        border-bottom: 1px solid #F5F5F7;
+        border-bottom: 1px solid var(--gray-100);
+        transition: all var(--transition-fast);
       }
 
       .attachment-item:last-child {
         border-bottom: none;
+      }
+
+      .attachment-item:hover {
+        background: var(--gray-50);
+        padding-left: 12px;
+        margin-left: -12px;
+        padding-right: 12px;
+        margin-right: -12px;
+        border-radius: var(--radius-md);
       }
 
       .attachment-info {
@@ -156,33 +264,38 @@
 
       .attachment-name {
         font-size: 14px;
-        color: #1D1D1F;
+        color: var(--gray-900);
         margin-bottom: 4px;
+        font-weight: 500;
       }
 
       .attachment-meta {
         font-size: 13px;
-        color: #86868B;
+        color: var(--gray-500);
       }
 
       .attachment-download {
-        color: #0071E3;
+        color: var(--primary);
         text-decoration: none;
         font-size: 14px;
         padding: 6px 12px;
+        transition: all var(--transition-fast);
+        border-radius: var(--radius-sm);
       }
 
       .attachment-download:hover {
-        text-decoration: underline;
+        background: var(--primary-light);
+        color: var(--accent-purple);
       }
 
-      /* Extracted text section */
       .extracted-text {
-        background: #FFFFFF;
-        border: 1px solid #D2D2D7;
-        border-radius: 12px;
-        padding: 24px;
-        margin-bottom: 24px;
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-lg);
+        margin-bottom: var(--spacing-lg);
+        box-shadow: var(--shadow-sm);
+        animation: fadeIn 0.3s ease-out;
       }
 
       .extracted-text-toggle {
@@ -192,16 +305,17 @@
         cursor: pointer;
         user-select: none;
         font-size: 14px;
-        color: #1D1D1F;
+        color: var(--gray-900);
+        transition: all var(--transition-fast);
       }
 
       .extracted-text-toggle:hover {
-        color: #0071E3;
+        color: var(--primary);
       }
 
       .toggle-icon {
         display: inline-block;
-        transition: transform 0.2s;
+        transition: transform var(--transition-base);
       }
 
       .toggle-icon.expanded {
@@ -212,51 +326,53 @@
         display: none;
         margin-top: 16px;
         padding: 16px;
-        background: #F5F5F7;
-        border-radius: 8px;
+        background: var(--gray-50);
+        border-radius: var(--radius-md);
         font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Courier New', monospace;
         font-size: 13px;
         line-height: 1.8;
-        color: #1D1D1F;
+        color: var(--gray-900);
         max-height: 400px;
         overflow-y: auto;
         white-space: pre-wrap;
         word-wrap: break-word;
+        animation: fadeIn 0.2s ease-out;
       }
 
       .extracted-text-content.visible {
         display: block;
       }
 
-      /* Footer actions */
       .footer-actions {
         display: flex;
         justify-content: flex-end;
-        margin-top: 32px;
+        margin-top: var(--spacing-xl);
       }
 
       .delete-btn {
         padding: 8px 16px;
         background: transparent;
-        color: #FF3B30;
+        color: var(--accent-red);
         border: none;
-        border-radius: 6px;
+        border-radius: var(--radius-sm);
         font-size: 14px;
         cursor: pointer;
-        transition: background 0.15s;
+        transition: all var(--transition-fast);
       }
 
       .delete-btn:hover {
         background: rgba(255, 59, 48, 0.1);
+        transform: translateX(-2px);
       }
 
-      /* AI Summary section (Layer 2) */
       .ai-summary {
-        background: #FAFAFA;
-        border: 1px solid #E5E5EA;
-        border-radius: 12px;
-        padding: 24px;
-        margin-bottom: 24px;
+        background: var(--gray-50);
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-lg);
+        margin-bottom: var(--spacing-lg);
+        box-shadow: var(--shadow-sm);
+        animation: fadeIn 0.3s ease-out;
       }
 
       .ai-summary-header {
@@ -268,7 +384,7 @@
 
       .ai-summary-title {
         font-size: 14px;
-        color: #86868B;
+        color: var(--gray-500);
         font-weight: 500;
       }
 
@@ -285,13 +401,13 @@
 
       .ai-field-label {
         font-size: 14px;
-        color: #86868B;
+        color: var(--gray-500);
         min-width: 100px;
       }
 
       .ai-field-value {
         font-size: 14px;
-        color: #1D1D1F;
+        color: var(--gray-900);
       }
 
       .ai-summary-controls {
@@ -299,48 +415,49 @@
         gap: 12px;
         margin-top: 16px;
         padding-top: 16px;
-        border-top: 1px solid #E5E5EA;
+        border-top: 1px solid var(--gray-200);
       }
 
       .ai-btn {
         padding: 8px 16px;
         background: transparent;
-        color: #0071E3;
-        border: 1px solid #D2D2D7;
-        border-radius: 6px;
+        color: var(--primary);
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-sm);
         font-size: 14px;
         cursor: pointer;
-        transition: all 0.15s;
+        transition: all var(--transition-fast);
       }
 
       .ai-btn:hover {
-        background: #F5F5F7;
-        border-color: #0071E3;
+        background: var(--gray-50);
+        border-color: var(--primary);
+        transform: translateY(-1px);
       }
 
       .ai-btn-primary {
-        background: #0071E3;
-        color: #FFFFFF;
-        border-color: #0071E3;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%);
+        color: white;
+        border-color: var(--primary);
+        box-shadow: 0 2px 8px rgba(0, 113, 227, 0.3);
       }
 
       .ai-btn-primary:hover {
-        background: #0077ED;
+        box-shadow: 0 4px 12px rgba(0, 113, 227, 0.4);
       }
 
       .ai-btn-secondary {
-        color: #86868B;
+        color: var(--gray-500);
       }
 
       .ai-btn-secondary:hover {
-        color: #1D1D1F;
+        color: var(--gray-900);
       }
 
-      /* Loading state */
       .ai-loading {
         display: none;
         font-size: 14px;
-        color: #86868B;
+        color: var(--gray-500);
         padding: 16px 0;
       }
 
@@ -354,7 +471,22 @@
       <a href="/" class="back-link">← Back to vault</a>
 
       <div class="header">
-        <h1 class="title">{{ item.title }}</h1>
+        <div class="title-section">
+          <h1 class="title" id="itemTitle">{{ item.title }}</h1>
+          <button class="edit-title-btn" id="editBtn" onclick="enableTitleEdit()">Rename</button>
+        </div>
+
+        <div class="title-edit-mode" id="titleEditMode" style="display: none;">
+          <input type="text" class="title-edit-input" id="titleInput" value="{{ item.title }}" maxlength="200">
+          <div class="title-edit-actions">
+            <button onclick="saveTitle()">Save</button>
+            <button onclick="cancelTitleEdit()">Cancel</button>
+            {% if ai_summary %}
+            <button onclick="suggestTitle()">AI Suggest</button>
+            {% endif %}
+          </div>
+        </div>
+
         <div class="original-filename">Original filename: {{ item.original_filename }}</div>
       </div>
 
@@ -496,6 +628,7 @@
       </div>
     </div>
 
+    <script src="/static/js/enhancements.js"></script>
     <script>
       function toggleExtractedText() {
         const content = document.getElementById('extractedTextContent');
@@ -611,6 +744,81 @@
           }
         }
       });
+
+      // Rename functionality
+      function enableTitleEdit() {
+        document.getElementById('itemTitle').style.display = 'none';
+        document.getElementById('editBtn').style.display = 'none';
+        document.getElementById('titleEditMode').style.display = 'block';
+        document.getElementById('titleInput').focus();
+        document.getElementById('titleInput').select();
+      }
+
+      function cancelTitleEdit() {
+        document.getElementById('itemTitle').style.display = 'block';
+        document.getElementById('editBtn').style.display = 'block';
+        document.getElementById('titleEditMode').style.display = 'none';
+        // Reset input to current title
+        document.getElementById('titleInput').value = document.getElementById('itemTitle').textContent;
+      }
+
+      async function saveTitle() {
+        const newTitle = document.getElementById('titleInput').value.trim();
+
+        if (!newTitle) {
+          alert('Title cannot be empty');
+          return;
+        }
+
+        if (newTitle.length > 200) {
+          alert('Title too long (max 200 characters)');
+          return;
+        }
+
+        try {
+          const itemId = '{{ item.id }}';
+          const response = await fetch(`/items/${itemId}/title?title=${encodeURIComponent(newTitle)}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            alert(`Error: ${error.detail || 'Failed to update title'}`);
+            return;
+          }
+
+          // Update the title display
+          document.getElementById('itemTitle').textContent = newTitle;
+
+          // Exit edit mode
+          cancelTitleEdit();
+        } catch (error) {
+          console.error('Error saving title:', error);
+          alert('Failed to save title. Please try again.');
+        }
+      }
+
+      async function suggestTitle() {
+        try {
+          const itemId = '{{ item.id }}';
+          const response = await fetch(`/items/${itemId}/title/suggest`);
+
+          if (!response.ok) {
+            const error = await response.json();
+            alert(`Error: ${error.detail || 'Failed to get suggestion'}`);
+            return;
+          }
+
+          const data = await response.json();
+          document.getElementById('titleInput').value = data.suggested_title;
+        } catch (error) {
+          console.error('Error getting suggestion:', error);
+          alert('Failed to get AI suggestion. Please try again.');
+        }
+      }
     </script>
   </body>
 </html>

@@ -3,7 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Document Vault</title>
+    <title>Document Vault - Life Admin System</title>
+    <link rel="stylesheet" href="/static/styles/theme.css" />
     <link rel="stylesheet" href="/static/styles/enhancements.css" />
     <style>
       * {
@@ -14,8 +15,8 @@
 
       body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        background: #F5F5F7;
-        color: #1D1D1F;
+        background: var(--gray-50);
+        color: var(--gray-900);
         line-height: 1.5;
       }
 
@@ -25,113 +26,6 @@
         height: 100vh;
       }
 
-      /* Sidebar */
-      .sidebar {
-        width: 240px;
-        background: #FFFFFF;
-        border-right: 1px solid #D2D2D7;
-        display: flex;
-        flex-direction: column;
-        flex-shrink: 0;
-      }
-
-      .sidebar-header {
-        padding: 24px 20px;
-        border-bottom: 1px solid #D2D2D7;
-      }
-
-      .sidebar-title {
-        font-size: 18px;
-        font-weight: 600;
-        color: #1D1D1F;
-      }
-
-      .sidebar-nav {
-        flex: 1;
-        padding: 16px 0;
-        overflow-y: auto;
-      }
-
-      .nav-section {
-        margin-bottom: 24px;
-      }
-
-      .nav-section-title {
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        color: #86868B;
-        padding: 8px 20px;
-        letter-spacing: 0.5px;
-      }
-
-      .nav-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 8px 20px;
-        color: #1D1D1F;
-        text-decoration: none;
-        font-size: 14px;
-        transition: background 0.15s;
-      }
-
-      .nav-item:hover {
-        background: #F5F5F7;
-      }
-
-      .nav-item.active {
-        background: #E8E8ED;
-        font-weight: 500;
-      }
-
-      .nav-item-count {
-        font-size: 13px;
-        color: #86868B;
-      }
-
-      .sidebar-footer {
-        padding: 16px 20px;
-        border-top: 1px solid #D2D2D7;
-      }
-
-      .upload-button {
-        width: 100%;
-        padding: 10px 16px;
-        background: #0071E3;
-        color: #FFFFFF;
-        border: none;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: background 0.15s;
-      }
-
-      .upload-button:hover {
-        background: #0077ED;
-      }
-
-      .ai-batch-button {
-        padding: 8px 16px;
-        background: #34C759;
-        color: #FFFFFF;
-        border: none;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: background 0.15s;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .ai-batch-button:hover {
-        background: #30B350;
-      }
-
-      /* Main content */
       .main-content {
         flex: 1;
         display: flex;
@@ -139,77 +33,41 @@
         overflow: hidden;
       }
 
-      /* Top bar */
-      .top-bar {
-        background: #FFFFFF;
-        border-bottom: 1px solid #D2D2D7;
-        padding: 16px 32px;
-        display: flex;
-        align-items: center;
-        gap: 16px;
-      }
-
-      .search-box {
-        flex: 1;
-        max-width: 480px;
-        position: relative;
-      }
-
-      .search-input {
-        width: 100%;
-        padding: 8px 16px 8px 36px;
-        border: 1px solid #D2D2D7;
-        border-radius: 8px;
-        font-size: 14px;
-        background: #F5F5F7;
-        transition: all 0.15s;
-      }
-
-      .search-input:focus {
-        outline: none;
-        background: #FFFFFF;
-        border-color: #0071E3;
-      }
-
-      .search-icon {
-        position: absolute;
-        left: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #86868B;
-        font-size: 16px;
-      }
-
       /* Content area */
       .content-area {
         flex: 1;
         overflow-y: auto;
-        padding: 24px 32px;
+        padding: var(--spacing-xl);
       }
 
       .content-header {
-        margin-bottom: 24px;
+        margin-bottom: var(--spacing-lg);
       }
 
       .content-title {
         font-size: 28px;
-        font-weight: 600;
-        color: #1D1D1F;
-        margin-bottom: 8px;
+        font-weight: 700;
+        color: var(--gray-900);
+        margin-bottom: var(--spacing-xs);
+        background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-700) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
 
       .content-subtitle {
         font-size: 14px;
-        color: #86868B;
+        color: var(--gray-500);
       }
 
       /* Table */
       .documents-table {
         width: 100%;
-        background: #FFFFFF;
-        border-radius: 12px;
+        background: white;
+        border-radius: var(--radius-lg);
         overflow: hidden;
-        border: 1px solid #D2D2D7;
+        border: 1px solid var(--gray-200);
+        box-shadow: var(--shadow-md);
       }
 
       table {
@@ -218,8 +76,8 @@
       }
 
       thead {
-        background: #F5F5F7;
-        border-bottom: 1px solid #D2D2D7;
+        background: linear-gradient(180deg, var(--gray-50) 0%, var(--gray-100) 100%);
+        border-bottom: 1px solid var(--gray-200);
       }
 
       th {
@@ -227,26 +85,22 @@
         text-align: left;
         font-size: 12px;
         font-weight: 600;
-        color: #86868B;
+        color: var(--gray-500);
         text-transform: uppercase;
         letter-spacing: 0.5px;
       }
 
       tbody tr {
-        border-bottom: 1px solid #F5F5F7;
-        transition: background 0.1s;
+        border-bottom: 1px solid var(--gray-100);
+        transition: all var(--transition-fast);
       }
 
       tbody tr:last-child {
         border-bottom: none;
       }
 
-      tbody tr {
-        position: relative;
-      }
-
       tbody tr:hover {
-        background: #FAFAFC;
+        background: var(--gray-50);
       }
 
       tbody tr:hover .row-actions {
@@ -256,7 +110,7 @@
       td {
         padding: 14px 16px;
         font-size: 14px;
-        color: #1D1D1F;
+        color: var(--gray-900);
       }
 
       td a {
@@ -269,7 +123,7 @@
 
       .row-actions {
         opacity: 0;
-        transition: opacity 0.15s;
+        transition: opacity var(--transition-fast);
         display: flex;
         gap: 8px;
       }
@@ -277,127 +131,46 @@
       .preview-btn {
         background: transparent;
         border: none;
-        color: #667eea;
+        color: var(--accent-purple);
         font-size: 13px;
         cursor: pointer;
         padding: 4px 8px;
-        border-radius: 4px;
-        transition: background 0.15s;
+        border-radius: var(--radius-sm);
+        transition: all var(--transition-fast);
         font-weight: 500;
       }
 
       .preview-btn:hover {
-        background: rgba(102, 126, 234, 0.1);
+        background: rgba(94, 92, 230, 0.1);
       }
 
       .delete-btn {
         background: transparent;
         border: none;
-        color: #FF3B30;
+        color: var(--error);
         font-size: 13px;
         cursor: pointer;
         padding: 4px 8px;
-        border-radius: 4px;
-        transition: background 0.15s;
+        border-radius: var(--radius-sm);
+        transition: all var(--transition-fast);
       }
 
       .delete-btn:hover {
         background: rgba(255, 59, 48, 0.1);
       }
 
-      /* Preview Modal */
-      .modal-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.75);
-        z-index: 9999;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .modal-overlay.active {
-        display: flex;
-      }
-
-      .modal-content {
-        background: #FFFFFF;
-        border-radius: 16px;
-        width: 90%;
-        max-width: 1200px;
-        max-height: 90vh;
-        display: flex;
-        flex-direction: column;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      }
-
-      .modal-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 20px 24px;
-        border-bottom: 1px solid #E8E8ED;
-      }
-
-      .modal-title {
-        font-size: 18px;
-        font-weight: 600;
-        color: #1D1D1F;
-      }
-
-      .modal-close {
-        background: #F5F5F7;
-        border: none;
-        border-radius: 8px;
-        padding: 8px 12px;
-        font-size: 18px;
-        cursor: pointer;
-        transition: background 0.2s;
-      }
-
-      .modal-close:hover {
-        background: #E8E8ED;
-      }
-
-      .modal-body {
-        flex: 1;
-        overflow: auto;
-        padding: 24px;
-      }
-
-      .preview-container {
-        text-align: center;
-      }
-
-      .preview-container img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      }
-
-      .preview-container iframe {
-        width: 100%;
-        height: 70vh;
-        border: 1px solid #E8E8ED;
-        border-radius: 8px;
-      }
-
       /* File icon */
       .file-icon {
         width: 32px;
         height: 32px;
-        border-radius: 6px;
+        border-radius: var(--radius-sm);
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
         font-size: 11px;
         font-weight: 600;
-        color: #FFFFFF;
+        color: white;
         text-transform: uppercase;
       }
 
@@ -415,12 +188,12 @@
 
       .file-source {
         font-size: 12px;
-        color: #86868B;
+        color: var(--gray-500);
         margin-top: 2px;
       }
 
       .file-date {
-        color: #6E6E73;
+        color: var(--gray-600);
         white-space: nowrap;
       }
 
@@ -428,7 +201,7 @@
       .empty-state {
         text-align: center;
         padding: 80px 24px;
-        color: #86868B;
+        color: var(--gray-500);
       }
 
       .empty-state-icon {
@@ -440,267 +213,12 @@
       .empty-state-title {
         font-size: 18px;
         font-weight: 500;
-        color: #1D1D1F;
+        color: var(--gray-900);
         margin-bottom: 8px;
       }
 
       .empty-state-text {
         font-size: 14px;
-      }
-
-      /* Upload modal overlay */
-      .upload-modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.4);
-        z-index: 1000;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .upload-modal.active {
-        display: flex;
-      }
-
-      .upload-modal-content {
-        background: #FFFFFF;
-        border-radius: 12px;
-        padding: 32px;
-        max-width: 480px;
-        width: 90%;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      }
-
-      .upload-modal-title {
-        font-size: 20px;
-        font-weight: 600;
-        margin-bottom: 24px;
-      }
-
-      .upload-form-group {
-        margin-bottom: 24px;
-      }
-
-      .upload-form-label {
-        display: block;
-        font-size: 13px;
-        font-weight: 500;
-        color: #6E6E73;
-        margin-bottom: 8px;
-      }
-
-      .upload-file-input {
-        width: 100%;
-        padding: 48px 24px;
-        border: 2px dashed #D2D2D7;
-        border-radius: 8px;
-        background: #F5F5F7;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.15s;
-      }
-
-      .upload-file-input:hover {
-        border-color: #0071E3;
-        background: #FAFAFA;
-      }
-
-      .upload-actions {
-        display: flex;
-        gap: 12px;
-      }
-
-      .upload-submit {
-        flex: 1;
-        padding: 12px 24px;
-        background: #0071E3;
-        color: #FFFFFF;
-        border: none;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-      }
-
-      .upload-submit:hover {
-        background: #0077ED;
-      }
-
-      .upload-cancel {
-        padding: 12px 24px;
-        background: transparent;
-        color: #1D1D1F;
-        border: 1px solid #D2D2D7;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-      }
-
-      .upload-cancel:hover {
-        background: #F5F5F7;
-      }
-
-      /* Upload tabs */
-      .upload-tabs {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 16px;
-      }
-
-      .upload-tab {
-        flex: 1;
-        padding: 10px 16px;
-        background: transparent;
-        color: #1D1D1F;
-        border: 1px solid #D2D2D7;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.15s;
-      }
-
-      .upload-tab:hover {
-        background: #F5F5F7;
-      }
-
-      .upload-tab.active {
-        background: #0071E3;
-        color: #FFFFFF;
-        border-color: #0071E3;
-      }
-
-      /* File list */
-      .file-list {
-        max-height: 200px;
-        overflow-y: auto;
-        background: #F5F5F7;
-        border-radius: 8px;
-        padding: 12px;
-      }
-
-      .file-list-item {
-        padding: 8px 12px;
-        background: #FFFFFF;
-        border-radius: 6px;
-        margin-bottom: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        font-size: 13px;
-      }
-
-      .file-list-item:last-child {
-        margin-bottom: 0;
-      }
-
-      .file-list-name {
-        flex: 1;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        color: #1D1D1F;
-      }
-
-      .file-list-size {
-        color: #86868B;
-        margin-left: 12px;
-        font-size: 12px;
-      }
-
-      /* Progress bar */
-      .progress-container {
-        width: 100%;
-        height: 8px;
-        background: #E5E5EA;
-        border-radius: 4px;
-        overflow: hidden;
-        margin-bottom: 8px;
-      }
-
-      .progress-bar-upload {
-        height: 100%;
-        background: #0071E3;
-        transition: width 0.3s ease;
-        width: 0%;
-      }
-
-      .progress-text {
-        font-size: 13px;
-        color: #86868B;
-        text-align: center;
-      }
-
-      /* Batch summary modal */
-      .batch-summary-content {
-        max-width: 600px;
-      }
-
-      .batch-stats {
-        background: #F5F5F7;
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 24px;
-      }
-
-      .stat-loading {
-        text-align: center;
-        color: #86868B;
-        font-size: 14px;
-      }
-
-      .stat-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 16px;
-      }
-
-      .stat-item {
-        text-align: center;
-      }
-
-      .stat-value {
-        font-size: 32px;
-        font-weight: 600;
-        color: #1D1D1F;
-        display: block;
-      }
-
-      .stat-label {
-        font-size: 13px;
-        color: #86868B;
-        margin-top: 4px;
-        display: block;
-      }
-
-      .batch-description {
-        font-size: 14px;
-        color: #1D1D1F;
-        line-height: 1.6;
-        margin-bottom: 24px;
-      }
-
-      .batch-description p {
-        margin-bottom: 12px;
-      }
-
-      .batch-description ul {
-        margin-left: 20px;
-        margin-bottom: 12px;
-      }
-
-      .batch-description li {
-        margin-bottom: 6px;
-        color: #6E6E73;
-      }
-
-      .batch-description strong {
-        color: #34C759;
       }
 
       /* Expandable rows for AI summaries */
@@ -712,19 +230,19 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #86868B;
-        transition: transform 0.2s, color 0.2s;
+        color: var(--gray-500);
+        transition: all var(--transition-fast);
       }
 
       .expand-btn:hover {
-        color: #0071E3;
+        color: var(--primary);
       }
 
       .expand-icon {
         display: inline-block;
         font-size: 16px;
         font-weight: bold;
-        transition: transform 0.2s;
+        transition: transform var(--transition-fast);
       }
 
       .expand-icon.expanded {
@@ -732,7 +250,7 @@
       }
 
       .expanded-row {
-        background: #FAFAFA;
+        background: var(--gray-50);
       }
 
       .expanded-row td {
@@ -741,7 +259,7 @@
 
       .summary-card {
         padding: 20px 24px;
-        border-top: 1px solid #E5E5EA;
+        border-top: 1px solid var(--gray-200);
         animation: slideDown 0.2s ease-out;
       }
 
@@ -766,18 +284,18 @@
       .summary-badge {
         display: inline-block;
         padding: 4px 10px;
-        background: #E5E5EA;
-        color: #86868B;
+        background: var(--gray-200);
+        color: var(--gray-600);
         font-size: 12px;
         font-weight: 500;
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         text-transform: uppercase;
         letter-spacing: 0.5px;
       }
 
       .summary-date {
         font-size: 12px;
-        color: #86868B;
+        color: var(--gray-500);
       }
 
       .summary-fields {
@@ -794,14 +312,14 @@
 
       .field-label {
         font-size: 13px;
-        color: #86868B;
+        color: var(--gray-500);
         font-weight: 500;
         min-width: 70px;
       }
 
       .field-value {
         font-size: 13px;
-        color: #1D1D1F;
+        color: var(--gray-900);
         font-style: italic;
       }
 
@@ -809,44 +327,44 @@
         display: flex;
         gap: 12px;
         padding-top: 12px;
-        border-top: 1px solid #E5E5EA;
+        border-top: 1px solid var(--gray-200);
       }
 
       .summary-btn {
         padding: 8px 16px;
         background: transparent;
-        color: #0071E3;
-        border: 1px solid #D2D2D7;
-        border-radius: 6px;
+        color: var(--primary);
+        border: 1px solid var(--gray-300);
+        border-radius: var(--radius-sm);
         font-size: 13px;
         font-weight: 500;
         cursor: pointer;
         text-decoration: none;
         display: inline-block;
-        transition: all 0.15s;
+        transition: all var(--transition-fast);
       }
 
       .summary-btn:hover {
-        background: #F5F5F7;
-        border-color: #0071E3;
+        background: var(--gray-100);
+        border-color: var(--primary);
       }
 
       .summary-btn-primary {
-        background: #0071E3;
-        color: #FFFFFF;
-        border-color: #0071E3;
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
       }
 
       .summary-btn-primary:hover {
-        background: #0077ED;
+        background: var(--primary-hover);
       }
 
       .summary-btn-secondary {
-        color: #86868B;
+        color: var(--gray-600);
       }
 
       .summary-btn-secondary:hover {
-        color: #1D1D1F;
+        color: var(--gray-900);
       }
 
       .no-summary {
@@ -858,20 +376,20 @@
 
       .no-summary-text {
         font-size: 14px;
-        color: #86868B;
+        color: var(--gray-500);
         font-style: italic;
       }
 
       .no-summary-hint {
         font-size: 13px;
-        color: #86868B;
+        color: var(--gray-500);
       }
 
       /* Category filters and badges */
       .category-filter-bar {
         display: flex;
-        gap: 8px;
-        margin-bottom: 24px;
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-lg);
         flex-wrap: wrap;
         align-items: center;
       }
@@ -879,32 +397,32 @@
       .category-filter-label {
         font-size: 13px;
         font-weight: 600;
-        color: #86868B;
-        margin-right: 8px;
+        color: var(--gray-500);
+        margin-right: var(--spacing-sm);
       }
 
       .category-filter-btn {
         padding: 6px 14px;
-        background: #FFFFFF;
-        border: 1px solid #D2D2D7;
-        border-radius: 16px;
+        background: white;
+        border: 1px solid var(--gray-300);
+        border-radius: var(--radius-full);
         font-size: 13px;
         font-weight: 500;
-        color: #1D1D1F;
+        color: var(--gray-900);
         cursor: pointer;
-        transition: all 0.15s;
+        transition: all var(--transition-fast);
         white-space: nowrap;
       }
 
       .category-filter-btn:hover {
-        border-color: #0071E3;
-        background: #F5F5F7;
+        border-color: var(--primary);
+        background: var(--gray-50);
       }
 
       .category-filter-btn.active {
-        background: #0071E3;
-        border-color: #0071E3;
-        color: #FFFFFF;
+        background: var(--primary);
+        border-color: var(--primary);
+        color: white;
       }
 
       .category-badge {
@@ -912,7 +430,7 @@
         align-items: center;
         gap: 4px;
         padding: 4px 10px;
-        border-radius: 12px;
+        border-radius: var(--radius-full);
         font-size: 12px;
         font-weight: 500;
         white-space: nowrap;
@@ -933,115 +451,373 @@
       .category-government { background: #ECEFF1; color: #455A64; }
       .category-personal { background: #F3E5F5; color: #6A1B9A; }
       .category-other { background: #F5F5F5; color: #757575; }
+
+      /* Modals */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.75);
+        z-index: var(--z-modal);
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: white;
+        border-radius: var(--radius-lg);
+        width: 90%;
+        max-width: 1200px;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: var(--shadow-xl);
+      }
+
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--gray-200);
+      }
+
+      .modal-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--gray-900);
+      }
+
+      .modal-close {
+        background: var(--gray-100);
+        border: none;
+        border-radius: var(--radius-md);
+        padding: 8px 12px;
+        font-size: 18px;
+        cursor: pointer;
+        transition: background var(--transition-fast);
+      }
+
+      .modal-close:hover {
+        background: var(--gray-200);
+      }
+
+      .modal-body {
+        flex: 1;
+        overflow: auto;
+        padding: 24px;
+      }
+
+      .preview-container {
+        text-align: center;
+      }
+
+      .preview-container img {
+        max-width: 100%;
+        height: auto;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-md);
+      }
+
+      .preview-container iframe {
+        width: 100%;
+        height: 70vh;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-md);
+      }
+
+      /* Upload modal */
+      .upload-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: var(--z-modal);
+        align-items: center;
+        justify-content: center;
+      }
+
+      .upload-modal.active {
+        display: flex;
+      }
+
+      .upload-modal-content {
+        background: white;
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-xl);
+        max-width: 480px;
+        width: 90%;
+        box-shadow: var(--shadow-xl);
+      }
+
+      .upload-modal-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: var(--spacing-lg);
+      }
+
+      .upload-form-group {
+        margin-bottom: var(--spacing-lg);
+      }
+
+      .upload-form-label {
+        display: block;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--gray-600);
+        margin-bottom: var(--spacing-sm);
+      }
+
+      .upload-file-input {
+        width: 100%;
+        padding: 48px 24px;
+        border: 2px dashed var(--gray-300);
+        border-radius: var(--radius-md);
+        background: var(--gray-50);
+        text-align: center;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .upload-file-input:hover {
+        border-color: var(--primary);
+        background: var(--gray-100);
+      }
+
+      .upload-actions {
+        display: flex;
+        gap: var(--spacing-md);
+      }
+
+      .upload-submit {
+        flex: 1;
+        padding: 12px 24px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: var(--radius-md);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+      }
+
+      .upload-submit:hover {
+        background: var(--primary-hover);
+      }
+
+      .upload-cancel {
+        padding: 12px 24px;
+        background: transparent;
+        color: var(--gray-900);
+        border: 1px solid var(--gray-300);
+        border-radius: var(--radius-md);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+      }
+
+      .upload-cancel:hover {
+        background: var(--gray-100);
+      }
+
+      .upload-tabs {
+        display: flex;
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-md);
+      }
+
+      .upload-tab {
+        flex: 1;
+        padding: 10px 16px;
+        background: transparent;
+        color: var(--gray-900);
+        border: 1px solid var(--gray-300);
+        border-radius: var(--radius-md);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .upload-tab:hover {
+        background: var(--gray-100);
+      }
+
+      .upload-tab.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+      }
+
+      .file-list {
+        max-height: 200px;
+        overflow-y: auto;
+        background: var(--gray-50);
+        border-radius: var(--radius-md);
+        padding: 12px;
+      }
+
+      .file-list-item {
+        padding: 8px 12px;
+        background: white;
+        border-radius: var(--radius-sm);
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 13px;
+      }
+
+      .file-list-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .file-list-name {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: var(--gray-900);
+      }
+
+      .file-list-size {
+        color: var(--gray-500);
+        margin-left: 12px;
+        font-size: 12px;
+      }
+
+      .progress-container {
+        width: 100%;
+        height: 8px;
+        background: var(--gray-200);
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+        margin-bottom: 8px;
+      }
+
+      .progress-bar-upload {
+        height: 100%;
+        background: var(--primary);
+        transition: width 0.3s ease;
+        width: 0%;
+      }
+
+      .progress-text {
+        font-size: 13px;
+        color: var(--gray-500);
+        text-align: center;
+      }
+
+      /* Batch summary modal */
+      .batch-summary-content {
+        max-width: 600px;
+      }
+
+      .batch-stats {
+        background: var(--gray-50);
+        border-radius: var(--radius-lg);
+        padding: 20px;
+        margin-bottom: var(--spacing-lg);
+      }
+
+      .stat-loading {
+        text-align: center;
+        color: var(--gray-500);
+        font-size: 14px;
+      }
+
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+
+      .stat-item {
+        text-align: center;
+      }
+
+      .batch-description {
+        font-size: 14px;
+        color: var(--gray-900);
+        line-height: 1.6;
+        margin-bottom: var(--spacing-lg);
+      }
+
+      .batch-description p {
+        margin-bottom: 12px;
+      }
+
+      .batch-description ul {
+        margin-left: 20px;
+        margin-bottom: 12px;
+      }
+
+      .batch-description li {
+        margin-bottom: 6px;
+        color: var(--gray-600);
+      }
+
+      .batch-description strong {
+        color: var(--accent-green);
+      }
+
+      .ai-batch-button {
+        padding: 8px 16px;
+        background: var(--accent-green);
+        color: white;
+        border: none;
+        border-radius: var(--radius-md);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .ai-batch-button:hover {
+        background: #2FB950;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(52, 199, 89, 0.3);
+      }
     </style>
   </head>
   <body>
     <div class="app-container">
-      <!-- Sidebar -->
-      <aside class="sidebar">
-        <div class="sidebar-header">
-          <div class="sidebar-title">Document Vault</div>
-        </div>
-
-        <nav class="sidebar-nav">
-          <div class="nav-section">
-            <div class="nav-section-title">Views</div>
-            <a href="/dashboard" class="nav-item">
-              <span>Dashboard</span>
-            </a>
-            <a href="/actions" class="nav-item">
-              <span>Action Items</span>
-            </a>
-            <a href="/categories" class="nav-item">
-              <span>Categories</span>
-            </a>
-            <a href="/agents" class="nav-item">
-              <span>Agents</span>
-            </a>
-            <a href="/?source=all" class="nav-item {% if source == 'all' %}active{% endif %}">
-              <span>Vault</span>
-              <span class="nav-item-count">{{ counts.all }}</span>
-            </a>
-            <a href="/upload" class="nav-item">
-              <span>Upload</span>
-            </a>
-          </div>
-
-          <div class="nav-section">
-            <div class="nav-section-title">Filter</div>
-            <a href="/?source=email" class="nav-item {% if source == 'email' %}active{% endif %}">
-              <span>Emails</span>
-              <span class="nav-item-count">{{ counts.email }}</span>
-            </a>
-            <a href="/?source=upload" class="nav-item {% if source == 'upload' %}active{% endif %}">
-              <span>Uploads</span>
-              <span class="nav-item-count">{{ counts.upload }}</span>
-            </a>
-            <a href="/?source=attachment" class="nav-item {% if source == 'attachment' %}active{% endif %}">
-              <span>Attachments</span>
-              <span class="nav-item-count">{{ counts.attachment }}</span>
-            </a>
-          </div>
-
-          <div class="nav-section">
-            <div class="nav-section-title">AI Tools</div>
-            <a href="#" class="nav-item" onclick="event.preventDefault(); triggerGmailSync()">
-              <span>Sync Gmail</span>
-            </a>
-            <a href="#" class="nav-item" onclick="event.preventDefault(); triggerGenerateSummaries()">
-              <span>Generate Summaries</span>
-            </a>
-            <a href="#" class="nav-item" onclick="event.preventDefault(); triggerCategorizeAll()">
-              <span>Categorize Documents</span>
-            </a>
-            <a href="#" class="nav-item" onclick="event.preventDefault(); showCategoryStats()">
-              <span>Category Stats</span>
-            </a>
-          </div>
-
-          <div class="nav-section">
-            <div class="nav-section-title">Help</div>
-            <a href="/entities-manage" class="nav-item">
-              <span>Manage Entities</span>
-            </a>
-            <a href="/docs/" class="nav-item">
-              <span>📚 Documentation</span>
-            </a>
-          </div>
-        </nav>
-
-        <div class="sidebar-footer">
-          <button class="upload-button" onclick="showUploadModal()">Upload Document</button>
-        </div>
-      </aside>
+      <!-- Sidebar Component -->
+      {% include '_sidebar.html' %}
 
       <!-- Main content -->
       <main class="main-content">
-        <!-- Top bar -->
-        <div class="top-bar">
-          <div class="search-box">
-            <span class="search-icon">🔍</span>
-            <form action="/" method="get">
-              <input type="hidden" name="source" value="{{ source }}" />
-              <input
-                type="text"
-                name="q"
-                class="search-input"
-                placeholder="Search documents..."
-                value="{{ q or '' }}"
-                autocomplete="off"
-              />
-            </form>
-          </div>
-          {% if ai_enabled %}
-          <button class="ai-batch-button" onclick="showBatchSummaryModal()">
-            <span>⚡</span> AI Summaries
-          </button>
-          <button class="ai-batch-button" onclick="categorizeAllDocuments()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-            <span>🏷️</span> Categorize All
-          </button>
-          {% endif %}
-        </div>
+        <!-- Header Component -->
+        {% set breadcrumb = [{'label': 'Vault', 'url': '/'}] %}
+        {% set show_search = true %}
+        {% set query = q %}
+        {% if ai_enabled %}
+          {% set header_actions %}
+            <button class="ai-batch-button" onclick="showBatchSummaryModal()">
+              <span>⚡</span> AI Summaries
+            </button>
+            <button class="ai-batch-button" onclick="categorizeAllDocuments()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+              <span>🏷️</span> Categorize All
+            </button>
+            <button class="ai-batch-button" onclick="showBulkRenameModal()" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+              <span>✏️</span> Auto-Rename
+            </button>
+          {% endset %}
+        {% endif %}
+        {% include '_header.html' %}
 
         <!-- Content area -->
         <div class="content-area">
@@ -1081,7 +857,7 @@
           </div>
 
           {% if items %}
-            <div class="documents-table">
+            <div class="documents-table animate-fade-in">
               <table>
                 <thead>
                   <tr>
@@ -1214,7 +990,7 @@
               </table>
             </div>
           {% else %}
-            <div class="empty-state">
+            <div class="empty-state animate-fade-in">
               <div class="empty-state-icon">📭</div>
               {% if q %}
                 <div class="empty-state-title">No results found</div>
@@ -1265,6 +1041,52 @@
       </div>
     </div>
 
+    <!-- Bulk Rename Modal -->
+    <div class="upload-modal" id="bulkRenameModal">
+      <div class="upload-modal-content" style="max-width: 800px;">
+        <h2 class="upload-modal-title">Auto-Rename Items</h2>
+        <div class="batch-summary-content">
+          <div class="batch-description">
+            <p>Automatically generate smart titles from AI summaries in the format:</p>
+            <p style="font-weight: 600; color: var(--primary); margin: 8px 0;">Vendor - Type - Amount - Date</p>
+            <p style="font-size: 13px; color: var(--gray-600); margin-top: 8px;">Only items with AI summaries will be renamed. Review changes before applying.</p>
+          </div>
+
+          <div class="batch-stats" id="renamePreviewArea" style="display: none;">
+            <div style="max-height: 400px; overflow-y: auto; margin: 16px 0;">
+              <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
+                <thead style="position: sticky; top: 0; background: white; border-bottom: 2px solid var(--gray-300);">
+                  <tr>
+                    <th style="text-align: left; padding: 8px; width: 50%;">Current Title</th>
+                    <th style="text-align: left; padding: 8px; width: 50%;">Proposed Title</th>
+                  </tr>
+                </thead>
+                <tbody id="renamePreviewTable"></tbody>
+              </table>
+            </div>
+            <div id="renameStats" style="margin-top: 12px; padding: 12px; background: var(--gray-50); border-radius: 6px; font-size: 14px;">
+              <strong id="renameCount">0</strong> items will be renamed
+            </div>
+          </div>
+
+          <div class="batch-progress" id="renameProgress" style="display: none;">
+            <label class="upload-form-label">Renaming items...</label>
+            <div class="progress-text" id="renameProgressText">Processing...</div>
+          </div>
+
+          <div class="upload-actions" id="renameActions">
+            <button type="button" class="upload-submit" id="renamePreviewButton" onclick="previewBulkRename()">
+              Preview Changes
+            </button>
+            <button type="button" class="upload-submit" id="renameApplyButton" onclick="applyBulkRename()" style="display: none;">
+              Apply Changes
+            </button>
+            <button type="button" class="upload-cancel" onclick="hideBulkRenameModal()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Upload modal -->
     <div class="upload-modal" id="uploadModal">
       <div class="upload-modal-content">
@@ -1306,11 +1128,25 @@
       </div>
     </div>
 
+    <!-- Preview Modal -->
+    <div id="preview-modal" class="modal-overlay" onclick="closePreviewModal(event)">
+      <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+          <span class="modal-title" id="preview-title">Document Preview</span>
+          <button class="modal-close" onclick="closePreviewModal()">✕</button>
+        </div>
+        <div class="modal-body" id="preview-body">
+          <div class="preview-container">
+            Loading preview...
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="/static/js/enhancements.js"></script>
     <script>
       function showUploadModal() {
         document.getElementById('uploadModal').classList.add('active');
-        // Reset form
         document.getElementById('uploadForm').reset();
         document.getElementById('fileListContainer').style.display = 'none';
         document.getElementById('uploadProgress').style.display = 'none';
@@ -1321,7 +1157,6 @@
         document.getElementById('uploadModal').classList.remove('active');
       }
 
-      // Batch Summary Modal
       async function showBatchSummaryModal() {
         document.getElementById('batchSummaryModal').classList.add('active');
         await loadBatchStats();
@@ -1380,7 +1215,6 @@
         const progressBar = document.getElementById('batchProgressBar');
         const progressText = document.getElementById('batchProgressText');
 
-        // Show progress
         progressContainer.style.display = 'block';
         setButtonLoading(button, true);
 
@@ -1392,7 +1226,6 @@
           const result = await response.json();
 
           if (result.ok) {
-            // Update progress bar
             progressBar.style.width = '100%';
             progressText.textContent = `${result.successful} / ${result.total} documents`;
 
@@ -1402,10 +1235,8 @@
               (result.failed > 0 ? `\n${result.failed} failed` : '')
             );
 
-            // Reload stats
             await loadBatchStats();
 
-            // Hide progress after a moment
             setTimeout(() => {
               progressContainer.style.display = 'none';
               progressBar.style.width = '0%';
@@ -1428,7 +1259,6 @@
         const uploadLabel = document.getElementById('uploadLabel');
         const tabs = document.querySelectorAll('.upload-tab');
 
-        // Update active tab
         tabs.forEach(tab => tab.classList.remove('active'));
         event?.target?.classList.add('active');
 
@@ -1444,7 +1274,6 @@
           uploadLabel.textContent = 'Choose files (you can select multiple)';
         }
 
-        // Clear selection
         fileInput.value = '';
         updateFileList();
       }
@@ -1488,7 +1317,6 @@
         return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
       }
 
-      // Handle upload form submission
       document.getElementById('uploadForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
@@ -1505,7 +1333,6 @@
         const progressBar = document.getElementById('progressBar');
         const progressText = document.getElementById('progressText');
 
-        // Show progress
         progressContainer.style.display = 'block';
         setButtonLoading(uploadButton, true);
 
@@ -1518,7 +1345,6 @@
           let uploadedCount = 0;
           const totalFiles = files.length;
 
-          // Update progress
           const updateProgress = () => {
             const percent = (uploadedCount / totalFiles) * 100;
             progressBar.style.width = percent + '%';
@@ -1527,7 +1353,6 @@
 
           updateProgress();
 
-          // Upload all files
           const response = await fetch('/intake/upload-multiple', {
             method: 'POST',
             body: formData,
@@ -1535,11 +1360,9 @@
 
           const result = await response.json();
 
-          // Update progress to complete
           uploadedCount = totalFiles;
           updateProgress();
 
-          // Show result
           if (result.ok) {
             const message = [
               `${result.successful} file(s) uploaded successfully`,
@@ -1563,28 +1386,12 @@
         }
       });
 
-      // Close modal on outside click
       document.getElementById('uploadModal').addEventListener('click', function(e) {
         if (e.target === this) {
           hideUploadModal();
         }
       });
 
-      // Auto-submit search on input
-      document.querySelector('.search-input').addEventListener('input', function() {
-        clearTimeout(window.searchTimeout);
-        window.searchTimeout = setTimeout(() => {
-          this.form.submit();
-        }, 500);
-      });
-
-      // Functions moved to enhancements.js:
-      // - deleteItem()
-      // - toggleExpand()
-      // - generateSummaryInline()
-      // - regenerateSummary()
-
-      // Categorize all documents
       async function categorizeAllDocuments() {
         const button = event.target.closest('button');
         const originalHTML = button.innerHTML;
@@ -1614,35 +1421,29 @@
         }
       }
 
-      // Category filtering
       function filterByCategory(category) {
-        // Update active button
         document.querySelectorAll('.category-filter-btn').forEach(btn => {
           btn.classList.toggle('active', btn.dataset.category === category);
         });
 
-        // Filter table rows
         const rows = document.querySelectorAll('.table-row');
         rows.forEach(row => {
           const rowCategory = row.dataset.category;
 
           if (category === 'all') {
             row.style.display = '';
-            // Also show the expanded row if it exists
             const expandedRow = document.getElementById('expanded-' + row.querySelector('a').href.split('/').pop());
             if (expandedRow && expandedRow.style.display !== 'none') {
               expandedRow.style.display = 'table-row';
             }
           } else if (rowCategory === category) {
             row.style.display = '';
-            // Also show the expanded row if it exists
             const expandedRow = document.getElementById('expanded-' + row.querySelector('a').href.split('/').pop());
             if (expandedRow && expandedRow.style.display !== 'none') {
               expandedRow.style.display = 'table-row';
             }
           } else {
             row.style.display = 'none';
-            // Hide the expanded row too
             const itemId = row.querySelector('a').href.split('/').pop();
             const expandedRow = document.getElementById('expanded-' + itemId);
             if (expandedRow) {
@@ -1652,105 +1453,6 @@
         });
       }
 
-      // Sidebar AI Tools functions
-      async function triggerGmailSync() {
-        Toast.info('Syncing Gmail', 'Fetching new emails...');
-
-        try {
-          const response = await fetch('/gmail/sync', {
-            method: 'POST',
-          });
-
-          const result = await response.json();
-
-          if (result.ok) {
-            Toast.success('Gmail Synced', result.message || 'Gmail sync completed successfully');
-            // Reload after a short delay to show new documents
-            setTimeout(() => window.location.reload(), 1500);
-          } else {
-            Toast.error('Sync Failed', result.message || 'Unknown error');
-          }
-        } catch (error) {
-          Toast.error('Sync Failed', error.message);
-        }
-      }
-
-      async function triggerGenerateSummaries() {
-        if (!confirm('Generate AI summaries for all documents without summaries?\n\nThis may take several minutes depending on how many documents need processing.')) {
-          return;
-        }
-
-        Toast.info('Generating Summaries', 'Processing documents...');
-
-        try {
-          const response = await fetch('/summaries/generate-all', {
-            method: 'POST',
-          });
-
-          const result = await response.json();
-
-          if (result.ok) {
-            Toast.success('Summaries Generated', `Successfully generated ${result.successful} summaries. ${result.failed} failed.`);
-            setTimeout(() => window.location.reload(), 1500);
-          } else {
-            Toast.error('Generation Failed', result.message || 'Unknown error');
-          }
-        } catch (error) {
-          Toast.error('Generation Failed', error.message);
-        }
-      }
-
-      async function triggerCategorizeAll() {
-        if (!confirm('Categorize all uncategorized documents?\n\nThis will analyze documents and assign them to life admin categories.')) {
-          return;
-        }
-
-        Toast.info('Categorizing', 'Analyzing documents...');
-
-        try {
-          const response = await fetch('/categories/categorize-all', {
-            method: 'POST',
-          });
-
-          const result = await response.json();
-
-          if (result.ok) {
-            Toast.success('Documents Categorized', `Categorized ${result.categorized} documents`);
-            setTimeout(() => window.location.reload(), 1500);
-          } else {
-            Toast.error('Categorization Failed', result.message || 'Unknown error');
-          }
-        } catch (error) {
-          Toast.error('Categorization Failed', error.message);
-        }
-      }
-
-      async function showCategoryStats() {
-        Toast.info('Loading Stats', 'Fetching category statistics...');
-
-        try {
-          const response = await fetch('/categories/stats');
-          const result = await response.json();
-
-          if (result.ok) {
-            let statsMessage = `Total Categories: ${result.categories.length}\n`;
-            statsMessage += `Uncategorized Documents: ${result.uncategorized}\n\n`;
-            statsMessage += 'Category Breakdown:\n';
-
-            result.categories.forEach(cat => {
-              statsMessage += `  ${cat.category}: ${cat.count} documents\n`;
-            });
-
-            alert(statsMessage);
-          } else {
-            Toast.error('Stats Failed', result.message || 'Unknown error');
-          }
-        } catch (error) {
-          Toast.error('Stats Failed', error.message);
-        }
-      }
-
-      // Preview Document Modal
       async function previewDocument(itemId, filename) {
         const modal = document.getElementById('preview-modal');
         const title = document.getElementById('preview-title');
@@ -1768,21 +1470,18 @@
             const contentType = result.content_type || '';
 
             if (contentType.includes('image')) {
-              // Show image
               body.innerHTML = `
                 <div class="preview-container">
                   <img src="${result.url}" alt="${escapeHtml(filename)}" />
                 </div>
               `;
             } else if (contentType.includes('pdf')) {
-              // Show PDF in iframe
               body.innerHTML = `
                 <div class="preview-container">
                   <iframe src="${result.url}" title="${escapeHtml(filename)}"></iframe>
                 </div>
               `;
             } else {
-              // Unsupported type
               body.innerHTML = `
                 <div style="text-align: center; padding: 40px; color: #86868B;">
                   <div style="font-size: 48px; margin-bottom: 16px;">📄</div>
@@ -1813,21 +1512,126 @@
         div.textContent = text;
         return div.innerHTML;
       }
-    </script>
 
-    <!-- Preview Modal -->
-    <div id="preview-modal" class="modal-overlay" onclick="closePreviewModal(event)">
-      <div class="modal-content" onclick="event.stopPropagation()">
-        <div class="modal-header">
-          <span class="modal-title" id="preview-title">Document Preview</span>
-          <button class="modal-close" onclick="closePreviewModal()">✕</button>
-        </div>
-        <div class="modal-body" id="preview-body">
-          <div class="preview-container">
-            Loading preview...
-          </div>
-        </div>
-      </div>
-    </div>
+      // Mobile sidebar toggle
+      function toggleMobileSidebar() {
+        document.querySelector('.sidebar').classList.toggle('mobile-open');
+      }
+
+      // Bulk rename functionality
+      let currentRenameChanges = [];
+
+      function showBulkRenameModal() {
+        document.getElementById('bulkRenameModal').classList.add('active');
+        // Reset state
+        document.getElementById('renamePreviewArea').style.display = 'none';
+        document.getElementById('renamePreviewButton').style.display = 'inline-block';
+        document.getElementById('renameApplyButton').style.display = 'none';
+        document.getElementById('renameProgress').style.display = 'none';
+        currentRenameChanges = [];
+      }
+
+      function hideBulkRenameModal() {
+        document.getElementById('bulkRenameModal').classList.remove('active');
+      }
+
+      async function previewBulkRename() {
+        const previewButton = document.getElementById('renamePreviewButton');
+        const previewArea = document.getElementById('renamePreviewArea');
+        const previewTable = document.getElementById('renamePreviewTable');
+
+        try {
+          previewButton.disabled = true;
+          previewButton.textContent = 'Loading...';
+
+          // Fetch preview with dry_run=true
+          const response = await fetch('/items/title/auto-generate?dry_run=true&require_summary=true&overwrite_existing=false', {
+            method: 'POST'
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            alert(`Error: ${error.detail || 'Failed to generate preview'}`);
+            return;
+          }
+
+          const data = await response.json();
+          currentRenameChanges = data.changes;
+
+          if (currentRenameChanges.length === 0) {
+            alert('No items to rename. Make sure items have AI summaries generated.');
+            return;
+          }
+
+          // Build preview table
+          previewTable.innerHTML = '';
+          currentRenameChanges.forEach(change => {
+            const row = document.createElement('tr');
+            row.style.borderBottom = '1px solid var(--gray-200)';
+            row.innerHTML = `
+              <td style="padding: 8px; color: var(--gray-700);">${escapeHtml(change.current_title)}</td>
+              <td style="padding: 8px; color: var(--primary); font-weight: 500;">${escapeHtml(change.proposed_title)}</td>
+            `;
+            previewTable.appendChild(row);
+          });
+
+          // Update stats
+          document.getElementById('renameCount').textContent = currentRenameChanges.length;
+
+          // Show preview and apply button
+          previewArea.style.display = 'block';
+          previewButton.style.display = 'none';
+          document.getElementById('renameApplyButton').style.display = 'inline-block';
+
+        } catch (error) {
+          console.error('Error previewing bulk rename:', error);
+          alert('Failed to generate preview. Please try again.');
+        } finally {
+          previewButton.disabled = false;
+          previewButton.textContent = 'Preview Changes';
+        }
+      }
+
+      async function applyBulkRename() {
+        const applyButton = document.getElementById('renameApplyButton');
+        const progressArea = document.getElementById('renameProgress');
+        const progressText = document.getElementById('renameProgressText');
+        const actionsArea = document.getElementById('renameActions');
+
+        try {
+          applyButton.disabled = true;
+          progressArea.style.display = 'block';
+          actionsArea.style.display = 'none';
+
+          progressText.textContent = `Renaming ${currentRenameChanges.length} items...`;
+
+          // Apply changes
+          const response = await fetch('/items/title/auto-generate?dry_run=false&require_summary=true&overwrite_existing=false', {
+            method: 'POST'
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            alert(`Error: ${error.detail || 'Failed to apply changes'}`);
+            return;
+          }
+
+          progressText.textContent = 'Done! Reloading page...';
+
+          // Reload page to show new titles
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+
+        } catch (error) {
+          console.error('Error applying bulk rename:', error);
+          alert('Failed to apply changes. Please try again.');
+          actionsArea.style.display = 'flex';
+          progressArea.style.display = 'none';
+        } finally {
+          applyButton.disabled = false;
+        }
+      }
+    </script>
   </body>
 </html>
